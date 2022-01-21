@@ -13,6 +13,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import me.miquiis.onlyblock.OnlyBlock;
+import me.miquiis.onlyblock.client.recipes.DiamondBlockLBR;
 import net.minecraft.client.gui.DialogTexts;
 import net.minecraft.client.gui.chat.NarratorChatListener;
 import net.minecraft.client.gui.screen.Screen;
@@ -38,6 +39,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class LavaBookScreen extends Screen {
+
    public static final LavaBookScreen.IBookInfo EMPTY_BOOK = new LavaBookScreen.IBookInfo() {
       /**
        * Returns the size of the book
@@ -52,6 +54,13 @@ public class LavaBookScreen extends Screen {
       }
 
    };
+
+   public static final LavaBookScreen.WrittenBookInfo RECIPE_BOOK = new WrittenBookInfo(new ArrayList<CraftRecipe>(
+           Arrays.asList(
+                   new DiamondBlockLBR()
+           )
+   ));
+
    public static final ResourceLocation BOOK_TEXTURES = new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/lava_book.png");
    private LavaBookScreen.IBookInfo bookInfo;
    private int currPage;
@@ -69,7 +78,7 @@ public class LavaBookScreen extends Screen {
    }
 
    public LavaBookScreen() {
-      this(EMPTY_BOOK, false);
+      this(RECIPE_BOOK, true);
    }
 
    private LavaBookScreen(LavaBookScreen.IBookInfo bookInfoIn, boolean pageTurnSoundsIn) {

@@ -2,6 +2,7 @@ package me.miquiis.onlyblock;
 
 import me.miquiis.onlyblock.common.registries.BlockRegister;
 import me.miquiis.onlyblock.common.registries.ItemRegister;
+import me.miquiis.onlyblock.server.network.OnlyBlockNetwork;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -33,7 +34,7 @@ public class OnlyBlock
 
     private void setup(final FMLCommonSetupEvent event)
     {
-
+        OnlyBlockNetwork.init();
     }
 
     private void doClientStuff(final FMLClientSetupEvent event)
