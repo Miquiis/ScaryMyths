@@ -1,6 +1,9 @@
 package me.miquiis.onlyblock.server.network;
 
 import me.miquiis.onlyblock.OnlyBlock;
+import me.miquiis.onlyblock.server.network.messages.OpenAshBookMessage;
+import me.miquiis.onlyblock.server.network.messages.OpenCobblestoneBookMessage;
+import me.miquiis.onlyblock.server.network.messages.OpenFrostBookMessage;
 import me.miquiis.onlyblock.server.network.messages.OpenLavaBookMessage;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkRegistry;
@@ -17,6 +20,9 @@ public class OnlyBlockNetwork {
 
     public static void init() {
         CHANNEL.registerMessage(0, OpenLavaBookMessage.class, OpenLavaBookMessage::encode, OpenLavaBookMessage::decode, OpenLavaBookMessage::handle);
+        CHANNEL.registerMessage(1, OpenCobblestoneBookMessage.class, OpenCobblestoneBookMessage::encode, OpenCobblestoneBookMessage::decode, OpenCobblestoneBookMessage::handle);
+        CHANNEL.registerMessage(2, OpenAshBookMessage.class, OpenAshBookMessage::encode, OpenAshBookMessage::decode, OpenAshBookMessage::handle);
+        CHANNEL.registerMessage(3, OpenFrostBookMessage.class, OpenFrostBookMessage::encode, OpenFrostBookMessage::decode, OpenFrostBookMessage::handle);
     }
 
 }

@@ -34,14 +34,7 @@ public class ForgeEvents {
         if (event.getWorld().isRemote()) return;
         if (event.getState().getBlock().equals(BlockRegister.LAVA_BLOCK.get()))
         {
-            if (event.getPlayer().isCreative()) return;
-            event.setCanceled(true);
-            double d0 = (double)(event.getPlayer().world.rand.nextFloat() * 0.5F) + 0.25D;
-            double d1 = (double)(event.getPlayer().world.rand.nextFloat() * 0.5F) + 0.5D;
-            double d2 = (double)(event.getPlayer().world.rand.nextFloat() * 0.5F) + 0.25D;
-            ItemEntity itemEntity = new ItemEntity(event.getPlayer().world, event.getPos().getX() + d0, event.getPos().getY() + d1, event.getPos().getZ() + d2, new ItemStack(Items.CHAIN));
-            itemEntity.setDefaultPickupDelay();
-            event.getWorld().addEntity(itemEntity);
+            OnlyBlock.getInstance().getBlockManager().onLavaBlockBreak(event);
         }
     }
 

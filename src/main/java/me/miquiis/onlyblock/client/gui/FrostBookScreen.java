@@ -1,71 +1,51 @@
 package me.miquiis.onlyblock.client.gui;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableList.Builder;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import me.miquiis.onlyblock.OnlyBlock;
+import me.miquiis.onlyblock.client.recipes.DiamondBlockLBR;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.chat.NarratorChatListener;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nullable;
-
-import me.miquiis.onlyblock.OnlyBlock;
-import me.miquiis.onlyblock.client.recipes.DiamondBlockLBR;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.DialogTexts;
-import net.minecraft.client.gui.chat.NarratorChatListener;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.WrittenBookItem;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.IReorderingProcessor;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.ITextProperties;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.util.text.event.ClickEvent;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class LavaBookScreen extends Screen {
+public class FrostBookScreen extends Screen {
 
-   public static final LavaBookScreen.WrittenBookInfo RECIPE_BOOK = new WrittenBookInfo(new ArrayList<CraftRecipe>(
+   public static final FrostBookScreen.WrittenBookInfo RECIPE_BOOK = new WrittenBookInfo(new ArrayList<CraftRecipe>(
            Arrays.asList(
                    new DiamondBlockLBR()
            )
    ));
 
-   public static final ResourceLocation BOOK_TEXTURES = new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/lava_book.png");
-   private LavaBookScreen.IBookInfo bookInfo;
+   public static final ResourceLocation BOOK_TEXTURES = new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/frost_book.png");
+   private FrostBookScreen.IBookInfo bookInfo;
    private int currPage;
    private ITextComponent field_243344_s = StringTextComponent.EMPTY;
-   private List<HoverItem> hoverItems;
    private ChangePageButton buttonNextPage;
    private ChangePageButton buttonPreviousPage;
    /** Determines if a sound is played when the page is turned */
    private final boolean pageTurnSounds;
 
-   public LavaBookScreen() {
+   public FrostBookScreen() {
       this(RECIPE_BOOK, true);
    }
 
-   private LavaBookScreen(LavaBookScreen.IBookInfo bookInfoIn, boolean pageTurnSoundsIn) {
+   private FrostBookScreen(FrostBookScreen.IBookInfo bookInfoIn, boolean pageTurnSoundsIn) {
       super(NarratorChatListener.EMPTY);
       this.bookInfo = bookInfoIn;
       this.pageTurnSounds = pageTurnSoundsIn;
-      this.hoverItems = new ArrayList<>();
    }
 
    protected void init() {
@@ -212,7 +192,7 @@ public class LavaBookScreen extends Screen {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public static class WrittenBookInfo implements LavaBookScreen.IBookInfo {
+   public static class WrittenBookInfo implements FrostBookScreen.IBookInfo {
 
       private final List<CraftRecipe> craftRecipes;
 
