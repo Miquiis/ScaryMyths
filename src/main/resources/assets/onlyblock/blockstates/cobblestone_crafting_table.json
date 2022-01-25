@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "onlyblock:block/cobblestone_crafting_table"
+    }
+  }
+}

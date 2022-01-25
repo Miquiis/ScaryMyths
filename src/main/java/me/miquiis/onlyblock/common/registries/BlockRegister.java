@@ -1,9 +1,12 @@
 package me.miquiis.onlyblock.common.registries;
 
 import me.miquiis.onlyblock.OnlyBlock;
+import me.miquiis.onlyblock.common.blocks.CobblestoneCraftingTableBlock;
 import me.miquiis.onlyblock.common.blocks.LavaBlock;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
+import net.minecraft.block.CraftingTableBlock;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -23,6 +26,10 @@ public class BlockRegister {
 
     public static final RegistryObject<Block> LAVA_BLOCK = registerBlock("lava_block", () ->
             new LavaBlock(AbstractBlock.Properties.create(Material.ROCK).hardnessAndResistance(2f).setLightLevel((state) -> 15))
+    );
+
+    public static final RegistryObject<Block> COBBLESTONE_CRAFTING_TABLE = registerBlock("cobblestone_crafting_table", () ->
+            new CobblestoneCraftingTableBlock(AbstractBlock.Properties.create(Material.ROCK).hardnessAndResistance(3.5F).sound(SoundType.STONE))
     );
 
     private static<T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block) {

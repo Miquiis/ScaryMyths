@@ -1,3 +1,14 @@
 {
-  "block.onlyblock.lava_block": "Lava Block"
+  "block.onlyblock.lava_block": "Lava Block",
+  "block.onlyblock.cobblestone_crafting_table": "Cobblestone Crafting Table",
+  "item.onlyblock.cobblestone_book": "Cobblestone Book",
+  "item.onlyblock.ash_book": "Ash Book",
+  "item.onlyblock.lava_book": "Lava Book",
+  "item.onlyblock.frost_book": "Frost Book",
+  "item.onlyblock.cobblestone_stick": "Cobblestone Stick",
+  "item.onlyblock.cobblestone_sword": "Cobblestone Sword",
+  "item.onlyblock.cobblestone_pickaxe": "Cobblestone Pickaxe",
+  "item.onlyblock.cobblestone_axe": "Cobblestone Axe",
+  "item.onlyblock.cobblestone_shovel": "Cobblestone Shovel",
+  "item.onlyblock.cobblestone_hoe": "Cobblestone Hoe"
 }
