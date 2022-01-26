@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "onlyblock:block/lava_log_horizontal",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "onlyblock:block/lava_log"
+    },
+    "axis=z": {
+      "model": "onlyblock:block/lava_log_horizontal",
+      "x": 90
+    }
+  }
+}
