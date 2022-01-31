@@ -1,9 +1,9 @@
-package me.miquiis.onlyblock.client.gui.custombar.server.commands;
+package me.miquiis.onlyblock.common.custombar.server.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import me.miquiis.onlyblock.client.gui.custombar.common.BarManager;
+import me.miquiis.onlyblock.common.custombar.common.BarManager;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.util.text.ITextComponent;

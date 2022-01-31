@@ -1,6 +1,6 @@
-package me.miquiis.onlyblock.client.gui.custombar.server;
+package me.miquiis.onlyblock.common.custombar.server;
 
-import me.miquiis.onlyblock.client.gui.custombar.common.BarInfo;
+import me.miquiis.onlyblock.common.custombar.common.BarInfo;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.text.StringTextComponent;

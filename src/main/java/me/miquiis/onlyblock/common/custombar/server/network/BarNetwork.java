@@ -1,7 +1,7 @@
-package me.miquiis.onlyblock.client.gui.custombar.server.network;
+package me.miquiis.onlyblock.common.custombar.server.network;
 
 import me.miquiis.onlyblock.OnlyBlock;
-import me.miquiis.onlyblock.client.gui.custombar.server.network.messages.SendBarUpdate;
+import me.miquiis.onlyblock.common.custombar.server.network.messages.SendBarUpdate;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;

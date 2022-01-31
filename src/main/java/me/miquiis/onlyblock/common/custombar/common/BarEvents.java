@@ -1,13 +1,10 @@
-package me.miquiis.onlyblock.client.gui.custombar.common;
+package me.miquiis.onlyblock.common.custombar.common;
 
 import me.miquiis.onlyblock.OnlyBlock;
-import me.miquiis.onlyblock.client.gui.custombar.client.BarOverlay;
-import me.miquiis.onlyblock.client.gui.custombar.server.BarSave;
-import me.miquiis.onlyblock.client.gui.custombar.server.commands.CustomBarCommand;
-import me.miquiis.onlyblock.server.commands.OnlyBlockCommand;
+import me.miquiis.onlyblock.common.custombar.client.BarOverlay;
+import me.miquiis.onlyblock.common.custombar.server.BarSave;
+import me.miquiis.onlyblock.common.custombar.server.commands.CustomBarCommand;
 import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -15,8 +12,6 @@ import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.server.command.ConfigCommand;
-
-import java.util.UUID;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = OnlyBlock.MOD_ID)
 public class BarEvents {

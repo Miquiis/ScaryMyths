@@ -1,15 +1,10 @@
-package me.miquiis.onlyblock.client.gui.custombar.common;
+package me.miquiis.onlyblock.common.custombar.common;
 
 import com.google.common.collect.Maps;
-import me.miquiis.onlyblock.client.gui.custombar.common.BarInfo;
-import me.miquiis.onlyblock.client.gui.custombar.server.network.BarNetwork;
-import me.miquiis.onlyblock.client.gui.custombar.server.network.messages.SendBarUpdate;
-import me.miquiis.onlyblock.server.network.messages.OpenLavaBookMessage;
-import net.minecraft.client.Minecraft;
-import net.minecraft.server.MinecraftServer;
+import me.miquiis.onlyblock.common.custombar.server.network.BarNetwork;
+import me.miquiis.onlyblock.common.custombar.server.network.messages.SendBarUpdate;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.PacketDistributor;

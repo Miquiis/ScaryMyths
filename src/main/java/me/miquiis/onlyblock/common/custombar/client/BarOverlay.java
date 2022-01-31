@@ -1,9 +1,9 @@
-package me.miquiis.onlyblock.client.gui.custombar.client;
+package me.miquiis.onlyblock.common.custombar.client;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.miquiis.onlyblock.OnlyBlock;
-import me.miquiis.onlyblock.client.gui.custombar.common.BarInfo;
+import me.miquiis.onlyblock.common.custombar.common.BarInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.util.ResourceLocation;

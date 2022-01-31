@@ -1,7 +1,7 @@
-package me.miquiis.onlyblock.client.gui.custombar.server.network.messages;
+package me.miquiis.onlyblock.common.custombar.server.network.messages;
 
-import me.miquiis.onlyblock.client.gui.custombar.common.BarInfo;
-import me.miquiis.onlyblock.client.gui.custombar.common.BarManager;
+import me.miquiis.onlyblock.common.custombar.common.BarInfo;
+import me.miquiis.onlyblock.common.custombar.common.BarManager;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;

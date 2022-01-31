@@ -1,4 +1,4 @@
-package me.miquiis.onlyblock.client.gui.custombar.common;
+package me.miquiis.onlyblock.common.custombar.common;
 
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
