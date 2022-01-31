@@ -8,6 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.CraftingTableBlock;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.material.MaterialColor;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -26,6 +27,10 @@ public class BlockRegister {
 
     public static final RegistryObject<Block> LAVA_BLOCK = registerBlock("lava_block", () ->
             new LavaBlock(AbstractBlock.Properties.create(Material.ROCK).hardnessAndResistance(2f).setLightLevel((state) -> 15))
+    );
+
+    public static final RegistryObject<Block> LAVA_PLANKS = registerBlock("lava_planks", () ->
+            new Block(AbstractBlock.Properties.create(Material.WOOD, MaterialColor.WOOD).hardnessAndResistance(2.2F, 3.2F).sound(SoundType.WOOD))
     );
 
     public static final RegistryObject<Block> COBBLESTONE_CRAFTING_TABLE = registerBlock("cobblestone_crafting_table", () ->
