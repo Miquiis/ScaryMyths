@@ -1,5 +1,6 @@
 package me.miquiis.onlyblock;
 
+import me.miquiis.onlyblock.client.gui.custombar.common.BarManager;
 import me.miquiis.onlyblock.common.managers.BlockManager;
 import me.miquiis.onlyblock.common.managers.FileManager;
 import me.miquiis.onlyblock.common.registries.BlockRegister;
@@ -43,6 +44,7 @@ public class OnlyBlock
     {
         instance = this;
         OnlyBlockNetwork.init();
+        BarManager.init();
     }
 
     private void doClientStuff(final FMLClientSetupEvent event)
