@@ -10,9 +10,10 @@ import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class BlockManager {
+
+    //private static final UUID BAR_UUID = UUID.fromString("5c429c2f-fc87-49b8-a438-90c87cf6b676");
 
     private OnlyBlock mod;
     private FileManager folderReference;
@@ -25,6 +26,7 @@ public class BlockManager {
         this.folderReference = mod.getOnlyBlockFolder();
         this.cachedLootTables = new HashSet<>();
         setupFolder();
+        setupBar();
     }
 
     public void onLavaBlockBreak(BlockEvent.BreakEvent event)
@@ -49,6 +51,18 @@ public class BlockManager {
         ItemEntity itemEntity = new ItemEntity(event.getPlayer().world, event.getPos().getX() + d0, event.getPos().getY() + d1, event.getPos().getZ() + d2, toDrop);
         itemEntity.setDefaultPickupDelay();
         event.getWorld().addEntity(itemEntity);
+    }
+
+    private void setupBar()
+    {
+//        BarManager.addBar(
+//                UUID.randomUUID(),
+//                new StringTextComponent("Lava Progress"),
+//                0f,
+//                new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/lava_bar.png"),
+//                new int[]{240, 89, 34},
+//                false
+//        );
     }
 
     private void setupFolder()
