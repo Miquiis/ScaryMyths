@@ -5,6 +5,8 @@ import net.minecraft.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import java.util.stream.Stream;
+
 @OnlyIn(Dist.CLIENT)
    public class CraftRecipe {
 
@@ -33,6 +35,10 @@ import net.minecraftforge.api.distmarker.OnlyIn;
          return title;
       }
 
+      public ItemStack[] getAllRows() {
+         return Stream.of(firstRow, secondRow, thirdRow).flatMap(Stream::of).toArray(ItemStack[]::new);
+      }
+
       public ItemStack[] getFirstRow() {
          return firstRow;
       }
@@ -47,5 +53,9 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
       public ItemStack getResult() {
          return result;
+      }
+
+      public boolean isEmpty() {
+         return this.equals(NO_RECIPE);
       }
    }

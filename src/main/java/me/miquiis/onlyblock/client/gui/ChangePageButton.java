@@ -25,7 +25,7 @@ public class ChangePageButton extends Button {
 
    public void renderWidget(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
       RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-      Minecraft.getInstance().getTextureManager().bindTexture(LavaBookScreen.BOOK_TEXTURES);
+      Minecraft.getInstance().getTextureManager().bindTexture(CraftingRecipeBookScreen.BOOK_TEXTURES);
       int i = 0;
       int j = 192;
       if (this.isHovered()) {

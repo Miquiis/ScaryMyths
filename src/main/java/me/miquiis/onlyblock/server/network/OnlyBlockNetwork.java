@@ -1,10 +1,7 @@
 package me.miquiis.onlyblock.server.network;
 
 import me.miquiis.onlyblock.OnlyBlock;
-import me.miquiis.onlyblock.server.network.messages.OpenAshBookMessage;
-import me.miquiis.onlyblock.server.network.messages.OpenCobblestoneBookMessage;
-import me.miquiis.onlyblock.server.network.messages.OpenFrostBookMessage;
-import me.miquiis.onlyblock.server.network.messages.OpenLavaBookMessage;
+import me.miquiis.onlyblock.server.network.messages.*;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
@@ -23,6 +20,8 @@ public class OnlyBlockNetwork {
         CHANNEL.registerMessage(1, OpenCobblestoneBookMessage.class, OpenCobblestoneBookMessage::encode, OpenCobblestoneBookMessage::decode, OpenCobblestoneBookMessage::handle);
         CHANNEL.registerMessage(2, OpenAshBookMessage.class, OpenAshBookMessage::encode, OpenAshBookMessage::decode, OpenAshBookMessage::handle);
         CHANNEL.registerMessage(3, OpenFrostBookMessage.class, OpenFrostBookMessage::encode, OpenFrostBookMessage::decode, OpenFrostBookMessage::handle);
+        CHANNEL.registerMessage(4, OpenCraftBookMessage.class, OpenCraftBookMessage::encode, OpenCraftBookMessage::decode, OpenCraftBookMessage::handle);
+        CHANNEL.registerMessage(5, OpenRecipeWorkbenchMessage.class, OpenRecipeWorkbenchMessage::encode, OpenRecipeWorkbenchMessage::decode, OpenRecipeWorkbenchMessage::handle);
     }
 
 }

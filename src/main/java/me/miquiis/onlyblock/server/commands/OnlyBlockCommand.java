@@ -6,10 +6,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.miquiis.onlyblock.client.gui.AshBookScreen;
 import me.miquiis.onlyblock.server.network.OnlyBlockNetwork;
-import me.miquiis.onlyblock.server.network.messages.OpenAshBookMessage;
-import me.miquiis.onlyblock.server.network.messages.OpenCobblestoneBookMessage;
-import me.miquiis.onlyblock.server.network.messages.OpenFrostBookMessage;
-import me.miquiis.onlyblock.server.network.messages.OpenLavaBookMessage;
+import me.miquiis.onlyblock.server.network.messages.*;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraftforge.fml.network.PacketDistributor;
@@ -24,6 +21,11 @@ public class OnlyBlockCommand {
                     Object message;
                     switch (book.toLowerCase())
                     {
+                        case "craftbook":
+                        {
+                            message = new OpenCraftBookMessage();
+                            break;
+                        }
                         case "frost":
                         {
                             message = new OpenFrostBookMessage();
