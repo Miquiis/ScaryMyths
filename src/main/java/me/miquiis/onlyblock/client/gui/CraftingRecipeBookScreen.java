@@ -89,7 +89,7 @@ public class CraftingRecipeBookScreen extends Screen {
             CraftItemButton craftItemButton = (CraftItemButton) button;
             if (craftItemButton.canCraft())
             {
-               OnlyBlockNetwork.CHANNEL.sendToServer(new OpenRecipeWorkbenchMessage(firstRecipe));
+               OnlyBlockNetwork.CHANNEL.sendToServer(new OpenRecipeWorkbenchMessage(firstRecipe, hasShiftDown()));
             }
          }));
 
@@ -98,7 +98,7 @@ public class CraftingRecipeBookScreen extends Screen {
             CraftItemButton craftItemButton = (CraftItemButton) button;
             if (craftItemButton.canCraft())
             {
-               OnlyBlockNetwork.CHANNEL.sendToServer(new OpenRecipeWorkbenchMessage(secondRecipe));
+               OnlyBlockNetwork.CHANNEL.sendToServer(new OpenRecipeWorkbenchMessage(secondRecipe, hasShiftDown()));
             }
          }));
    }

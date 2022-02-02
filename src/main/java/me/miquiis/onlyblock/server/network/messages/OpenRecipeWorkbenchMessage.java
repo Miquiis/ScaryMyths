@@ -18,9 +18,11 @@ public class OpenRecipeWorkbenchMessage {
     private static final ITextComponent CONTAINER_NAME = new TranslationTextComponent("container.crafting");
 
     private CraftRecipe craftRecipe;
+    private boolean isShiftClick;
 
-    public OpenRecipeWorkbenchMessage(CraftRecipe craftRecipe) {
+    public OpenRecipeWorkbenchMessage(CraftRecipe craftRecipe, boolean isShiftClick) {
         this.craftRecipe = craftRecipe;
+        this.isShiftClick = isShiftClick;
     }
 
     public static void encode(OpenRecipeWorkbenchMessage message, PacketBuffer buffer)
@@ -30,6 +32,7 @@ public class OpenRecipeWorkbenchMessage {
             buffer.writeItemStack(itemStack);
         }
         buffer.writeItemStack(message.craftRecipe.getResult());
+        buffer.writeBoolean(message.isShiftClick);
     }
 
     public static OpenRecipeWorkbenchMessage decode(PacketBuffer buffer)
@@ -40,13 +43,13 @@ public class OpenRecipeWorkbenchMessage {
                 new ItemStack[]{buffer.readItemStack(),buffer.readItemStack(),buffer.readItemStack()},
                 new ItemStack[]{buffer.readItemStack(),buffer.readItemStack(),buffer.readItemStack()},
                 buffer.readItemStack()
-        ));
+        ), buffer.readBoolean());
     }
 
     public static void handle(OpenRecipeWorkbenchMessage message, Supplier<NetworkEvent.Context> contextSupplier)
     {
         NetworkEvent.Context context = contextSupplier.get();
-        context.getSender().openContainer(new SimpleNamedContainerProvider((id, inventory, player) -> new RecipeWorkbenchContainer(id, inventory, IWorldPosCallable.of(player.getEntityWorld(), null), message.craftRecipe), CONTAINER_NAME));
+        context.getSender().openContainer(new SimpleNamedContainerProvider((id, inventory, player) -> new RecipeWorkbenchContainer(id, inventory, IWorldPosCallable.of(player.getEntityWorld(), null), message.craftRecipe, message.isShiftClick), CONTAINER_NAME));
         context.setPacketHandled(true);
     }
 }
