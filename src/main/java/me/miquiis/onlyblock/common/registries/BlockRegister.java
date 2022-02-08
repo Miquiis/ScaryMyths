@@ -3,9 +3,9 @@ package me.miquiis.onlyblock.common.registries;
 import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.common.blocks.CobblestoneCraftingTableBlock;
 import me.miquiis.onlyblock.common.blocks.LavaBlock;
+import me.miquiis.onlyblock.common.blocks.XPBlock;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.CraftingTableBlock;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
@@ -27,6 +27,10 @@ public class BlockRegister {
 
     public static final RegistryObject<Block> LAVA_BLOCK = registerBlock("lava_block", () ->
             new LavaBlock(AbstractBlock.Properties.create(Material.ROCK).hardnessAndResistance(2f).setLightLevel((state) -> 15))
+    );
+
+    public static final RegistryObject<Block> XP_BLOCK = registerBlock("xp_block", () ->
+            new XPBlock(AbstractBlock.Properties.create(Material.GLASS).hardnessAndResistance(2f).setLightLevel((state) -> 15))
     );
 
     public static final RegistryObject<Block> LAVA_PLANKS = registerBlock("lava_planks", () ->

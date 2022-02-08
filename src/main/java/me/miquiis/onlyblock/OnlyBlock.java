@@ -4,10 +4,12 @@ import me.miquiis.onlyblock.common.managers.BlockManager;
 import me.miquiis.onlyblock.common.managers.FileManager;
 import me.miquiis.onlyblock.common.registries.BlockRegister;
 import me.miquiis.onlyblock.common.registries.ItemRegister;
+import me.miquiis.onlyblock.common.tileentity.ModTileEntity;
 import me.miquiis.onlyblock.server.network.OnlyBlockNetwork;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -35,6 +37,7 @@ public class OnlyBlock
 
         ItemRegister.register(modEventBus);
         BlockRegister.register(modEventBus);
+        ModTileEntity.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.register(this);
     }
@@ -48,7 +51,9 @@ public class OnlyBlock
 
     private void doClientStuff(final FMLClientSetupEvent event)
     {
+        event.enqueueWork(() -> {
 
+        });
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event)
