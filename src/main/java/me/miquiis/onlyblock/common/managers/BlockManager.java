@@ -2,10 +2,12 @@ package me.miquiis.onlyblock.common.managers;
 
 import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.common.models.LootTable;
+import net.minecraft.entity.item.ExperienceOrbEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -27,6 +29,12 @@ public class BlockManager {
         this.cachedLootTables = new HashSet<>();
         setupFolder();
         setupBar();
+    }
+
+    public void onXPInteractEvent(PlayerInteractEvent event)
+    {
+        ExperienceOrbEntity experienceOrbEntity = new ExperienceOrbEntity(event.getPlayer().world, event.getPos().getX() + 0.5, event.getPos().getY() + 1.1, event.getPos().getZ() + 0.5, event.getWorld().rand.nextInt(50));
+        event.getWorld().addEntity(experienceOrbEntity);
     }
 
     public void onLavaBlockBreak(BlockEvent.BreakEvent event)
