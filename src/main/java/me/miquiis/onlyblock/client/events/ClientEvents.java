@@ -2,13 +2,17 @@ package me.miquiis.onlyblock.client.events;
 
 import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.client.gui.LavaBookScreen;
+import me.miquiis.onlyblock.common.entities.renderer.FakeExperienceOrbRenderer;
+import me.miquiis.onlyblock.common.registries.EntityRegister;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 import java.util.ArrayList;
 

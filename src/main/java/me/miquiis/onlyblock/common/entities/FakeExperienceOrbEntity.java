@@ -1,6 +1,8 @@
 package me.miquiis.onlyblock.common.entities;
 
 import java.util.Map.Entry;
+
+import me.miquiis.onlyblock.common.registries.EntityRegister;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
@@ -21,26 +23,31 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.network.NetworkHooks;
 
-public class FakeExperienceOrbEntity extends ExperienceOrbEntity {
+public class FakeExperienceOrbEntity extends Entity {
    public int xpColor;
    public int xpOrbAge;
    public int delayBeforeCanPickup;
    private int xpOrbHealth = 5;
+   private final int originalXpValue;
    public int xpValue;
    private PlayerEntity closestPlayer;
    private int xpTargetColor;
 
    public FakeExperienceOrbEntity(World worldIn, double x, double y, double z, int expValue) {
-      this(EntityType.EXPERIENCE_ORB, worldIn);
+      this(EntityRegister.FAKE_EXPERIENCE_ORB.get(), worldIn);
       this.setPosition(x, y, z);
+      this.xpValue = rand.nextInt(10);
       this.rotationYaw = (float)(this.rand.nextDouble() * 360.0D);
-      this.setMotion((this.rand.nextDouble() * (double)0.2F - (double)0.1F) * 2.0D, this.rand.nextDouble() * 0.2D * 2.0D, (this.rand.nextDouble() * (double)0.2F - (double)0.1F) * 2.0D);
-      this.xpValue = expValue;
+      this.setMotion((this.rand.nextDouble() * (double)0.2F - (double)0.1F), this.rand.nextDouble() * 0.2D, (this.rand.nextDouble() * (double)0.2F - (double)0.1F));
+      this.xpOrbAge = 5960;
    }
 
-   public FakeExperienceOrbEntity(EntityType<? extends ExperienceOrbEntity> p_i50382_1_, World entity) {
+   public FakeExperienceOrbEntity(EntityType<FakeExperienceOrbEntity> p_i50382_1_, World entity) {
       super(p_i50382_1_, entity);
+      this.xpValue = rand.nextInt(10);
+      this.originalXpValue = xpValue;
    }
 
    protected boolean canTriggerWalking() {
@@ -54,14 +61,10 @@ public class FakeExperienceOrbEntity extends ExperienceOrbEntity {
     * Called to update the entity's position/logic.
     */
    public void tick() {
-      super.tick();
-      if (this.delayBeforeCanPickup > 0) {
-         --this.delayBeforeCanPickup;
-      }
-
       this.prevPosX = this.getPosX();
       this.prevPosY = this.getPosY();
       this.prevPosZ = this.getPosZ();
+
       if (this.areEyesInFluid(FluidTags.WATER)) {
          this.applyFloatMotion();
       } else if (!this.hasNoGravity()) {
@@ -73,16 +76,8 @@ public class FakeExperienceOrbEntity extends ExperienceOrbEntity {
          this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4F, 2.0F + this.rand.nextFloat() * 0.4F);
       }
 
-      if (!this.world.hasNoCollisions(this.getBoundingBox())) {
-         this.pushOutOfBlocks(this.getPosX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0D, this.getPosZ());
-      }
-
       double d0 = 8.0D;
       if (this.xpTargetColor < this.xpColor - 20 + this.getEntityId() % 100) {
-         if (this.closestPlayer == null || this.closestPlayer.getDistanceSq(this) > 64.0D) {
-            this.closestPlayer = this.world.getClosestPlayer(this, 8.0D);
-         }
-
          this.xpTargetColor = this.xpColor;
       }
 
@@ -100,10 +95,16 @@ public class FakeExperienceOrbEntity extends ExperienceOrbEntity {
 
       ++this.xpColor;
       ++this.xpOrbAge;
+
       if (this.xpOrbAge >= 6000) {
          this.remove();
       }
 
+      if (this.xpValue <= 0)
+      {
+         this.xpValue = originalXpValue;
+      }
+      --this.xpValue;
    }
 
    private void applyFloatMotion() {
@@ -174,27 +175,7 @@ public class FakeExperienceOrbEntity extends ExperienceOrbEntity {
     */
    @OnlyIn(Dist.CLIENT)
    public int getTextureByXP() {
-      if (this.xpValue >= 2477) {
-         return 10;
-      } else if (this.xpValue >= 1237) {
-         return 9;
-      } else if (this.xpValue >= 617) {
-         return 8;
-      } else if (this.xpValue >= 307) {
-         return 7;
-      } else if (this.xpValue >= 149) {
-         return 6;
-      } else if (this.xpValue >= 73) {
-         return 5;
-      } else if (this.xpValue >= 37) {
-         return 4;
-      } else if (this.xpValue >= 17) {
-         return 3;
-      } else if (this.xpValue >= 7) {
-         return 2;
-      } else {
-         return this.xpValue >= 3 ? 1 : 0;
-      }
+      return xpValue;
    }
 
    /**
@@ -229,5 +210,10 @@ public class FakeExperienceOrbEntity extends ExperienceOrbEntity {
     */
    public boolean canBeAttackedWithItem() {
       return false;
+   }
+
+   @Override
+   public IPacket<?> createSpawnPacket() {
+      return NetworkHooks.getEntitySpawningPacket(this);
    }
 }

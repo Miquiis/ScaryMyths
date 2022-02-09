@@ -1,5 +1,7 @@
 {
   "variants": {
-    "": { "model": "onlyblock:block/xp_block" }
+    "": { "model": "onlyblock:block/xp_block" },
+    "ticking=true": { "model": "onlyblock:block/xp_block" },
+    "ticking=false": { "model": "onlyblock:block/xp_block" }
   }
 }

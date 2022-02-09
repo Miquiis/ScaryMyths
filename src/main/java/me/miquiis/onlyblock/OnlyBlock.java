@@ -1,8 +1,10 @@
 package me.miquiis.onlyblock;
 
+import me.miquiis.onlyblock.common.entities.renderer.FakeExperienceOrbRenderer;
 import me.miquiis.onlyblock.common.managers.BlockManager;
 import me.miquiis.onlyblock.common.managers.FileManager;
 import me.miquiis.onlyblock.common.registries.BlockRegister;
+import me.miquiis.onlyblock.common.registries.EntityRegister;
 import me.miquiis.onlyblock.common.registries.ItemRegister;
 import me.miquiis.onlyblock.common.tileentity.ModTileEntity;
 import me.miquiis.onlyblock.server.network.OnlyBlockNetwork;
@@ -10,6 +12,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -33,11 +36,11 @@ public class OnlyBlock
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::enqueueIMC);
         modEventBus.addListener(this::processIMC);
-        modEventBus.addListener(this::doClientStuff);
 
         ItemRegister.register(modEventBus);
         BlockRegister.register(modEventBus);
         ModTileEntity.register(modEventBus);
+        EntityRegister.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.register(this);
     }
@@ -47,13 +50,6 @@ public class OnlyBlock
         instance = this;
         OnlyBlockNetwork.init();
         //BarManager.init();
-    }
-
-    private void doClientStuff(final FMLClientSetupEvent event)
-    {
-        event.enqueueWork(() -> {
-
-        });
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event)
