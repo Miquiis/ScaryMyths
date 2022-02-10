@@ -3,6 +3,7 @@ package me.miquiis.onlyblock.common.items;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.SoundType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -48,10 +49,13 @@ public class EnchantedGrowBlockItem extends BlockItem {
                 BlockState blockstate = this.getStateForPlacement(blockitemusecontext);
                 if (blockstate == null) {
                     return ActionResultType.FAIL;
+                } else if (!context.getWorld().setBlockState(context.getPos(), blockstate, 11)) {
+                    return ActionResultType.FAIL;
                 } else {
                     final PlayerEntity playerentity = blockitemusecontext.getPlayer();
                     final BlockPos firstBlockPos = blockitemusecontext.getPos();
-                    final BlockPos centerPos = new BlockPos(firstBlockPos).offset(getClosestForwardDirection(blockitemusecontext.getNearestLookingDirections()), radius - 1);
+                    final Direction direction = context.getFace() == Direction.UP ? getClosestForwardDirection(blockitemusecontext.getNearestLookingDirections()) : context.getFace();
+                    final BlockPos centerPos = new BlockPos(firstBlockPos).offset(direction, radius - 1);
                     final World world = blockitemusecontext.getWorld();
                     final BlockState firstBlockState = world.getBlockState(firstBlockPos);
                     final ItemStack itemstack = blockitemusecontext.getItem();
@@ -61,6 +65,8 @@ public class EnchantedGrowBlockItem extends BlockItem {
                         for (int z = -radius; z <= radius; z++)
                         {
                             final BlockPos blockpos = new BlockPos(centerPos.getX() + x, firstBlockPos.getY(), centerPos.getZ() + z);
+                            final BlockState currentBlockState = world.getBlockState(blockpos);
+                            if (currentBlockState.getBlock() != Blocks.AIR) continue;
                             final double distance = blockpos.distanceSq(centerPos.getX(), centerPos.getY(), centerPos.getZ(), true);
                             if (isSphere && distance > radius*radius)
                             {

@@ -18,6 +18,19 @@ import java.util.Objects;
 
 public class FileManager {
 
+    public static class VersionChecker {
+
+        private final String VERSION;
+
+        public VersionChecker(String version) {
+            this.VERSION = version;
+        }
+
+        public String getVersion() {
+            return VERSION;
+        }
+    }
+
     private Gson gson;
     private Gson deserializer;
 
@@ -25,15 +38,18 @@ public class FileManager {
     private File mainFolder;
     private boolean isFirstTime;
 
-    public FileManager(String filePath) {
+    private VersionChecker versionChecker;
+
+    public FileManager(String filePath, String version) {
         this.minecraftFolder = Minecraft.getInstance().gameDir;
         this.gson = new GsonBuilder().setPrettyPrinting().create();
         this.deserializer = new GsonBuilder().setPrettyPrinting().create();
         this.mainFolder = new File(minecraftFolder, filePath);
+        this.versionChecker = new VersionChecker(version);
         this.isFirstTime = createFolder();
     }
 
-    public FileManager(String filePath, File directory) {
+    public FileManager(String filePath, File directory, String version) {
         this.minecraftFolder = directory;
 
         GsonBuilder gsonBuilder = new GsonBuilder().setPrettyPrinting();
@@ -41,12 +57,25 @@ public class FileManager {
         this.gson = gsonBuilder.create();
         this.deserializer = new GsonBuilder().setPrettyPrinting().create();
         this.mainFolder = new File(minecraftFolder, filePath);
+        this.versionChecker = new VersionChecker(version);
         this.isFirstTime = createFolder();
     }
 
     private boolean createFolder() {
+
         if (!mainFolder.exists()) {
-            return mainFolder.mkdir();
+            boolean a = mainFolder.mkdir();
+            saveObject("version", versionChecker);
+            return a;
+        }
+
+        VersionChecker lastVersion = loadObject("version", VersionChecker.class, false);
+        if (lastVersion == null) return true;
+
+        if (!lastVersion.VERSION.equals(versionChecker.getVersion()))
+        {
+            saveObject("version", versionChecker);
+            return true;
         }
 
         return false;

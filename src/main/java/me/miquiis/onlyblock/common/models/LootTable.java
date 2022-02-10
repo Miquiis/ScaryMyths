@@ -3,6 +3,7 @@ package me.miquiis.onlyblock.common.models;
 import me.miquiis.onlyblock.common.utils.MathUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class LootTable {
@@ -37,6 +38,18 @@ public class LootTable {
         this.lootTable = lootTable;
     }
 
+    public LootTable(String lootKey, List<Loot> lootTable, LootTable... copy)
+    {
+        this.lootKey = lootKey;
+        this.lootTable = lootTable;
+
+        for (LootTable table : copy)
+        {
+            lootTable.addAll(table.getLoots());
+        }
+
+    }
+
     public String getLootKey() {
         return lootKey;
     }
@@ -49,6 +62,8 @@ public class LootTable {
     {
         return lootTable.get(MathUtils.getRandomMax(lootTable.size()));
     }
+
+    public Collection<Loot> getLoots() { return lootTable; }
 
     public List<Loot> getLoot(int roll)
     {

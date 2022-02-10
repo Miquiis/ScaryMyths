@@ -3,9 +3,7 @@ package me.miquiis.onlyblock;
 import me.miquiis.onlyblock.common.entities.renderer.FakeExperienceOrbRenderer;
 import me.miquiis.onlyblock.common.managers.BlockManager;
 import me.miquiis.onlyblock.common.managers.FileManager;
-import me.miquiis.onlyblock.common.registries.BlockRegister;
-import me.miquiis.onlyblock.common.registries.EntityRegister;
-import me.miquiis.onlyblock.common.registries.ItemRegister;
+import me.miquiis.onlyblock.common.registries.*;
 import me.miquiis.onlyblock.common.tileentity.ModTileEntity;
 import me.miquiis.onlyblock.server.network.OnlyBlockNetwork;
 import net.minecraftforge.common.MinecraftForge;
@@ -20,6 +18,8 @@ import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+
+import java.lang.ref.Reference;
 
 @Mod(OnlyBlock.MOD_ID)
 public class OnlyBlock
@@ -37,6 +37,8 @@ public class OnlyBlock
         modEventBus.addListener(this::enqueueIMC);
         modEventBus.addListener(this::processIMC);
 
+        ParticleRegister.PARTICLES.register(modEventBus);
+        EffectRegister.register(modEventBus);
         ItemRegister.register(modEventBus);
         BlockRegister.register(modEventBus);
         ModTileEntity.register(modEventBus);
@@ -65,7 +67,7 @@ public class OnlyBlock
     @SubscribeEvent
     public void onServerStarting(FMLServerStartingEvent event)
     {
-        this.onlyBlockFolder = new FileManager("onlyblock", event.getServer().getDataDirectory());
+        this.onlyBlockFolder = new FileManager("onlyblock", event.getServer().getDataDirectory(), "1.1");
         this.blockManager = new BlockManager(this);
     }
 
