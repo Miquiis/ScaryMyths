@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "onlyblock:enchanted_cobblestone",
+    "onlyblock:enchanted_oak_planks",
+    "onlyblock:enchanted_dirt"
+  ]
+}

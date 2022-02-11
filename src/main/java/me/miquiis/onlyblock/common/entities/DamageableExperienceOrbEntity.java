@@ -1,6 +1,9 @@
 package me.miquiis.onlyblock.common.entities;
 
+import me.miquiis.onlyblock.common.classes.ExpExplosion;
 import me.miquiis.onlyblock.common.registries.EntityRegister;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -13,6 +16,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -62,11 +66,29 @@ public class DamageableExperienceOrbEntity extends Entity {
          this.xpTargetColor = this.xpColor;
       }
 
+      BlockPos.getAllInBox(getBoundingBox().grow(0, 0.1, 0)).forEach(blockPos -> {
+         final BlockState blockState = world.getBlockState(blockPos);
+         if (blockState.getBlock() != Blocks.AIR)
+         {
+            ExpExplosion explosion = new ExpExplosion(world, null, null, null, getPosX(), getPosY(), getPosZ(), 2, false, Explosion.Mode.BREAK, true);
+            explosion.doExplosionA();
+            explosion.doExplosionB(true);
+            remove();
+         }
+      });
+
       world.getEntitiesInAABBexcluding(this, getBoundingBox(), entity -> {
          return !(entity instanceof PlayerEntity) && entity instanceof LivingEntity;
       }).forEach(entity -> {
          LivingEntity livingEntity = (LivingEntity) entity;
-         livingEntity.attackEntityFrom(DamageSource.GENERIC, 9999f);
+         livingEntity.hurtResistantTime = 0;
+         livingEntity.attackEntityFrom(DamageSource.MAGIC, (float)damage);
+         livingEntity.hurtResistantTime = 0;
+
+         ExpExplosion explosion = new ExpExplosion(world, null, null, null, getPosX(), getPosY(), getPosZ(), 2, false, Explosion.Mode.BREAK, false);
+         explosion.doExplosionA();
+         explosion.doExplosionB(true);
+         remove();
       });
 
       this.move(MoverType.SELF, this.getMotion());

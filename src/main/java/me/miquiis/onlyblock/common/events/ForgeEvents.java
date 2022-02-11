@@ -1,6 +1,8 @@
 package me.miquiis.onlyblock.common.events;
 
 import me.miquiis.onlyblock.OnlyBlock;
+import me.miquiis.onlyblock.common.blocks.CustomBlockTags;
+import me.miquiis.onlyblock.common.classes.ExpExplosion;
 import me.miquiis.onlyblock.common.registries.BlockRegister;
 import me.miquiis.onlyblock.common.registries.EffectRegister;
 import me.miquiis.onlyblock.common.registries.ItemRegister;
@@ -14,6 +16,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.trees.OakTree;
 import net.minecraft.block.trees.Tree;
 import net.minecraft.client.particle.Particle;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.ExperienceOrbEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -25,6 +28,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -34,6 +38,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerXpEvent;
 import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.server.command.ConfigCommand;
@@ -103,6 +108,29 @@ public class ForgeEvents {
                     ExperienceOrbEntity experienceOrbEntity = new ExperienceOrbEntity((ServerWorld)event.getWorld(), highestBlock.getX() + 0.5, highestBlock.getY() + 0.5, highestBlock.getZ() + 0.5, 3);
                     experienceOrbEntity.setVelocity(rx, ry, rz);
                     event.getWorld().addEntity(experienceOrbEntity);
+                }
+            }
+        }
+
+        if (usingItem.getItem() == ItemRegister.XP_PICKAXE.get()) {
+            if (CustomBlockTags.ENCHANTED.contains(event.getState().getBlock()))
+            {
+                for (int x = -1; x <= 1; x++)
+                {
+                    for (int z= -1; z <= 1; z++)
+                    {
+                        if (x == 0 && z == 0) continue;
+                        BlockPos currentPos = event.getPos().add(x, 0, z);
+                        if (!CustomBlockTags.ENCHANTED.contains(event.getWorld().getBlockState(currentPos).getBlock())) continue;
+                        event.getWorld().setBlockState(currentPos, BlockRegister.XP_BLOCK.get().getDefaultState(), 2);
+
+                        for (int i = 0; i < 5; i++)
+                        {
+                            ExperienceOrbEntity experienceOrbEntity = new ExperienceOrbEntity((ServerWorld)event.getWorld(), currentPos.getX() + 0.5, currentPos.getY() + 1.1, currentPos.getZ() + 0.5, MathUtils.getRandomMax(5));
+                            experienceOrbEntity.addVelocity(0, 0.5, 0);
+                            event.getWorld().addEntity(experienceOrbEntity);
+                        }
+                    }
                 }
             }
         }

@@ -6,6 +6,7 @@ import me.miquiis.onlyblock.common.managers.FileManager;
 import me.miquiis.onlyblock.common.registries.*;
 import me.miquiis.onlyblock.common.tileentity.ModTileEntity;
 import me.miquiis.onlyblock.server.network.OnlyBlockNetwork;
+import net.minecraft.entity.Entity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

@@ -113,7 +113,7 @@ public class CobblestoneWorkbenchContainer extends RecipeBookContainer<CraftingI
     * Determines whether supplied player can use this container
     */
    public boolean canInteractWith(PlayerEntity playerIn) {
-      return isWithinUsableDistance(this.worldPosCallable, playerIn, BlockRegister.COBBLESTONE_CRAFTING_TABLE.get());
+      return true;
    }
 
    /**

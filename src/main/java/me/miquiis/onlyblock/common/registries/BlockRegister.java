@@ -2,19 +2,20 @@ package me.miquiis.onlyblock.common.registries;
 
 import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.common.blocks.CobblestoneCraftingTableBlock;
+import me.miquiis.onlyblock.common.blocks.EnchantedGrassPathBlock;
 import me.miquiis.onlyblock.common.blocks.EnchantedSaplingBlock;
 import me.miquiis.onlyblock.common.blocks.XPBlock;
 import me.miquiis.onlyblock.common.items.EnchantedBlockItem;
 import me.miquiis.onlyblock.common.items.EnchantedGrowBlockItem;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.SoundType;
+import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraft.block.trees.OakTree;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockReader;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
@@ -42,13 +43,21 @@ public class BlockRegister {
             2, false
     );
 
+    public static final RegistryObject<Block> ENCHANTED_GRASS_PATH = registerEnchantedBlock("enchanted_grass_path", () ->
+            new EnchantedGrassPathBlock(AbstractBlock.Properties.create(Material.EARTH).hardnessAndResistance(0.65F).sound(SoundType.PLANT).setBlocksVision(BlockRegister::needsPostProcessing).setSuffocates(BlockRegister::needsPostProcessing))
+    );
+
     public static final RegistryObject<Block> XP_BLOCK = registerBlock("xp_block", () ->
             new XPBlock(AbstractBlock.Properties.create(Material.GLASS).hardnessAndResistance(2f).sound(SoundType.GLASS).setLightLevel((state) -> 15))
     );
 
-    public static final RegistryObject<Block> COBBLESTONE_CRAFTING_TABLE = registerBlock("cobblestone_crafting_table", () ->
-            new CobblestoneCraftingTableBlock(AbstractBlock.Properties.create(Material.ROCK).hardnessAndResistance(3.5F).sound(SoundType.STONE))
+    public static final RegistryObject<Block> ENCHANTED_CRAFTING_TABLE = registerEnchantedBlock("enchanted_crafting_table", () ->
+            new CobblestoneCraftingTableBlock(AbstractBlock.Properties.create(Material.WOOD).hardnessAndResistance(2.5F).sound(SoundType.WOOD))
     );
+
+    private static boolean needsPostProcessing(BlockState state, IBlockReader reader, BlockPos pos) {
+        return true;
+    }
 
     private static<T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block) {
         RegistryObject<T> toReturn = BLOCKS.register(name, block);

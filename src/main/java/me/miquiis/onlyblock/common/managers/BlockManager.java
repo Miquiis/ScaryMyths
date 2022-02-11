@@ -65,7 +65,7 @@ public class BlockManager {
         if (loot != null)
         {
             ItemStack toDrop = new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation(loot.getLootResource())), loot.getLootAmount());
-            ItemEntity itemEntity = new ItemEntity(world, blockPos.getX(), blockPos.getY() + 1.1, blockPos.getZ(), toDrop);
+            ItemEntity itemEntity = new ItemEntity(world, blockPos.getX() + 0.5, blockPos.getY() + 1.1, blockPos.getZ() + 0.5, toDrop);
             itemEntity.setDefaultPickupDelay();
             world.addEntity(itemEntity);
         }
