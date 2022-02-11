@@ -1,6 +1,7 @@
 package me.miquiis.onlyblock.common.registries;
 
 import me.miquiis.onlyblock.OnlyBlock;
+import me.miquiis.onlyblock.common.entities.DamageableExperienceOrbEntity;
 import me.miquiis.onlyblock.common.entities.FakeExperienceOrbEntity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
@@ -18,6 +19,12 @@ public class EntityRegister {
             () -> EntityType.Builder.<FakeExperienceOrbEntity>create(FakeExperienceOrbEntity::new, EntityClassification.MISC)
                     .size(0.5F, 0.5F).trackingRange(6).updateInterval(20)
                     .build(new ResourceLocation(OnlyBlock.MOD_ID, "fake_experience_orb").toString())
+    );
+
+    public static final RegistryObject<EntityType<DamageableExperienceOrbEntity>> DAMAGEABLE_EXPERIENCE_ORB = ENTITIES.register("damageable_experience_orb",
+            () -> EntityType.Builder.<DamageableExperienceOrbEntity>create(DamageableExperienceOrbEntity::new, EntityClassification.MISC)
+                    .size(0.5F, 0.5F).trackingRange(6).updateInterval(20)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "damageable_experience_orb").toString())
     );
 
     public static void register(IEventBus bus)

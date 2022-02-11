@@ -42,10 +42,6 @@ public class BlockRegister {
             2, false
     );
 
-    public static final RegistryObject<Block> ENCHANTED_OAK_SAPLING = registerEnchantedBlock("enchanted_oak_sapling", () ->
-            new EnchantedSaplingBlock(new OakTree(), AbstractBlock.Properties.create(Material.PLANTS).doesNotBlockMovement().zeroHardnessAndResistance().sound(SoundType.PLANT))
-    );
-
     public static final RegistryObject<Block> XP_BLOCK = registerBlock("xp_block", () ->
             new XPBlock(AbstractBlock.Properties.create(Material.GLASS).hardnessAndResistance(2f).sound(SoundType.GLASS).setLightLevel((state) -> 15))
     );

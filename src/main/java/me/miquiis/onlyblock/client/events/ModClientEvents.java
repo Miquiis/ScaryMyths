@@ -1,6 +1,8 @@
 package me.miquiis.onlyblock.client.events;
 
 import me.miquiis.onlyblock.OnlyBlock;
+import me.miquiis.onlyblock.common.entities.DamageableExperienceOrbEntity;
+import me.miquiis.onlyblock.common.entities.renderer.DamageableExperienceOrbRenderer;
 import me.miquiis.onlyblock.common.entities.renderer.FakeExperienceOrbRenderer;
 import me.miquiis.onlyblock.common.particles.ExpExplosionParticle;
 import me.miquiis.onlyblock.common.registries.BlockRegister;
@@ -25,7 +27,7 @@ public class ModClientEvents {
     public static void doClientStuff(final FMLClientSetupEvent event)
     {
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.FAKE_EXPERIENCE_ORB.get(), FakeExperienceOrbRenderer::new);
-        RenderTypeLookup.setRenderLayer(BlockRegister.ENCHANTED_OAK_SAPLING.get(), RenderType.getCutout());
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.DAMAGEABLE_EXPERIENCE_ORB.get(), DamageableExperienceOrbRenderer::new);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)

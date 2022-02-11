@@ -83,7 +83,7 @@ public class ForgeEvents {
                 event.getWorld().setBlockState(event.getPos(), Blocks.DIRT.getDefaultState(), 12);
                 Tree tree = new OakTree();
                 tree.attemptGrowTree((ServerWorld) event.getWorld(), ((ServerWorld) event.getWorld()).getChunkProvider().getChunkGenerator(), event.getPos().add(0, 1, 0), Blocks.OAK_SAPLING.getDefaultState(), ((ServerWorld) event.getWorld()).rand);
-                event.getWorld().setBlockState(event.getPos(), event.getState(), 12);
+                event.getWorld().setBlockState(event.getPos(), Blocks.AIR.getDefaultState(), 12);
                 return;
             }
 
