@@ -1,4 +1,4 @@
-package me.miquiis.onlyblock.common.models;
+package me.miquiis.onlyblock.common.classes;
 
 import me.miquiis.onlyblock.common.utils.MathUtils;
 

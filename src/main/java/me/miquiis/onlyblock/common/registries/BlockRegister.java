@@ -1,10 +1,7 @@
 package me.miquiis.onlyblock.common.registries;
 
 import me.miquiis.onlyblock.OnlyBlock;
-import me.miquiis.onlyblock.common.blocks.CobblestoneCraftingTableBlock;
-import me.miquiis.onlyblock.common.blocks.EnchantedGrassPathBlock;
-import me.miquiis.onlyblock.common.blocks.EnchantedSaplingBlock;
-import me.miquiis.onlyblock.common.blocks.XPBlock;
+import me.miquiis.onlyblock.common.blocks.*;
 import me.miquiis.onlyblock.common.items.EnchantedBlockItem;
 import me.miquiis.onlyblock.common.items.EnchantedGrowBlockItem;
 import net.minecraft.block.*;
@@ -51,11 +48,19 @@ public class BlockRegister {
             new XPBlock(AbstractBlock.Properties.create(Material.GLASS).hardnessAndResistance(2f).sound(SoundType.GLASS).setLightLevel((state) -> 15))
     );
 
+    public static final RegistryObject<Block> XP_MINER = registerBlock("xp_miner", () ->
+            new XpMinerBlock(AbstractBlock.Properties.create(Material.ANVIL).hardnessAndResistance(3f).sound(SoundType.ANVIL).notSolid())
+    );
+
     public static final RegistryObject<Block> ENCHANTED_CRAFTING_TABLE = registerEnchantedBlock("enchanted_crafting_table", () ->
             new CobblestoneCraftingTableBlock(AbstractBlock.Properties.create(Material.WOOD).hardnessAndResistance(2.5F).sound(SoundType.WOOD))
     );
 
     private static boolean needsPostProcessing(BlockState state, IBlockReader reader, BlockPos pos) {
+        return true;
+    }
+
+    private static boolean isOpaque(BlockState state, IBlockReader reader, BlockPos pos) {
         return true;
     }
 

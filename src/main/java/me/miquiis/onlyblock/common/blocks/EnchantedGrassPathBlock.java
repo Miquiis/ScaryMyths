@@ -18,7 +18,6 @@ public class EnchantedGrassPathBlock extends GrassPathBlock {
 
         if (entityIn instanceof LivingEntity)
         {
-            System.out.println("Test");
             ExperienceOrbEntity experienceOrbEntity = new ExperienceOrbEntity(worldIn, pos.getX() + 0.5, pos.getY() + 1.1, pos.getZ() + 0.5, 2);
             worldIn.addEntity(experienceOrbEntity);
         }

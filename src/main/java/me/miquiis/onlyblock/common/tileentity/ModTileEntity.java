@@ -14,6 +14,9 @@ public class ModTileEntity {
     public static DeferredRegister<TileEntityType<?>> TILE_ENTITIES =
             DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, OnlyBlock.MOD_ID);
 
+    public static RegistryObject<TileEntityType<XpMinerTileEntity>> XP_MINER_TILE_ENTITY = TILE_ENTITIES.register("xp_miner_tile_entity", () ->
+            TileEntityType.Builder.create(XpMinerTileEntity::new, BlockRegister.XP_MINER.get()).build(null));
+
     public static void register(IEventBus eventBus) { TILE_ENTITIES.register(eventBus);}
 
 }

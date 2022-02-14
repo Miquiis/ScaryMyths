@@ -19,6 +19,7 @@ import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import software.bernie.geckolib3.GeckoLib;
 
 import java.lang.ref.Reference;
 
@@ -46,6 +47,8 @@ public class OnlyBlock
         EntityRegister.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.register(this);
+
+        GeckoLib.initialize();
     }
 
     private void setup(final FMLCommonSetupEvent event)
