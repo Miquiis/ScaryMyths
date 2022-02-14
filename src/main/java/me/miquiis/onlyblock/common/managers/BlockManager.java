@@ -13,6 +13,7 @@ import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -88,8 +89,14 @@ public class BlockManager {
         } else if (level < 12)
         {
             return getLootTable("level_10").getLoot();
-        } else {
+        } else if (level < 20){
             return getLootTable("level_12").getLoot();
+        } else if (level < 25)
+        {
+            return getLootTable("level_20").getLoot();
+        } else
+        {
+            return getLootTable("level_25").getLoot();
         }
     }
 
@@ -158,10 +165,24 @@ public class BlockManager {
                 new LootTable.Loot(BlockRegister.ENCHANTED_COBBLESTONE.get().getRegistryName().toString(), 1)
         )), level10);
 
+        LootTable level20 = new LootTable("level_20", new ArrayList<>(Arrays.asList(
+                new LootTable.Loot(ItemRegister.XP_COW_EGG.get().getRegistryName().toString(), 1),
+                new LootTable.Loot(ItemRegister.XP_SHEEP_EGG.get().getRegistryName().toString(), 1),
+                new LootTable.Loot(ItemRegister.XP_CHICKEN_EGG.get().getRegistryName().toString(), 1),
+                new LootTable.Loot(BlockRegister.ENCHANTED_COBBLESTONE.get().getRegistryName().toString(), 1)
+        )), level12);
+
+        LootTable level30 = new LootTable("level_25", new ArrayList<>(Arrays.asList(
+                new LootTable.Loot(Tags.Blocks.SAND.toString(), 1),
+                new LootTable.Loot(Tags.Blocks.SAND.toString(), 2)
+        )), level20);
+
         folderReference.saveObject("level_3", level3);
         folderReference.saveObject("level_7", level7);
         folderReference.saveObject("level_10", level10);
         folderReference.saveObject("level_12", level12);
+        folderReference.saveObject("level_20", level20);
+        folderReference.saveObject("level_30", level30);
     }
 
     public LootTable getLootTable(String lootKey) {

@@ -40,11 +40,11 @@ public class OnlyBlock
         modEventBus.addListener(this::processIMC);
 
         ParticleRegister.PARTICLES.register(modEventBus);
+        EntityRegister.register(modEventBus);
+        ModTileEntity.register(modEventBus);
         EffectRegister.register(modEventBus);
         ItemRegister.register(modEventBus);
         BlockRegister.register(modEventBus);
-        ModTileEntity.register(modEventBus);
-        EntityRegister.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.register(this);
 
@@ -71,7 +71,7 @@ public class OnlyBlock
     @SubscribeEvent
     public void onServerStarting(FMLServerStartingEvent event)
     {
-        this.onlyBlockFolder = new FileManager("onlyblock", event.getServer().getDataDirectory(), "1.1");
+        this.onlyBlockFolder = new FileManager("onlyblock", event.getServer().getDataDirectory(), "1.3");
         this.blockManager = new BlockManager(this);
     }
 

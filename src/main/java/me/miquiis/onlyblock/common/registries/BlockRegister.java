@@ -56,6 +56,10 @@ public class BlockRegister {
             new CobblestoneCraftingTableBlock(AbstractBlock.Properties.create(Material.WOOD).hardnessAndResistance(2.5F).sound(SoundType.WOOD))
     );
 
+    public static final RegistryObject<Block> XP_TNT = registerBlock("xp_tnt", () ->
+            new XPTNTBlock(AbstractBlock.Properties.create(Material.TNT).zeroHardnessAndResistance().sound(SoundType.PLANT))
+    );
+
     private static boolean needsPostProcessing(BlockState state, IBlockReader reader, BlockPos pos) {
         return true;
     }

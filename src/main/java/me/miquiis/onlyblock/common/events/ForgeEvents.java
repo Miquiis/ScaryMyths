@@ -3,6 +3,8 @@ package me.miquiis.onlyblock.common.events;
 import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.common.blocks.CustomBlockTags;
 import me.miquiis.onlyblock.common.classes.ExpExplosion;
+import me.miquiis.onlyblock.common.entities.IXPMob;
+import me.miquiis.onlyblock.common.entities.XPZombieEntity;
 import me.miquiis.onlyblock.common.registries.BlockRegister;
 import me.miquiis.onlyblock.common.registries.EffectRegister;
 import me.miquiis.onlyblock.common.registries.ItemRegister;
@@ -17,9 +19,12 @@ import net.minecraft.block.trees.OakTree;
 import net.minecraft.block.trees.Tree;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ExperienceOrbEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.potion.EffectInstance;
@@ -34,12 +39,17 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
+import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerXpEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.server.command.ConfigCommand;
 
@@ -65,6 +75,57 @@ public class ForgeEvents {
         if (block.getBlock().equals(BlockRegister.XP_BLOCK.get()))
         {
             OnlyBlock.getInstance().getBlockManager().onXPInteractEvent(event);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onMobSpawn(LivingSpawnEvent.CheckSpawn event)
+    {
+        if (event.getWorld().isRemote()) return;
+        if (event.getEntityLiving().getType() instanceof IXPMob) return;
+
+        if (event.getEntityLiving().getType() == EntityType.ZOMBIE)
+        {
+            System.out.println("A");
+            ServerWorld serverWorld = (ServerWorld) event.getWorld();
+            event.setResult(Event.Result.DENY);
+            XPZombieEntity zombieEntity = new XPZombieEntity(serverWorld);
+            zombieEntity.setLocationAndAngles(event.getX(), event.getY(), event.getZ(), event.getEntityLiving().rotationYawHead, event.getEntityLiving().rotationPitch);
+            serverWorld.addEntity(zombieEntity);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerTick(TickEvent.PlayerTickEvent event)
+    {
+        if (event.side == LogicalSide.SERVER)
+        {
+            for (ItemStack armor : event.player.getArmorInventoryList())
+            {
+                boolean hasFullArmor = armor.getItem().getRegistryName().toString().contains("xp_");
+                if (!hasFullArmor) return;
+            }
+
+            event.player.world.getEntitiesInAABBexcluding(event.player, event.player.getBoundingBox().grow(2), entity -> entity instanceof ExperienceOrbEntity).forEach(entity -> {
+                ExperienceOrbEntity experienceOrbEntity = (ExperienceOrbEntity)entity;
+                event.player.giveExperiencePoints(experienceOrbEntity.getXpValue());
+                event.player.world.playSound(null, experienceOrbEntity.getPosX(), experienceOrbEntity.getPosY(), experienceOrbEntity.getPosZ(), SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 0.1F, (event.player.world.rand.nextFloat() - event.player.world.rand.nextFloat()) * 0.35F + 0.9F);
+                entity.remove();
+            });
+
+        }
+    }
+
+    @SubscribeEvent
+    public static void onConsumeEvent(LivingEntityUseItemEvent.Finish event)
+    {
+        if (event.getItem().getItem() == ItemRegister.XP_MEAT.get())
+        {
+            if (event.getEntityLiving() instanceof ServerPlayerEntity)
+            {
+                ServerPlayerEntity player = (ServerPlayerEntity) event.getEntityLiving();
+                player.giveExperiencePoints(player.xpBarCap() / 2);
+            }
         }
     }
 

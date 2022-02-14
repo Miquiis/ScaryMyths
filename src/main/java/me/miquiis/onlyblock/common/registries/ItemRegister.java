@@ -1,9 +1,11 @@
 package me.miquiis.onlyblock.common.registries;
 
 import me.miquiis.onlyblock.OnlyBlock;
-import me.miquiis.onlyblock.common.items.EnchantedItem;
+import me.miquiis.onlyblock.common.items.CustomArmorMaterial;
 import me.miquiis.onlyblock.common.items.ExpShovel;
 import me.miquiis.onlyblock.common.items.ExpSword;
+import me.miquiis.onlyblock.common.items.ModSpawnEgg;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.*;
 import net.minecraft.potion.EffectInstance;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -27,6 +29,10 @@ public class ItemRegister {
             new Item(new Item.Properties().food(new Food.Builder().hunger(4).saturation(0.3F).effect(() -> new EffectInstance(EffectRegister.XP_BOOST.get(), 200, 0), 1.0f).setAlwaysEdible().build()).group(ItemGroup.FOOD))
     );
 
+    public static final RegistryObject<Item> XP_MEAT = ITEMS.register("xp_meat", () ->
+            new Item(new Item.Properties().food(new Food.Builder().hunger(6).saturation(0.6F).setAlwaysEdible().build()).group(ItemGroup.FOOD))
+    );
+
     public static final RegistryObject<Item> XP_AXE = ITEMS.register("xp_axe", () ->
             new AxeItem(ItemTier.DIAMOND, 1.5F, -3.0F, (new Item.Properties()).group(ItemGroup.TOOLS))
     );
@@ -41,6 +47,34 @@ public class ItemRegister {
 
     public static final RegistryObject<Item> XP_SWORD = ITEMS.register("xp_sword", () ->
             new ExpSword(ItemTier.DIAMOND, 3, -2.4F, (new Item.Properties()).group(ItemGroup.COMBAT))
+    );
+
+    public static final RegistryObject<Item> XP_HELMET = ITEMS.register("xp_helmet", () ->
+            new ArmorItem(CustomArmorMaterial.XP, EquipmentSlotType.HEAD, (new Item.Properties()).group(ItemGroup.COMBAT))
+    );
+
+    public static final RegistryObject<Item> XP_CHESTPLATE = ITEMS.register("xp_chestplate", () ->
+            new ArmorItem(CustomArmorMaterial.XP, EquipmentSlotType.CHEST, (new Item.Properties()).group(ItemGroup.COMBAT))
+    );
+
+    public static final RegistryObject<Item> XP_LEGGINGS = ITEMS.register("xp_leggings", () ->
+            new ArmorItem(CustomArmorMaterial.XP, EquipmentSlotType.LEGS, (new Item.Properties()).group(ItemGroup.COMBAT))
+    );
+
+    public static final RegistryObject<Item> XP_BOOTS = ITEMS.register("xp_boots", () ->
+            new ArmorItem(CustomArmorMaterial.XP, EquipmentSlotType.FEET, (new Item.Properties()).group(ItemGroup.COMBAT))
+    );
+
+    public static final RegistryObject<Item> XP_SHEEP_EGG = ITEMS.register("xp_sheep_egg", () ->
+            new ModSpawnEgg(EntityRegister.XP_SHEEP, 61793, 16777215, (new Item.Properties()).group(ItemGroup.MISC))
+    );
+
+    public static final RegistryObject<Item> XP_COW_EGG = ITEMS.register("xp_cow_egg", () ->
+            new ModSpawnEgg(EntityRegister.XP_COW, 61793, 7295287, (new Item.Properties()).group(ItemGroup.MISC))
+    );
+
+    public static final RegistryObject<Item> XP_CHICKEN_EGG = ITEMS.register("xp_chicken_egg", () ->
+            new ModSpawnEgg(EntityRegister.XP_CHICKEN, 61793, 16730420, (new Item.Properties()).group(ItemGroup.MISC))
     );
 
     public static void register(IEventBus bus)

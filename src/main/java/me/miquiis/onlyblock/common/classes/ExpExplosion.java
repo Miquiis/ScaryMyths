@@ -186,7 +186,10 @@ public class ExpExplosion extends Explosion {
 
       boolean flag = this.mode != Explosion.Mode.NONE;
       if (spawnParticles) {
-         this.world.addParticle(ParticleRegister.EXP_EXPLOSION.get(), this.x, this.y, this.z, 5.0D, 0.0D, 0.0D);
+         for (int i = 0; i < 3; i++)
+         {
+            this.world.addParticle(ParticleRegister.EXP_EXPLOSION.get(), this.x, this.y, this.z, size * 2, 0.0D, 0.0D);
+         }
       }
 
       if (flag) {

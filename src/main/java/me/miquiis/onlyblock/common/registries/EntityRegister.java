@@ -2,10 +2,12 @@ package me.miquiis.onlyblock.common.registries;
 
 import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.common.entities.*;
+import me.miquiis.onlyblock.common.entities.renderer.MiniXPTNTRenderer;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.GlobalEntityTypeAttributes;
+import net.minecraft.entity.item.TNTEntity;
 import net.minecraft.entity.passive.CowEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
@@ -33,6 +35,13 @@ public class EntityRegister {
                     .build(new ResourceLocation(OnlyBlock.MOD_ID, "damageable_experience_orb").toString())
     );
 
+    public static final RegistryObject<EntityType<XPZombieEntity>> XP_ZOMBIE = ENTITIES.register("xp_zombie",
+            () -> EntityType.Builder.<XPZombieEntity>create(XPZombieEntity::new, EntityClassification.MONSTER)
+                    .size(0.6F, 1.95F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "xp_zombie").toString())
+    );
+
     public static final RegistryObject<EntityType<XpCowEntity>> XP_COW = ENTITIES.register("xp_cow",
             () -> EntityType.Builder.<XpCowEntity>create(XpCowEntity::new, EntityClassification.CREATURE)
                     .size(0.9F, 1.4F)
@@ -54,6 +63,24 @@ public class EntityRegister {
                     .build(new ResourceLocation(OnlyBlock.MOD_ID, "xp_chicken").toString())
     );
 
+    public static final RegistryObject<EntityType<XPTNTEntity>> XP_TNT = ENTITIES.register("xp_tnt",
+            () -> EntityType.Builder.<XPTNTEntity>create(XPTNTEntity::new, EntityClassification.MISC)
+                    .immuneToFire()
+                    .size(0.98F, 0.98F)
+                    .trackingRange(10)
+                    .updateInterval(10)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "xp_tnt").toString())
+    );
+
+    public static final RegistryObject<EntityType<MiniXPTNTEntity>> MINI_XP_TNT = ENTITIES.register("mini_xp_tnt",
+            () -> EntityType.Builder.<MiniXPTNTEntity>create(MiniXPTNTEntity::new, EntityClassification.MISC)
+                    .immuneToFire()
+                    .size(0.245F, 0.245F)
+                    .trackingRange(10)
+                    .updateInterval(10)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "mini_xp_tnt").toString())
+    );
+
     public static void register(IEventBus bus)
     {
         ENTITIES.register(bus);
@@ -65,6 +92,8 @@ public class EntityRegister {
         event.put(XP_CHICKEN.get(), XpChickenEntity.func_234187_eI_().create());
         event.put(XP_COW.get(), XpCowEntity.registerAttributes().create());
         event.put(XP_SHEEP.get(), XpSheepEntity.registerAttributes().create());
+
+        event.put(XP_ZOMBIE.get(), XPZombieEntity.func_234342_eQ_().create());
     }
 
 }
