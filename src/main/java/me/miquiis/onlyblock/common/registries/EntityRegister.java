@@ -35,11 +35,53 @@ public class EntityRegister {
                     .build(new ResourceLocation(OnlyBlock.MOD_ID, "damageable_experience_orb").toString())
     );
 
+    public static final RegistryObject<EntityType<XPKingEntity>> XP_KING = ENTITIES.register("xp_king",
+            () -> EntityType.Builder.<XPKingEntity>create(XPKingEntity::new, EntityClassification.MONSTER)
+                    .size(0.6F, 1.95F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "xp_king").toString())
+    );
+
+    public static final RegistryObject<EntityType<XPWarhammerProjectileEntity>> XP_WARHAMMER_PROJECTILE = ENTITIES.register("xp_warhammer_projectile",
+            () -> EntityType.Builder.<XPWarhammerProjectileEntity>create(XPWarhammerProjectileEntity::new, EntityClassification.MONSTER)
+                    .size(0.3F, 1.50F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "xp_warhammer_projectile").toString())
+    );
+
     public static final RegistryObject<EntityType<XPZombieEntity>> XP_ZOMBIE = ENTITIES.register("xp_zombie",
             () -> EntityType.Builder.<XPZombieEntity>create(XPZombieEntity::new, EntityClassification.MONSTER)
                     .size(0.6F, 1.95F)
                     .trackingRange(8)
                     .build(new ResourceLocation(OnlyBlock.MOD_ID, "xp_zombie").toString())
+    );
+
+    public static final RegistryObject<EntityType<XPCreeperEntity>> XP_CREEPER = ENTITIES.register("xp_creeper",
+            () -> EntityType.Builder.<XPCreeperEntity>create(XPCreeperEntity::new, EntityClassification.MONSTER)
+                    .size(0.6F, 1.7F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "xp_creeper").toString())
+    );
+
+    public static final RegistryObject<EntityType<XPSkeletonEntity>> XP_SKELETON = ENTITIES.register("xp_skeleton",
+            () -> EntityType.Builder.<XPSkeletonEntity>create(XPSkeletonEntity::new, EntityClassification.MONSTER)
+                    .size(0.6F, 1.99F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "xp_skeleton").toString())
+    );
+
+    public static final RegistryObject<EntityType<XPEndermanEntity>> XP_ENDERMAN = ENTITIES.register("xp_enderman",
+            () -> EntityType.Builder.<XPEndermanEntity>create(XPEndermanEntity::new, EntityClassification.MONSTER)
+                    .size(0.6F, 2.9F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "xp_enderman").toString())
+    );
+
+    public static final RegistryObject<EntityType<XPSpiderEntity>> XP_SPIDER = ENTITIES.register("xp_spider",
+            () -> EntityType.Builder.<XPSpiderEntity>create(XPSpiderEntity::new, EntityClassification.MONSTER)
+                    .size(1.4F, 0.9F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "xp_spider").toString())
     );
 
     public static final RegistryObject<EntityType<XpCowEntity>> XP_COW = ENTITIES.register("xp_cow",
@@ -93,7 +135,13 @@ public class EntityRegister {
         event.put(XP_COW.get(), XpCowEntity.registerAttributes().create());
         event.put(XP_SHEEP.get(), XpSheepEntity.registerAttributes().create());
 
+        event.put(XP_KING.get(), XPKingEntity.registerAttributes().create());
+
         event.put(XP_ZOMBIE.get(), XPZombieEntity.func_234342_eQ_().create());
+        event.put(XP_SKELETON.get(), XPSkeletonEntity.registerAttributes().create());
+        event.put(XP_ENDERMAN.get(), XPEndermanEntity.func_234287_m_().create());
+        event.put(XP_SPIDER.get(), XPSpiderEntity.func_234305_eI_().create());
+        event.put(XP_CREEPER.get(), XPCreeperEntity.registerAttributes().create());
     }
 
 }

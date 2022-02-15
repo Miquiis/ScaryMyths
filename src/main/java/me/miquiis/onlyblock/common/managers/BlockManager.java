@@ -80,23 +80,18 @@ public class BlockManager {
         if (MathUtils.chance(95))
             return null;
 
-        if (level < 7)
-        {
+        if (level < 7) {
             return getLootTable("level_3").getLoot();
-        } else if (level < 10)
-        {
+        } else if (level < 10) {
             return getLootTable("level_7").getLoot();
-        } else if (level < 12)
-        {
+        } else if (level < 12) {
             return getLootTable("level_10").getLoot();
         } else if (level < 20){
             return getLootTable("level_12").getLoot();
-        } else if (level < 25)
-        {
+        } else if (level < 25) {
             return getLootTable("level_20").getLoot();
-        } else
-        {
-            return getLootTable("level_25").getLoot();
+        } else {
+            return getLootTable("level_30").getLoot();
         }
     }
 
@@ -172,7 +167,7 @@ public class BlockManager {
                 new LootTable.Loot(BlockRegister.ENCHANTED_COBBLESTONE.get().getRegistryName().toString(), 1)
         )), level12);
 
-        LootTable level30 = new LootTable("level_25", new ArrayList<>(Arrays.asList(
+        LootTable level30 = new LootTable("level_30", new ArrayList<>(Arrays.asList(
                 new LootTable.Loot(Tags.Blocks.SAND.toString(), 1),
                 new LootTable.Loot(Tags.Blocks.SAND.toString(), 2)
         )), level20);

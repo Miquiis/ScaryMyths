@@ -71,7 +71,7 @@ public class OnlyBlock
     @SubscribeEvent
     public void onServerStarting(FMLServerStartingEvent event)
     {
-        this.onlyBlockFolder = new FileManager("onlyblock", event.getServer().getDataDirectory(), "1.3");
+        this.onlyBlockFolder = new FileManager("onlyblock", event.getServer().getDataDirectory(), "1.4");
         this.blockManager = new BlockManager(this);
     }
 

@@ -38,6 +38,13 @@ public class ModClientEvents {
         ClientRegistry.bindTileEntityRenderer(ModTileEntity.XP_MINER_TILE_ENTITY.get(), XpMinerTileEntityRenderer::new);
 
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.XP_ZOMBIE.get(), XPZombieRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.XP_CREEPER.get(), XPCreeperRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.XP_SKELETON.get(), XPSkeletonRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.XP_SPIDER.get(), XPSpiderRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.XP_ENDERMAN.get(), XPEndermanRenderer::new);
+
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.XP_KING.get(), XPKingRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.XP_WARHAMMER_PROJECTILE.get(), XPWarhammerRenderer::new);
 
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.XP_CHICKEN.get(), XpChickenRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.XP_COW.get(), XpCowRenderer::new);

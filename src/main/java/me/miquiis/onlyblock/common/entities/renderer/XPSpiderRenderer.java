@@ -13,7 +13,7 @@ import net.minecraft.util.ResourceLocation;
 
 public class XPSpiderRenderer<T extends SpiderEntity> extends MobRenderer<T, SpiderModel<T>> {
 
-    private final ResourceLocation SPIDER_TEXTURE = new ResourceLocation(OnlyBlock.MOD_ID, "textures/entity/xp_creeper");
+    private final ResourceLocation SPIDER_TEXTURE = new ResourceLocation(OnlyBlock.MOD_ID, "textures/entity/xp_spider.png");
 
     public XPSpiderRenderer(EntityRendererManager renderManagerIn) {
         super(renderManagerIn, new SpiderModel<>(), 0.8F);

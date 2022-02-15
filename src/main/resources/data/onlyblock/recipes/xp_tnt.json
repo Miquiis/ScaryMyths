@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "sticks",
+  "pattern": [
+    "!#!",
+    "#!#",
+    "!#!"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:sand"
+    },
+    "!": {
+      "item": "onlyblock:xp_gunpowder"
+    }
+  },
+  "result": {
+    "item": "onlyblock:xp_tnt",
+    "count": 1
+  }
+}

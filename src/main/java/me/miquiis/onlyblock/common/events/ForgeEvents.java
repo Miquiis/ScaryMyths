@@ -3,8 +3,7 @@ package me.miquiis.onlyblock.common.events;
 import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.common.blocks.CustomBlockTags;
 import me.miquiis.onlyblock.common.classes.ExpExplosion;
-import me.miquiis.onlyblock.common.entities.IXPMob;
-import me.miquiis.onlyblock.common.entities.XPZombieEntity;
+import me.miquiis.onlyblock.common.entities.*;
 import me.miquiis.onlyblock.common.registries.BlockRegister;
 import me.miquiis.onlyblock.common.registries.EffectRegister;
 import me.miquiis.onlyblock.common.registries.ItemRegister;
@@ -21,8 +20,10 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.item.ExperienceOrbEntity;
 import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.monster.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -40,6 +41,7 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -79,19 +81,60 @@ public class ForgeEvents {
     }
 
     @SubscribeEvent
-    public static void onMobSpawn(LivingSpawnEvent.CheckSpawn event)
+    public static void onEntityJoinWorld(EntityJoinWorldEvent event)
     {
-        if (event.getWorld().isRemote()) return;
-        if (event.getEntityLiving().getType() instanceof IXPMob) return;
+        if (event.getWorld().isRemote) return;
+        if (event.getEntity() instanceof IXPMob) return;
+        final ServerWorld serverWorld = (ServerWorld) event.getWorld();
 
-        if (event.getEntityLiving().getType() == EntityType.ZOMBIE)
+        if (event.getEntity() instanceof ZombieEntity)
         {
-            System.out.println("A");
-            ServerWorld serverWorld = (ServerWorld) event.getWorld();
-            event.setResult(Event.Result.DENY);
-            XPZombieEntity zombieEntity = new XPZombieEntity(serverWorld);
-            zombieEntity.setLocationAndAngles(event.getX(), event.getY(), event.getZ(), event.getEntityLiving().rotationYawHead, event.getEntityLiving().rotationPitch);
-            serverWorld.addEntity(zombieEntity);
+            event.setCanceled(true);
+            XPZombieEntity zombieEntity = new XPZombieEntity(event.getWorld());
+            zombieEntity.onInitialSpawn(serverWorld, serverWorld.getDifficultyForLocation(event.getEntity().getPosition()), SpawnReason.NATURAL, null, null);
+            zombieEntity.setPositionAndRotation(event.getEntity().getPosX(), event.getEntity().getPosY(), event.getEntity().getPosZ(), event.getEntity().rotationYaw, event.getEntity().rotationPitch);
+            event.getWorld().addEntity(zombieEntity);
+            return;
+        }
+
+        if (event.getEntity() instanceof CreeperEntity)
+        {
+            event.setCanceled(true);
+            XPCreeperEntity customEntity = new XPCreeperEntity(event.getWorld());
+            customEntity.onInitialSpawn(serverWorld, serverWorld.getDifficultyForLocation(event.getEntity().getPosition()), SpawnReason.NATURAL, null, null);
+            customEntity.setPositionAndRotation(event.getEntity().getPosX(), event.getEntity().getPosY(), event.getEntity().getPosZ(), event.getEntity().rotationYaw, event.getEntity().rotationPitch);
+            event.getWorld().addEntity(customEntity);
+            return;
+        }
+
+        if (event.getEntity() instanceof SkeletonEntity)
+        {
+            event.setCanceled(true);
+            XPSkeletonEntity customEntity = new XPSkeletonEntity(event.getWorld());
+            customEntity.onInitialSpawn(serverWorld, serverWorld.getDifficultyForLocation(event.getEntity().getPosition()), SpawnReason.NATURAL, null, null);
+            customEntity.setPositionAndRotation(event.getEntity().getPosX(), event.getEntity().getPosY(), event.getEntity().getPosZ(), event.getEntity().rotationYaw, event.getEntity().rotationPitch);
+            event.getWorld().addEntity(customEntity);
+            return;
+        }
+
+        if (event.getEntity() instanceof EndermanEntity)
+        {
+            event.setCanceled(true);
+            XPEndermanEntity customEntity = new XPEndermanEntity(event.getWorld());
+            customEntity.onInitialSpawn(serverWorld, serverWorld.getDifficultyForLocation(event.getEntity().getPosition()), SpawnReason.NATURAL, null, null);
+            customEntity.setPositionAndRotation(event.getEntity().getPosX(), event.getEntity().getPosY(), event.getEntity().getPosZ(), event.getEntity().rotationYaw, event.getEntity().rotationPitch);
+            event.getWorld().addEntity(customEntity);
+            return;
+        }
+
+        if (event.getEntity() instanceof SpiderEntity)
+        {
+            event.setCanceled(true);
+            XPSpiderEntity customEntity = new XPSpiderEntity(event.getWorld());
+            customEntity.onInitialSpawn(serverWorld, serverWorld.getDifficultyForLocation(event.getEntity().getPosition()), SpawnReason.NATURAL, null, null);
+            customEntity.setPositionAndRotation(event.getEntity().getPosX(), event.getEntity().getPosY(), event.getEntity().getPosZ(), event.getEntity().rotationYaw, event.getEntity().rotationPitch);
+            event.getWorld().addEntity(customEntity);
+            return;
         }
     }
 

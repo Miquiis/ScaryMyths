@@ -1,10 +1,8 @@
 package me.miquiis.onlyblock.common.registries;
 
 import me.miquiis.onlyblock.OnlyBlock;
-import me.miquiis.onlyblock.common.items.CustomArmorMaterial;
-import me.miquiis.onlyblock.common.items.ExpShovel;
-import me.miquiis.onlyblock.common.items.ExpSword;
-import me.miquiis.onlyblock.common.items.ModSpawnEgg;
+import me.miquiis.onlyblock.common.items.*;
+import me.miquiis.onlyblock.common.items.renderer.WarhammerRenderer;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.*;
 import net.minecraft.potion.EffectInstance;
@@ -12,6 +10,8 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+
+import java.util.HashSet;
 
 public class ItemRegister {
 
@@ -31,6 +31,14 @@ public class ItemRegister {
 
     public static final RegistryObject<Item> XP_MEAT = ITEMS.register("xp_meat", () ->
             new Item(new Item.Properties().food(new Food.Builder().hunger(6).saturation(0.6F).setAlwaysEdible().build()).group(ItemGroup.FOOD))
+    );
+
+    public static final RegistryObject<Item> XP_GUNPOWDER = ITEMS.register("xp_gunpowder", () ->
+            new Item(new Item.Properties().group(ItemGroup.MATERIALS))
+    );
+
+    public static final RegistryObject<Item> XP_WARHAMMER = ITEMS.register("xp_warhammer", () ->
+            new WarhammerItem(15.0F, -1.0F, ItemTier.NETHERITE, new HashSet<>(), new Item.Properties().group(ItemGroup.TOOLS).setISTER(() -> WarhammerRenderer::new))
     );
 
     public static final RegistryObject<Item> XP_AXE = ITEMS.register("xp_axe", () ->

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "sticks",
+  "pattern": [
+    "X X",
+    "XXX",
+    "XXX"
+  ],
+  "key": {
+    "X": {
+      "item": "onlyblock:xp_ingot"
+    }
+  },
+  "result": {
+    "item": "onlyblock:xp_chestplate",
+    "count": 1
+  }
+}

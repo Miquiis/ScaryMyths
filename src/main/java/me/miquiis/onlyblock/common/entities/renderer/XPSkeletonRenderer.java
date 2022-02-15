@@ -11,7 +11,7 @@ import net.minecraft.util.ResourceLocation;
 
 public class XPSkeletonRenderer extends SkeletonRenderer {
 
-    private final ResourceLocation SKELETON_TEXTURE = new ResourceLocation(OnlyBlock.MOD_ID, "textures/entity/xp_skeleton");
+    private final ResourceLocation SKELETON_TEXTURE = new ResourceLocation(OnlyBlock.MOD_ID, "textures/entity/xp_skeleton.png");
 
     public XPSkeletonRenderer(EntityRendererManager renderManagerIn) {
         super(renderManagerIn);

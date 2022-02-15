@@ -8,7 +8,7 @@ import net.minecraft.util.ResourceLocation;
 
 public class XPZombieRenderer extends ZombieRenderer {
 
-    private final ResourceLocation ZOMBIE_TEXTURE = new ResourceLocation(OnlyBlock.MOD_ID, "textures/entity/xp_zombie");
+    private final ResourceLocation ZOMBIE_TEXTURE = new ResourceLocation(OnlyBlock.MOD_ID, "textures/entity/xp_zombie.png");
 
     public XPZombieRenderer(EntityRendererManager renderManagerIn) {
         super(renderManagerIn);
