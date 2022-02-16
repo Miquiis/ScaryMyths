@@ -30,6 +30,10 @@ public class BlockRegister {
             5, true
     );
 
+    public static final RegistryObject<Block> KEY_HOLE = registerBlock("key_hole", () ->
+                    new Block(AbstractBlock.Properties.create(Material.ROCK).setRequiresTool().hardnessAndResistance(2.0F, 6.0F))
+    );
+
     public static final RegistryObject<Block> ENCHANTED_DIRT = registerEnchantedBlock("enchanted_dirt", () ->
                     new Block(AbstractBlock.Properties.create(Material.EARTH, MaterialColor.DIRT).hardnessAndResistance(0.5F).sound(SoundType.GROUND)),
             1, false
@@ -46,6 +50,11 @@ public class BlockRegister {
 
     public static final RegistryObject<Block> XP_BLOCK = registerBlock("xp_block", () ->
             new XPBlock(AbstractBlock.Properties.create(Material.GLASS).hardnessAndResistance(2f).sound(SoundType.GLASS).setLightLevel((state) -> 15))
+    );
+
+    public static final RegistryObject<Block> XP_PLATFORM = registerEnchantedBlock("xp_platform", () ->
+                    new Block(AbstractBlock.Properties.create(Material.ROCK).setRequiresTool().hardnessAndResistance(2.0F, 6.0F)),
+            BlockRegister.XP_BLOCK, 15, false
     );
 
     public static final RegistryObject<Block> ENERGY_XP_BLOCK = registerBlock("energy_xp_block", () ->
@@ -93,6 +102,12 @@ public class BlockRegister {
         return toReturn;
     }
 
+    private static<T extends Block> RegistryObject<T> registerEnchantedBlock(String name, Supplier<T> block, Supplier<T> blockToGrow, int radius, boolean sphere) {
+        RegistryObject<T> toReturn = BLOCKS.register(name, block);
+        registerEnchantedBlockItem(name, toReturn, blockToGrow, radius, sphere);
+        return toReturn;
+    }
+
     private static <T extends Block> void registerBlockItem(String name, RegistryObject<T> block) {
         ItemRegister.ITEMS.register(name, () -> new BlockItem(block.get(),
                 new Item.Properties().group(ItemGroup.MISC))
@@ -101,6 +116,12 @@ public class BlockRegister {
 
     private static <T extends Block> void registerEnchantedBlockItem(String name, RegistryObject<T> block, int radius, boolean sphere) {
         ItemRegister.ITEMS.register(name, () -> new EnchantedGrowBlockItem(block.get(),
+                new Item.Properties().group(ItemGroup.MISC), radius, sphere)
+        );
+    }
+
+    private static <T extends Block> void registerEnchantedBlockItem(String name, RegistryObject<T> block, Supplier<T> toPlace, int radius, boolean sphere) {
+        ItemRegister.ITEMS.register(name, () -> new EnchantedGrowBlockItem(block.get(), toPlace.get(),
                 new Item.Properties().group(ItemGroup.MISC), radius, sphere)
         );
     }

@@ -4,10 +4,8 @@ import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.common.blocks.CustomBlockTags;
 import me.miquiis.onlyblock.common.classes.ExpExplosion;
 import me.miquiis.onlyblock.common.entities.*;
-import me.miquiis.onlyblock.common.registries.BlockRegister;
-import me.miquiis.onlyblock.common.registries.EffectRegister;
-import me.miquiis.onlyblock.common.registries.ItemRegister;
-import me.miquiis.onlyblock.common.registries.ParticleRegister;
+import me.miquiis.onlyblock.common.managers.BlockManager;
+import me.miquiis.onlyblock.common.registries.*;
 import me.miquiis.onlyblock.common.utils.MathUtils;
 import me.miquiis.onlyblock.server.commands.OnlyBlockCommand;
 import net.minecraft.block.Block;
@@ -17,10 +15,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.trees.OakTree;
 import net.minecraft.block.trees.Tree;
 import net.minecraft.client.particle.Particle;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.*;
 import net.minecraft.entity.item.ExperienceOrbEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.monster.*;
@@ -30,6 +25,7 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.play.server.STitlePacket;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.tileentity.TileEntity;
@@ -38,9 +34,13 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextComponentUtils;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.MobSpawnInfo;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -51,12 +51,15 @@ import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerXpEvent;
+import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.server.command.ConfigCommand;
 
 import java.util.ArrayList;
@@ -77,6 +80,7 @@ public class ForgeEvents {
     {
         if (event.getHand() != Hand.MAIN_HAND) return;
         if (event.getWorld().isRemote()) return;
+
         final BlockState block = event.getWorld().getBlockState(event.getPos());
         if (block.getBlock().equals(BlockRegister.XP_BLOCK.get()) || block.getBlock().equals(BlockRegister.ENERGY_XP_BLOCK.get()))
         {
@@ -85,9 +89,48 @@ public class ForgeEvents {
     }
 
     @SubscribeEvent
+    public static void onLockUse(PlayerInteractEvent event)
+    {
+        if (event.getHand() != Hand.MAIN_HAND) return;
+        if (event.getWorld().isRemote()) return;
+
+        final ItemStack itemInHand = event.getItemStack();
+        final BlockState block = event.getWorld().getBlockState(event.getPos());
+        final ServerPlayerEntity player = (ServerPlayerEntity) event.getPlayer();
+
+        if (block.getBlock() == BlockRegister.KEY_HOLE.get())
+        {
+            if (itemInHand.getItem() == ItemRegister.XP_KEY.get())
+            {
+                event.getWorld().setBlockState(event.getPos(), Blocks.AIR.getDefaultState());
+                event.getWorld().setBlockState(event.getPos().down(), Blocks.AIR.getDefaultState());
+                event.getWorld().playSound(null, event.getPos(), SoundRegister.UNLOCK.get(), SoundCategory.BLOCKS, 1f, 1f);
+            } else
+            {
+                player.sendStatusMessage(new StringTextComponent("\u00a7a\u00a7l*REQUIRES XP KEY - REACH LVL 100*"), true);
+            }
+        }
+
+    }
+
+    private static boolean hasNotifiedHundred = false;
+    @SubscribeEvent
+    public static void onPlayerLevelUp(PlayerXpEvent.LevelChange event)
+    {
+        if (!hasNotifiedHundred && event.getLevels() >= 100)
+        {
+            hasNotifiedHundred = true;
+            final ServerPlayerEntity player = (ServerPlayerEntity)event.getPlayer();
+            player.connection.sendPacket(new STitlePacket(STitlePacket.Type.TITLE, new StringTextComponent("\u00a7a\u00a7lREACHED LVL 100"), 10, 60, 10));
+            player.connection.sendPacket(new STitlePacket(STitlePacket.Type.SUBTITLE, new StringTextComponent("\u00a7e\u00a7lCHEST UNLOCKED..."), 10, 60, 10));
+        }
+    }
+
+    @SubscribeEvent
     public static void onEntityJoinWorld(EntityJoinWorldEvent event)
     {
         if (event.getWorld().isRemote) return;
+        if (!event.getWorld().isAreaLoaded(event.getEntity().getPosition(), 1)) return;
         if (event.getEntity() instanceof IXPMob) return;
         final ServerWorld serverWorld = (ServerWorld) event.getWorld();
 
@@ -140,6 +183,27 @@ public class ForgeEvents {
             event.getWorld().addEntity(customEntity);
             return;
         }
+    }
+
+    @SubscribeEvent
+    public static void onSpawnEntities(BiomeLoadingEvent event)
+    {
+//        if (event.getCategory() != Biome.Category.OCEAN)
+//        {
+//            if (event.getCategory() != Biome.Category.THEEND)
+//            {
+//                event.getSpawns().getSpawner(EntityClassification.MONSTER).clear();
+//                event.getSpawns().getSpawner(EntityClassification.MONSTER).add(new MobSpawnInfo.Spawners(EntityRegister.XP_SPIDER.get(), 100, 4, 4));
+//                event.getSpawns().getSpawner(EntityClassification.MONSTER).add(new MobSpawnInfo.Spawners(EntityRegister.XP_ZOMBIE.get(), 90, 4, 4));
+//                event.getSpawns().getSpawner(EntityClassification.MONSTER).add(new MobSpawnInfo.Spawners(EntityRegister.XP_SKELETON.get(), 90, 4, 4));
+//                event.getSpawns().getSpawner(EntityClassification.MONSTER).add(new MobSpawnInfo.Spawners(EntityRegister.XP_CREEPER.get(), 100, 4, 4));
+//                event.getSpawns().getSpawner(EntityClassification.MONSTER).add(new MobSpawnInfo.Spawners(EntityRegister.XP_ENDERMAN.get(), 10, 1, 4));
+//            } else
+//            {
+//                event.getSpawns().getSpawner(EntityClassification.MONSTER).clear();
+//                event.getSpawns().getSpawner(EntityClassification.MONSTER).add(new MobSpawnInfo.Spawners(EntityRegister.XP_ENDERMAN.get(), 100, 1, 2));
+//            }
+//        }
     }
 
     @SubscribeEvent
@@ -217,7 +281,14 @@ public class ForgeEvents {
             if (event.getEntityLiving() instanceof ServerPlayerEntity)
             {
                 ServerPlayerEntity player = (ServerPlayerEntity) event.getEntityLiving();
-                player.giveExperiencePoints(player.xpBarCap() / 2);
+                EffectInstance effectInstance = event.getEntityLiving().getActivePotionEffect(EffectRegister.XP_BOOST.get());
+                if (effectInstance != null)
+                {
+                    player.giveExperiencePoints(player.xpBarCap());
+
+                } else {
+                    player.giveExperiencePoints(player.xpBarCap() / 2);
+                }
             }
         }
     }
@@ -227,7 +298,14 @@ public class ForgeEvents {
     {
         EffectInstance effectInstance = event.getPlayer().getActivePotionEffect(EffectRegister.XP_BOOST.get());
         if (effectInstance == null) return;
-        event.getOrb().xpValue += Math.ceil(event.getOrb().xpValue * 0.25);
+        event.getOrb().xpValue += Math.ceil(event.getOrb().xpValue * 0.5);
+    }
+
+    @SubscribeEvent
+    public static void onPlayerXPChange(PlayerXpEvent.XpChange event)
+    {
+        final BlockManager blockManager = OnlyBlock.getInstance().getBlockManager();
+        event.setAmount((int)Math.ceil(event.getAmount() * blockManager.getGlobalMultiplier()));
     }
 
     @SubscribeEvent

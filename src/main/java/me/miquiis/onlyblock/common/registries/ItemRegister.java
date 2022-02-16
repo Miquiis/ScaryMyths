@@ -17,12 +17,36 @@ public class ItemRegister {
 
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, OnlyBlock.MOD_ID);
 
+    public static final RegistryObject<Item> EGGS_CRAFT = ITEMS.register("temp_eggs_craft", () ->
+            new Item(new Item.Properties().rarity(Rarity.EPIC))
+    );
+
+    public static final RegistryObject<Item> WARHAMMER_CRAFT = ITEMS.register("temp_warhammer_craft", () ->
+            new Item(new Item.Properties().rarity(Rarity.EPIC))
+    );
+
+    public static final RegistryObject<Item> CROWN_CRAFT = ITEMS.register("temp_crown_craft", () ->
+            new Item(new Item.Properties().rarity(Rarity.EPIC))
+    );
+
     public static final RegistryObject<Item> XP_INGOT = ITEMS.register("xp_ingot", () ->
             new Item(new Item.Properties().group(ItemGroup.MATERIALS))
     );
 
     public static final RegistryObject<Item> ENERGY_XP_INGOT = ITEMS.register("energy_xp_ingot", () ->
             new Item(new Item.Properties().group(ItemGroup.MATERIALS))
+    );
+
+    public static final RegistryObject<Item> XP_KEY = ITEMS.register("xp_key", () ->
+            new Item(new Item.Properties().group(ItemGroup.MISC))
+    );
+
+    public static final RegistryObject<Item> XP_FRAG_1 = ITEMS.register("xp_key_frag_1", () ->
+            new Item(new Item.Properties().group(ItemGroup.MISC))
+    );
+
+    public static final RegistryObject<Item> XP_FRAG_2 = ITEMS.register("xp_key_frag_2", () ->
+            new Item(new Item.Properties().group(ItemGroup.MISC))
     );
 
     public static final RegistryObject<Item> XP_APPLE = ITEMS.register("xp_apple", () ->

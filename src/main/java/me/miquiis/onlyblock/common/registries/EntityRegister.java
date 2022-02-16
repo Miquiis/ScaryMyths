@@ -56,6 +56,13 @@ public class EntityRegister {
                     .build(new ResourceLocation(OnlyBlock.MOD_ID, "xp_warhammer_projectile").toString())
     );
 
+    public static final RegistryObject<EntityType<XPSwordProjectileEntity>> XP_SWORD_PROJECTILE = ENTITIES.register("xp_sword_projectile",
+            () -> EntityType.Builder.<XPSwordProjectileEntity>create(XPSwordProjectileEntity::new, EntityClassification.MISC)
+                    .size(0.3F, 1.50F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "xp_sword_projectile").toString())
+    );
+
     public static final RegistryObject<EntityType<XPBeamProjectileEntity>> XP_BEAM_PROJECTILE = ENTITIES.register("xp_beam_projectile",
             () -> EntityType.Builder.<XPBeamProjectileEntity>create(XPBeamProjectileEntity::new, EntityClassification.MONSTER)
                     .size(0.2F, 0.2F)

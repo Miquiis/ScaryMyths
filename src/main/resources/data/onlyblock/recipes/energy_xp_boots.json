@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "#X#"
+  ],
+  "key": {
+    "X": {
+      "item": "onlyblock:xp_boots"
+    },
+    "#": {
+      "item": "onlyblock:energy_xp_ingot"
+    }
+  },
+  "result": {
+    "item": "onlyblock:energy_xp_boots",
+    "count": 1
+  }
+}

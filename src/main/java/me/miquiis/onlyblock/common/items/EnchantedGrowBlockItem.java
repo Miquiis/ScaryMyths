@@ -24,6 +24,7 @@ import java.util.Arrays;
 
 public class EnchantedGrowBlockItem extends BlockItem {
 
+    protected Block toPlace;
     protected boolean isSphere;
     protected int radius;
 
@@ -31,6 +32,14 @@ public class EnchantedGrowBlockItem extends BlockItem {
         super(blockIn, builder);
         this.radius = radius;
         this.isSphere = sphere;
+        this.toPlace = blockIn;
+    }
+
+    public EnchantedGrowBlockItem(Block blockIn, Block toPlace, Item.Properties builder, int radius, boolean sphere) {
+        super(blockIn, builder);
+        this.radius = radius;
+        this.isSphere = sphere;
+        this.toPlace = toPlace;
     }
 
     public boolean hasEffect(ItemStack stack) {
@@ -46,7 +55,7 @@ public class EnchantedGrowBlockItem extends BlockItem {
             if (blockitemusecontext == null) {
                 return ActionResultType.FAIL;
             } else {
-                BlockState blockstate = this.getStateForPlacement(blockitemusecontext);
+                BlockState blockstate = toPlace.getDefaultState();
                 if (blockstate == null) {
                     return ActionResultType.FAIL;
                 } else if (!context.getWorld().setBlockState(context.getPos(), blockstate, 11)) {

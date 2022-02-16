@@ -30,6 +30,7 @@ public class BlockManager {
     private FileManager folderReference;
     private Set<LootTable> cachedLootTables;
     private Map<UUID, Integer> clickCheck;
+    private float globalMultiplier;
 
     public BlockManager(OnlyBlock mod)
     {
@@ -37,6 +38,7 @@ public class BlockManager {
         this.folderReference = mod.getOnlyBlockFolder();
         this.cachedLootTables = new HashSet<>();
         this.clickCheck = new HashMap<>();
+        this.globalMultiplier = 1f;
         setupFolder();
         setupBar();
     }
@@ -80,21 +82,31 @@ public class BlockManager {
 
     private LootTable.Loot getLootFromLevel(int level)
     {
-        if (MathUtils.chance(95))
-            return null;
 
         if (level < 7) {
+            if (MathUtils.chance(95)) return null;
             return getLootTable("level_3").getLoot();
         } else if (level < 10) {
+            if (MathUtils.chance(95)) return null;
             return getLootTable("level_7").getLoot();
         } else if (level < 12) {
+            if (MathUtils.chance(95)) return null;
             return getLootTable("level_10").getLoot();
         } else if (level < 20){
+            if (MathUtils.chance(93)) return null;
             return getLootTable("level_12").getLoot();
         } else if (level < 25) {
+            if (MathUtils.chance(91)) return null;
             return getLootTable("level_20").getLoot();
-        } else {
+        } else if (level < 30) {
+            if (MathUtils.chance(90)) return null;
+            return getLootTable("level_25").getLoot();
+        } else if (level < 60){
+            if (MathUtils.chance(88)) return null;
             return getLootTable("level_30").getLoot();
+        } else {
+            if (MathUtils.chance(85)) return null;
+            return getLootTable("level_60").getLoot();
         }
     }
 
@@ -166,25 +178,30 @@ public class BlockManager {
         LootTable level20 = new LootTable("level_20", new ArrayList<>(Arrays.asList(
                 new LootTable.Loot(ItemRegister.XP_COW_EGG.get().getRegistryName().toString(), 1),
                 new LootTable.Loot(ItemRegister.XP_SHEEP_EGG.get().getRegistryName().toString(), 1),
-                new LootTable.Loot(ItemRegister.XP_CHICKEN_EGG.get().getRegistryName().toString(), 1),
-                new LootTable.Loot(BlockRegister.ENCHANTED_COBBLESTONE.get().getRegistryName().toString(), 1)
+                new LootTable.Loot(ItemRegister.XP_CHICKEN_EGG.get().getRegistryName().toString(), 1)
         )), level12);
+
+        LootTable level25 = new LootTable("level_25", new ArrayList<>(Arrays.asList(
+                new LootTable.Loot(BlockRegister.XP_BLOCK.get().getRegistryName().toString(), 1)
+        )), level20);
 
         LootTable level30 = new LootTable("level_30", new ArrayList<>(Arrays.asList(
                 new LootTable.Loot(Items.SAND.toString(), 1),
                 new LootTable.Loot(Items.SAND.toString(), 2)
-        )), level20);
+        )), level25);
 
         LootTable level60 = new LootTable("level_60", new ArrayList<>(Arrays.asList(
                 new LootTable.Loot(BlockRegister.ENERGY_XP_BLOCK.get().getRegistryName().toString(), 1)
-        )), level20);
+        )), level30);
 
         folderReference.saveObject("level_3", level3);
         folderReference.saveObject("level_7", level7);
         folderReference.saveObject("level_10", level10);
         folderReference.saveObject("level_12", level12);
         folderReference.saveObject("level_20", level20);
+        folderReference.saveObject("level_25", level25);
         folderReference.saveObject("level_30", level30);
+        folderReference.saveObject("level_60", level60);
     }
 
     public LootTable getLootTable(String lootKey) {
@@ -199,4 +216,12 @@ public class BlockManager {
         return cachedLootTable;
     }
 
+    public float getGlobalMultiplier() {
+        return globalMultiplier;
+    }
+
+    public void setGlobalMultiplier(float mult)
+    {
+        this.globalMultiplier = mult;
+    }
 }

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "eggs",
+  "pattern": [
+    "!"
+  ],
+  "key": {
+    "!": {
+      "item": "onlyblock:temp_eggs_craft"
+    }
+  },
+  "result": {
+    "item": "onlyblock:xp_sheep_egg",
+    "count": 1
+  }
+}

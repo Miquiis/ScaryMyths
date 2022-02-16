@@ -1,6 +1,7 @@
 package me.miquiis.onlyblock.common.items;
 
 import me.miquiis.onlyblock.common.entities.DamageableExperienceOrbEntity;
+import me.miquiis.onlyblock.common.entities.XPTNTEntity;
 import me.miquiis.onlyblock.common.utils.MathUtils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -30,8 +31,8 @@ public class EnergyExpSword extends SwordItem {
 
             serverPlayerEntity.getCooldownTracker().setCooldown(this, 10);
 
-            final double wideAngle = 45;
-            final double gap = 2;
+            final double wideAngle = 360;
+            final double gap = 5;
 
             for (double i = -wideAngle/2; i <= wideAngle/2; i+= gap)
             {
@@ -46,6 +47,7 @@ public class EnergyExpSword extends SwordItem {
                 worldIn.playSound(null, vec.getX(), vec.getY(), vec.getZ(), SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 1f, (float)MathUtils.getRandomMinMax(0.5, 0.6));
                 worldIn.addEntity(orbDamage);
             }
+
         }
         return super.onItemRightClick(worldIn, playerIn, handIn);
     }

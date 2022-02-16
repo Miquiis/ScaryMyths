@@ -8,10 +8,14 @@
   "block.onlyblock.xp_miner": "XP Miner",
   "block.onlyblock.enchanted_crafting_table": "Enchanted Crafting Table",
   "block.onlyblock.xp_tnt": "XP TNT",
+  "block.onlyblock.xp_platform": "XP Platform",
+  "block.onlyblock.key_hole": "Key Hole",
+  "effect.onlyblock.xp_boost": "XP Boost",
   "item.onlyblock.xp_ingot": "XP Ingot",
   "item.onlyblock.energy_xp_ingot": "Energy XP Ingot",
   "item.onlyblock.xp_apple": "XP Apple",
   "item.onlyblock.xp_meat": "XP Meat",
+  "item.onlyblock.xp_bone": "XP Bone",
   "item.onlyblock.xp_gunpowder": "XP Gunpowder",
   "item.onlyblock.xp_warhammer": "XP Warhammer",
   "item.onlyblock.xp_axe": "XP Axe",
@@ -32,5 +36,10 @@
   "item.onlyblock.xp_sheep_egg": "XP Sheep Egg",
   "item.onlyblock.xp_cow_egg": "XP Cow Egg",
   "item.onlyblock.xp_chicken_egg": "XP Chicken Egg",
-  "effect.onlyblock.xp_boost": "XP Boost"
+  "item.onlyblock.temp_eggs_craft": "Drops from XP Block",
+  "item.onlyblock.temp_warhammer_craft": "Drops from XP King",
+  "item.onlyblock.temp_crown_craft": "Drops from XP King",
+  "item.onlyblock.xp_key": "XP Key",
+  "item.onlyblock.xp_key_frag_1": "XP Key Fragment",
+  "item.onlyblock.xp_key_frag_2": "XP Key Fragment"
 }

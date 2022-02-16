@@ -1,17 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
+  "group": "eggs",
   "pattern": [
-    "XXX",
-    "X X",
-    "X X"
+    "!"
   ],
   "key": {
-    "X": {
-      "item": "onlyblock:xp_ingot"
+    "!": {
+      "item": "onlyblock:temp_eggs_craft"
     }
   },
   "result": {
-    "item": "onlyblock:xp_leggings",
+    "item": "onlyblock:xp_cow_egg",
     "count": 1
   }
 }

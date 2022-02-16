@@ -28,14 +28,7 @@ public class ExpSword extends SwordItem {
         {
             ServerWorld serverWorld = (ServerWorld) worldIn;
             ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity) playerIn;
-
-            if (serverPlayerEntity.experienceLevel < 3)
-            {
-                return super.onItemRightClick(worldIn, playerIn, handIn);
-            }
-
             serverPlayerEntity.getCooldownTracker().setCooldown(this, 20 * 3);
-            serverPlayerEntity.setExperienceLevel(playerIn.experienceLevel - 3);
 
             final double wideAngle = 20;
             final double gap = 3;

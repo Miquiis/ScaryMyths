@@ -2,6 +2,7 @@ package me.miquiis.onlyblock.client.events;
 
 import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.common.entities.MiniXPTNTEntity;
+import me.miquiis.onlyblock.common.entities.XPSwordProjectileEntity;
 import me.miquiis.onlyblock.common.entities.XPTNTEntity;
 import me.miquiis.onlyblock.common.entities.renderer.*;
 import me.miquiis.onlyblock.common.items.ModSpawnEgg;
@@ -11,6 +12,7 @@ import me.miquiis.onlyblock.common.registries.ParticleRegister;
 import me.miquiis.onlyblock.common.tileentity.ModTileEntity;
 import me.miquiis.onlyblock.common.tileentity.renderer.XpMinerTileEntityRenderer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.SpriteRenderer;
 import net.minecraft.client.renderer.entity.TNTRenderer;
 import net.minecraft.entity.EntityType;
 import net.minecraftforge.api.distmarker.Dist;
@@ -32,6 +34,10 @@ public class ModClientEvents {
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.FAKE_EXPERIENCE_ORB.get(), FakeExperienceOrbRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.DAMAGEABLE_EXPERIENCE_ORB.get(), DamageableExperienceOrbRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.CUSTOM_FALLING_BLOCK.get(), CustomFallingBlockRenderer::new);
+
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.XP_SWORD_PROJECTILE.get(), (manager -> {
+            return new SpriteRenderer<XPSwordProjectileEntity>(manager, event.getMinecraftSupplier().get().getItemRenderer());
+        }));
 
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.XP_TNT.get(), XPTNTRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.MINI_XP_TNT.get(), MiniXPTNTRenderer::new);
