@@ -5,6 +5,8 @@ import me.miquiis.onlyblock.common.classes.LootTable;
 import me.miquiis.onlyblock.common.registries.BlockRegister;
 import me.miquiis.onlyblock.common.registries.ItemRegister;
 import me.miquiis.onlyblock.common.utils.MathUtils;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.item.ExperienceOrbEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -41,6 +43,7 @@ public class BlockManager {
 
     public void onXPInteractEvent(PlayerInteractEvent event)
     {
+        final BlockState state = event.getWorld().getBlockState(event.getPos());
         if (!clickCheck.containsKey(event.getPlayer().getUniqueID()))
         {
             clickCheck.put(event.getPlayer().getUniqueID(), 2);
@@ -50,7 +53,7 @@ public class BlockManager {
         clickCheck.computeIfPresent(event.getPlayer().getUniqueID(), (uuid, integer) -> {
            if (integer == 2)
            {
-               dropItems((ServerPlayerEntity) event.getPlayer(), (ServerWorld) event.getWorld(), event.getPos());
+               dropItems((ServerPlayerEntity)event.getPlayer(), (ServerWorld)event.getWorld(), event.getPos(),  state.getBlock() == BlockRegister.ENERGY_XP_BLOCK.get());
                return 1;
            }
            else
@@ -60,7 +63,7 @@ public class BlockManager {
         });
     }
 
-    private void dropItems(ServerPlayerEntity player, ServerWorld world, BlockPos blockPos)
+    private void dropItems(ServerPlayerEntity player, ServerWorld world, BlockPos blockPos, boolean isEnergy)
     {
         LootTable.Loot loot = getLootFromLevel(player.experienceLevel);
         if (loot != null)
@@ -71,7 +74,7 @@ public class BlockManager {
             world.addEntity(itemEntity);
         }
 
-        ExperienceOrbEntity experienceOrbEntity = new ExperienceOrbEntity(world, blockPos.getX() + 0.5, blockPos.getY() + 1.1, blockPos.getZ() + 0.5, 1);
+        ExperienceOrbEntity experienceOrbEntity = new ExperienceOrbEntity(world, blockPos.getX() + 0.5, blockPos.getY() + 1.1, blockPos.getZ() + 0.5, isEnergy ? 5 : 1);
         world.addEntity(experienceOrbEntity);
     }
 
@@ -168,8 +171,12 @@ public class BlockManager {
         )), level12);
 
         LootTable level30 = new LootTable("level_30", new ArrayList<>(Arrays.asList(
-                new LootTable.Loot(Tags.Blocks.SAND.toString(), 1),
-                new LootTable.Loot(Tags.Blocks.SAND.toString(), 2)
+                new LootTable.Loot(Items.SAND.toString(), 1),
+                new LootTable.Loot(Items.SAND.toString(), 2)
+        )), level20);
+
+        LootTable level60 = new LootTable("level_60", new ArrayList<>(Arrays.asList(
+                new LootTable.Loot(BlockRegister.ENERGY_XP_BLOCK.get().getRegistryName().toString(), 1)
         )), level20);
 
         folderReference.saveObject("level_3", level3);

@@ -26,7 +26,10 @@ import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.monster.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.tileentity.TileEntity;
@@ -34,6 +37,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
@@ -74,7 +78,7 @@ public class ForgeEvents {
         if (event.getHand() != Hand.MAIN_HAND) return;
         if (event.getWorld().isRemote()) return;
         final BlockState block = event.getWorld().getBlockState(event.getPos());
-        if (block.getBlock().equals(BlockRegister.XP_BLOCK.get()))
+        if (block.getBlock().equals(BlockRegister.XP_BLOCK.get()) || block.getBlock().equals(BlockRegister.ENERGY_XP_BLOCK.get()))
         {
             OnlyBlock.getInstance().getBlockManager().onXPInteractEvent(event);
         }
@@ -141,7 +145,7 @@ public class ForgeEvents {
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event)
     {
-        if (event.side == LogicalSide.SERVER)
+        if (!event.player.world.isRemote && event.phase == TickEvent.Phase.START)
         {
             for (ItemStack armor : event.player.getArmorInventoryList())
             {
@@ -156,6 +160,52 @@ public class ForgeEvents {
                 entity.remove();
             });
 
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerTickWeapon(TickEvent.PlayerTickEvent event)
+    {
+        if (!event.player.world.isRemote && event.phase == TickEvent.Phase.START)
+        {
+
+            final ItemStack itemInHand = event.player.getHeldItemMainhand();
+
+            if (itemInHand.getItem() == ItemRegister.XP_LAUNCHER.get())
+            {
+                CompoundNBT tag = itemInHand.getOrCreateTag();
+                if (tag.contains("Activated"))
+                {
+                    boolean activated = tag.getBoolean("Activated");
+                    if (activated)
+                    {
+                        final Vector3d spawnLocation = event.player.getLookVec().mul(0.5, 0.5, 0.5).add(event.player.getPositionVec());
+                        final Vector3d velocity = event.player.getLookVec().mul(3, 3, 3);
+                        XPBeamProjectileEntity warhammerProjectileEntity = new XPBeamProjectileEntity(event.player.world);
+                        warhammerProjectileEntity.setPosition(spawnLocation.getX(), spawnLocation.getY() + 1.0, spawnLocation.getZ());
+                        warhammerProjectileEntity.setVelocity(velocity.getX(), velocity.getY(), velocity.getZ());
+                        warhammerProjectileEntity.setShooter(event.player);
+                        event.player.world.addEntity(warhammerProjectileEntity);
+                    }
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerTickA(TickEvent.PlayerTickEvent event)
+    {
+        if (!event.player.world.isRemote && event.phase == TickEvent.Phase.START)
+        {
+            final ItemStack helmet = event.player.getItemStackFromSlot(EquipmentSlotType.HEAD);
+            if (helmet.getItem() == ItemRegister.XP_CROWN.get())
+            {
+                if (event.player.world.getGameTime() % 20 == 0)
+                {
+                    event.player.giveExperiencePoints(5);
+                    event.player.world.playSound(null, event.player.getPosX(), event.player.getPosY(), event.player.getPosZ(), SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 0.1f, (float)MathUtils.getRandomMinMax(0.8, 1.0));
+                }
+            }
         }
     }
 

@@ -29,6 +29,13 @@ public class EntityRegister {
                     .build(new ResourceLocation(OnlyBlock.MOD_ID, "fake_experience_orb").toString())
     );
 
+    public static final RegistryObject<EntityType<CustomFallingBlockEntity>> CUSTOM_FALLING_BLOCK = ENTITIES.register("custom_falling_block",
+            () -> EntityType.Builder.<CustomFallingBlockEntity>create(CustomFallingBlockEntity::new, EntityClassification.MISC)
+                    .size(0.98F, 0.98F).trackingRange(10).updateInterval(20)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "custom_falling_block").toString())
+    );
+
+
     public static final RegistryObject<EntityType<DamageableExperienceOrbEntity>> DAMAGEABLE_EXPERIENCE_ORB = ENTITIES.register("damageable_experience_orb",
             () -> EntityType.Builder.<DamageableExperienceOrbEntity>create(DamageableExperienceOrbEntity::new, EntityClassification.MISC)
                     .size(0.5F, 0.5F).trackingRange(6).updateInterval(20)
@@ -37,7 +44,7 @@ public class EntityRegister {
 
     public static final RegistryObject<EntityType<XPKingEntity>> XP_KING = ENTITIES.register("xp_king",
             () -> EntityType.Builder.<XPKingEntity>create(XPKingEntity::new, EntityClassification.MONSTER)
-                    .size(0.6F, 1.95F)
+                    .size(1.2F, 4.05F)
                     .trackingRange(8)
                     .build(new ResourceLocation(OnlyBlock.MOD_ID, "xp_king").toString())
     );
@@ -47,6 +54,13 @@ public class EntityRegister {
                     .size(0.3F, 1.50F)
                     .trackingRange(8)
                     .build(new ResourceLocation(OnlyBlock.MOD_ID, "xp_warhammer_projectile").toString())
+    );
+
+    public static final RegistryObject<EntityType<XPBeamProjectileEntity>> XP_BEAM_PROJECTILE = ENTITIES.register("xp_beam_projectile",
+            () -> EntityType.Builder.<XPBeamProjectileEntity>create(XPBeamProjectileEntity::new, EntityClassification.MONSTER)
+                    .size(0.2F, 0.2F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "xp_beam_projectile").toString())
     );
 
     public static final RegistryObject<EntityType<XPZombieEntity>> XP_ZOMBIE = ENTITIES.register("xp_zombie",

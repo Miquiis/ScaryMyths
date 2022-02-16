@@ -16,6 +16,12 @@ import java.util.function.Supplier;
 public enum CustomArmorMaterial implements IArmorMaterial {
     XP("xp", 15, new int[]{2, 5, 6, 2}, 9, SoundEvents.ITEM_ARMOR_EQUIP_IRON, 0.0F, 0.0F, () -> {
         return Ingredient.fromItems(Items.IRON_INGOT);
+    }),
+    ENERGY_XP("energy_xp", 37, new int[]{3, 6, 8, 3}, 15, SoundEvents.ITEM_ARMOR_EQUIP_NETHERITE, 3.0F, 0.1F, () -> {
+        return Ingredient.fromItems(Items.NETHERITE_INGOT);
+    }),
+    CROWN("crown", 10, new int[]{2, 5, 6, 2}, 9, SoundEvents.ITEM_ARMOR_EQUIP_IRON, 0.0F, 0.0F, () -> {
+        return Ingredient.fromItems(Items.GOLD_INGOT);
     });
 
     private static final int[] MAX_DAMAGE_ARRAY = new int[]{13, 15, 16, 11};

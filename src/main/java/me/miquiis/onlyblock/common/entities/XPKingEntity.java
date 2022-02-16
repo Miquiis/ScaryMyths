@@ -1,25 +1,37 @@
 package me.miquiis.onlyblock.common.entities;
 
-import net.minecraft.entity.CreatureEntity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
+import me.miquiis.custombar.common.BarInfo;
+import me.miquiis.custombar.common.BarManager;
+import me.miquiis.onlyblock.OnlyBlock;
+import me.miquiis.onlyblock.common.registries.BlockRegister;
+import me.miquiis.onlyblock.common.utils.MathUtils;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.FallingBlock;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.ai.goal.ZombieAttackGoal;
+import net.minecraft.entity.item.FallingBlockEntity;
 import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.monster.ZombieEntity;
 import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.Hand;
-import net.minecraft.util.HandSide;
-import net.minecraft.util.NonNullList;
+import net.minecraft.pathfinding.Path;
+import net.minecraft.util.*;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
 import org.w3c.dom.Attr;
 import software.bernie.geckolib3.core.IAnimatable;
@@ -29,6 +41,10 @@ import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
+
+import javax.annotation.Nullable;
+import java.util.EnumSet;
+import java.util.UUID;
 
 public class XPKingEntity extends MonsterEntity implements IAnimatable {
 
@@ -50,6 +66,14 @@ public class XPKingEntity extends MonsterEntity implements IAnimatable {
         super(type, worldIn);
         this.ignoreFrustumCheck = true;
         this.animationStage = AnimationStage.IDLE;
+    }
+
+    @Nullable
+    @Override
+    public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
+        UUID bossBar = BarManager.addBar(new BarInfo(UUID.randomUUID(), new StringTextComponent("\u00a72\u00a7lXP King"), 1f, new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/xp_bar.png"), new int[]{255,255,255}, false));
+        BarManager.updateBar(bossBar, this.getUniqueID(), 1f, true);
+        return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
     }
 
     @Override
@@ -88,6 +112,30 @@ public class XPKingEntity extends MonsterEntity implements IAnimatable {
         super.registerGoals();
     }
 
+    public void createHammerExplosion()
+    {
+        final Vector3d forwardVector = this.getForward();
+        final AxisAlignedBB rangeBox = this.getBoundingBox().contract(0, -4,0).offset(0, -5, 0).offset(forwardVector.mul(3, 0, 3)).grow(2, 2, 2);
+        BlockPos.getAllInBox(rangeBox).forEach(blockPos -> {
+            BlockState currentState = world.getBlockState(blockPos);
+            if (currentState.getBlock() != Blocks.AIR)
+            {
+                if (MathUtils.chance(30)) return;
+                world.setBlockState(blockPos, BlockRegister.XP_BLOCK.get().getDefaultState(), 2);
+                CustomFallingBlockEntity xpFalling = new CustomFallingBlockEntity(world, blockPos.getX(), blockPos.getY(), blockPos.getZ(), BlockRegister.XP_BLOCK.get().getDefaultState());
+                xpFalling.fallTime = 1;
+                xpFalling.setVelocity(0, MathUtils.getRandomMinMax(0.2, 0.4), 0);
+                world.addEntity(xpFalling);
+            }
+        });
+        this.world.getEntitiesInAABBexcluding(this, rangeBox, null).forEach(entity -> {
+            if (entity instanceof LivingEntity)
+            {
+                this.attackEntityAsMob(entity);
+            }
+        });
+    }
+
     public void sheathWeapon()
     {
         setAnimationStage(AnimationStage.SHEATHING);
@@ -105,12 +153,13 @@ public class XPKingEntity extends MonsterEntity implements IAnimatable {
 
     public void finishSheath()
     {
+        if (hasHammerInHands()) return;
         setHammerInHands(true);
         setAnimationStage(AnimationStage.IDLE);
     }
 
     public static AttributeModifierMap.MutableAttribute registerAttributes() {
-        return MobEntity.func_233666_p_().createMutableAttribute(Attributes.MAX_HEALTH, 100.0D).createMutableAttribute(Attributes.ATTACK_DAMAGE, 10).createMutableAttribute(Attributes.FOLLOW_RANGE, 10).createMutableAttribute(Attributes.ARMOR, 5).createMutableAttribute(Attributes.MOVEMENT_SPEED, (double)0.2F);
+        return MobEntity.func_233666_p_().createMutableAttribute(Attributes.MAX_HEALTH, 100.0D).createMutableAttribute(Attributes.ATTACK_DAMAGE, 10).createMutableAttribute(Attributes.FOLLOW_RANGE, 35).createMutableAttribute(Attributes.ARMOR, 5).createMutableAttribute(Attributes.MOVEMENT_SPEED, (double)0.2F);
     }
 
     @Override
@@ -177,56 +226,224 @@ public class XPKingEntity extends MonsterEntity implements IAnimatable {
     }
 }
 
-class KingMeleeAttackGoal extends MeleeAttackGoal {
+class CustomMeleeAttackGoal extends Goal {
+    protected final XPKingEntity attacker;
+    private final double speedTowardsTarget;
+    private final boolean longMemory;
+    private Path path;
+    private double targetX;
+    private double targetY;
+    private double targetZ;
+    private int delayCounter;
+    private int swingCooldown;
+    private final int attackInterval = 20;
+    private long lastCheckTime;
+    private int failedPathFindingPenalty = 0;
+    private boolean canPenalize = false;
+    private boolean attacking = false;
+    private boolean hasDamaged = false;
+    private int attackingCounter;
+    private int damageCounter;
 
-    private XPKingEntity kingEntity;
-    private int attackDelay;
-    private boolean attacking;
-
-    public KingMeleeAttackGoal(XPKingEntity creature, double speedIn, boolean useLongMemory) {
-        super(creature, speedIn, useLongMemory);
-        this.kingEntity = creature;
+    public CustomMeleeAttackGoal(XPKingEntity creature, double speedIn, boolean useLongMemory) {
+        this.attacker = creature;
+        this.speedTowardsTarget = speedIn;
+        this.longMemory = useLongMemory;
+        this.setMutexFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
     }
 
-    @Override
-    public void startExecuting() {
-        super.startExecuting();
-        this.attackDelay = 40;
-        this.attacking = false;
-    }
-
-    @Override
-    protected void checkAndPerformAttack(LivingEntity enemy, double distToEnemySqr) {
-        double d0 = this.getAttackReachSqr(enemy);
-        if ((attacking || distToEnemySqr <= d0) && this.getSwingCooldown() <= 0) {
-            attack(enemy);
+    /**
+     * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
+     * method as well.
+     */
+    public boolean shouldExecute() {
+        long i = this.attacker.world.getGameTime();
+        if (i - this.lastCheckTime < 20L) {
+            return false;
+        } else {
+            this.lastCheckTime = i;
+            LivingEntity livingentity = this.attacker.getAttackTarget();
+            if (livingentity == null) {
+                return false;
+            } else if (!livingentity.isAlive()) {
+                return false;
+            } else {
+                if (canPenalize) {
+                    if (--this.delayCounter <= 0) {
+                        this.path = this.attacker.getNavigator().pathfind(livingentity, 0);
+                        this.delayCounter = 4 + this.attacker.getRNG().nextInt(7);
+                        return this.path != null;
+                    } else {
+                        return true;
+                    }
+                }
+                this.path = this.attacker.getNavigator().pathfind(livingentity, 0);
+                if (this.path != null) {
+                    return true;
+                } else {
+                    return this.getAttackReachSqr(livingentity) >= this.attacker.getDistanceSq(livingentity.getPosX(), livingentity.getPosY(), livingentity.getPosZ());
+                }
+            }
         }
     }
 
-    private void attack(LivingEntity enemy)
-    {
+    /**
+     * Returns whether an in-progress EntityAIBase should continue executing
+     */
+    public boolean shouldContinueExecuting() {
+        LivingEntity livingentity = this.attacker.getAttackTarget();
+        if (livingentity == null) {
+            return false;
+        } else if (!livingentity.isAlive()) {
+            return false;
+        } else if (attacking) {
+            return true;
+        } else if (!this.longMemory) {
+            return !this.attacker.getNavigator().noPath();
+        }  else if (!this.attacker.isWithinHomeDistanceFromPosition(livingentity.getPosition())) {
+            return false;
+        } else {
+            return !(livingentity instanceof PlayerEntity) || !livingentity.isSpectator() && !((PlayerEntity)livingentity).isCreative();
+        }
+    }
+
+    /**
+     * Execute a one shot task or start executing a continuous task
+     */
+    public void startExecuting() {
+        this.attacker.getNavigator().setPath(this.path, this.speedTowardsTarget);
+        this.attacker.setAggroed(true);
+        this.delayCounter = 0;
+        this.swingCooldown = 0;
+        this.attacking = false;
+        this.hasDamaged = false;
+        resetAttackingCounter();
+        resetDamageCounter();
+    }
+
+    /**
+     * Reset the task's internal state. Called when this task is interrupted by another one
+     */
+    public void resetTask() {
+        LivingEntity livingentity = this.attacker.getAttackTarget();
+        if (!EntityPredicates.CAN_AI_TARGET.test(livingentity)) {
+            this.attacker.setAttackTarget((LivingEntity)null);
+        }
+
+        this.attacker.setAggroed(false);
+        this.attacker.getNavigator().clearPath();
+        this.attacker.stopAttack();
+        this.attacking = false;
+        this.hasDamaged = false;
+        resetAttackingCounter();
+        resetDamageCounter();
+    }
+
+    /**
+     * Keep ticking a continuous task that has already been started
+     */
+    public void tick() {
+        LivingEntity livingentity = this.attacker.getAttackTarget();
+        double d0 = this.attacker.getDistanceSq(livingentity.getPosX(), livingentity.getPosY(), livingentity.getPosZ());
+        this.attacker.getLookController().setLookPositionWithEntity(livingentity, 30.0F, 30.0F);
         if (!attacking)
         {
-            attacking = true;
-            this.kingEntity.attack();
-        }
+            this.delayCounter = Math.max(this.delayCounter - 1, 0);
+            if ((this.longMemory || this.attacker.getEntitySenses().canSee(livingentity)) && this.delayCounter <= 0 && (this.targetX == 0.0D && this.targetY == 0.0D && this.targetZ == 0.0D || livingentity.getDistanceSq(this.targetX, this.targetY, this.targetZ) >= 1.0D || this.attacker.getRNG().nextFloat() < 0.05F)) {
+                this.targetX = livingentity.getPosX();
+                this.targetY = livingentity.getPosY();
+                this.targetZ = livingentity.getPosZ();
+                this.delayCounter = 4 + this.attacker.getRNG().nextInt(7);
+                if (this.canPenalize) {
+                    this.delayCounter += failedPathFindingPenalty;
+                    if (this.attacker.getNavigator().getPath() != null) {
+                        net.minecraft.pathfinding.PathPoint finalPathPoint = this.attacker.getNavigator().getPath().getFinalPathPoint();
+                        if (finalPathPoint != null && livingentity.getDistanceSq(finalPathPoint.x, finalPathPoint.y, finalPathPoint.z) < 1)
+                            failedPathFindingPenalty = 0;
+                        else
+                            failedPathFindingPenalty += 10;
+                    } else {
+                        failedPathFindingPenalty += 10;
+                    }
+                }
+                if (d0 > 1024.0D) {
+                    this.delayCounter += 10;
+                } else if (d0 > 256.0D) {
+                    this.delayCounter += 5;
+                }
 
-        if (attackDelay <= 0) {
-            handleAttack(enemy);
-            this.kingEntity.stopAttack();
-        } else {
-            attackDelay--;
+                if (!this.attacker.getNavigator().tryMoveToEntityLiving(livingentity, this.speedTowardsTarget)) {
+                    this.delayCounter += 15;
+                }
+            }
+
+        }
+        this.swingCooldown = Math.max(this.swingCooldown - 1, 0);
+        this.checkAndPerformAttack(livingentity, d0);
+    }
+
+    protected void checkAndPerformAttack(LivingEntity enemy, double distToEnemySqr) {
+        double d0 = this.getAttackReachSqr(enemy);
+        if (attacking)
+        {
+            if (!hasDamaged && damageCounter <= 0)
+            {
+                this.attacker.createHammerExplosion();
+                hasDamaged = true;
+            }
+
+            if (attackingCounter <= 0)
+            {
+                attacking = false;
+                resetAttackingCounter();
+                resetDamageCounter();
+                this.resetSwingCooldown();
+                this.attacker.stopAttack();
+            } else
+            {
+                this.attackingCounter = Math.max(this.attackingCounter - 1, 0);
+                this.damageCounter = Math.max(this.damageCounter - 1, 0);
+            }
+        } else
+        {
+            if (distToEnemySqr <= d0 && this.swingCooldown <= 0) {
+                startAttacking();
+            }
         }
     }
 
-    private void handleAttack(LivingEntity enemy)
+    protected void startAttacking()
     {
-        this.resetSwingCooldown();
-        this.attacker.attackEntityAsMob(enemy);
+        attacking = true;
+        attacker.attack();
+    }
+
+    protected void resetAttackingCounter() { this.attackingCounter = 45; }
+
+    protected void resetDamageCounter() { this.damageCounter = 30; }
+
+    protected void resetSwingCooldown() {
+        this.swingCooldown = 100;
+    }
+
+    protected boolean isSwingOnCooldown() {
+        return this.swingCooldown <= 0;
+    }
+
+    protected int getSwingCooldown() {
+        return this.swingCooldown;
+    }
+
+    protected int func_234042_k_() {
+        return 20;
+    }
+
+    protected double getAttackReachSqr(LivingEntity attackTarget) {
+        return (double)(this.attacker.getWidth() * 5.0F * this.attacker.getWidth() * 5.0F + attackTarget.getWidth());
     }
 }
 
-class KingAttackGoal extends KingMeleeAttackGoal {
+class KingAttackGoal extends CustomMeleeAttackGoal {
     private final XPKingEntity king;
     private int sheathTicks;
 
@@ -240,8 +457,10 @@ class KingAttackGoal extends KingMeleeAttackGoal {
      */
     public void startExecuting() {
         super.startExecuting();
-        this.sheathTicks = 0;
-        king.sheathWeapon();
+        if (!king.hasHammerInHands()){
+            this.sheathTicks = 0;
+            king.sheathWeapon();
+        }
     }
 
     /**

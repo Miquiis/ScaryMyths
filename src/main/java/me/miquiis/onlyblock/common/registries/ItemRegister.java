@@ -21,7 +21,7 @@ public class ItemRegister {
             new Item(new Item.Properties().group(ItemGroup.MATERIALS))
     );
 
-    public static final RegistryObject<Item> ENERGIZED_XP_INGOT = ITEMS.register("energized_xp_ingot", () ->
+    public static final RegistryObject<Item> ENERGY_XP_INGOT = ITEMS.register("energy_xp_ingot", () ->
             new Item(new Item.Properties().group(ItemGroup.MATERIALS))
     );
 
@@ -34,6 +34,10 @@ public class ItemRegister {
     );
 
     public static final RegistryObject<Item> XP_GUNPOWDER = ITEMS.register("xp_gunpowder", () ->
+            new Item(new Item.Properties().group(ItemGroup.MATERIALS))
+    );
+
+    public static final RegistryObject<Item> XP_BONE = ITEMS.register("xp_bone", () ->
             new Item(new Item.Properties().group(ItemGroup.MATERIALS))
     );
 
@@ -57,6 +61,18 @@ public class ItemRegister {
             new ExpSword(ItemTier.DIAMOND, 3, -2.4F, (new Item.Properties()).group(ItemGroup.COMBAT))
     );
 
+    public static final RegistryObject<Item> XP_LAUNCHER = ITEMS.register("xp_launcher", () ->
+            new XPLauncherItem(new Item.Properties().group(ItemGroup.COMBAT))
+    );
+
+    public static final RegistryObject<Item> ENERGY_XP_SWORD = ITEMS.register("energy_xp_sword", () ->
+            new EnergyExpSword(ItemTier.NETHERITE, 8, -1.4F, (new Item.Properties()).group(ItemGroup.COMBAT))
+    );
+
+    public static final RegistryObject<Item> XP_CROWN = ITEMS.register("xp_crown", () ->
+            new ArmorItem(CustomArmorMaterial.CROWN, EquipmentSlotType.HEAD, (new Item.Properties()).group(ItemGroup.COMBAT))
+    );
+
     public static final RegistryObject<Item> XP_HELMET = ITEMS.register("xp_helmet", () ->
             new ArmorItem(CustomArmorMaterial.XP, EquipmentSlotType.HEAD, (new Item.Properties()).group(ItemGroup.COMBAT))
     );
@@ -71,6 +87,22 @@ public class ItemRegister {
 
     public static final RegistryObject<Item> XP_BOOTS = ITEMS.register("xp_boots", () ->
             new ArmorItem(CustomArmorMaterial.XP, EquipmentSlotType.FEET, (new Item.Properties()).group(ItemGroup.COMBAT))
+    );
+
+    public static final RegistryObject<Item> ENERGY_XP_HELMET = ITEMS.register("energy_xp_helmet", () ->
+            new ArmorItem(CustomArmorMaterial.ENERGY_XP, EquipmentSlotType.HEAD, (new Item.Properties()).group(ItemGroup.COMBAT))
+    );
+
+    public static final RegistryObject<Item> ENERGY_XP_CHESTPLATE = ITEMS.register("energy_xp_chestplate", () ->
+            new ArmorItem(CustomArmorMaterial.ENERGY_XP, EquipmentSlotType.CHEST, (new Item.Properties()).group(ItemGroup.COMBAT))
+    );
+
+    public static final RegistryObject<Item> ENERGY_XP_LEGGINGS = ITEMS.register("energy_xp_leggings", () ->
+            new ArmorItem(CustomArmorMaterial.ENERGY_XP, EquipmentSlotType.LEGS, (new Item.Properties()).group(ItemGroup.COMBAT))
+    );
+
+    public static final RegistryObject<Item> ENERGY_XP_BOOTS = ITEMS.register("energy_xp_boots", () ->
+            new ArmorItem(CustomArmorMaterial.ENERGY_XP, EquipmentSlotType.FEET, (new Item.Properties()).group(ItemGroup.COMBAT))
     );
 
     public static final RegistryObject<Item> XP_SHEEP_EGG = ITEMS.register("xp_sheep_egg", () ->

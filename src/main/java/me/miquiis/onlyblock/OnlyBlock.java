@@ -1,5 +1,7 @@
 package me.miquiis.onlyblock;
 
+import me.miquiis.custombar.CustomBar;
+import me.miquiis.custombar.common.BarManager;
 import me.miquiis.onlyblock.common.entities.renderer.FakeExperienceOrbRenderer;
 import me.miquiis.onlyblock.common.managers.BlockManager;
 import me.miquiis.onlyblock.common.managers.FileManager;
@@ -71,7 +73,7 @@ public class OnlyBlock
     @SubscribeEvent
     public void onServerStarting(FMLServerStartingEvent event)
     {
-        this.onlyBlockFolder = new FileManager("onlyblock", event.getServer().getDataDirectory(), "1.4");
+        this.onlyBlockFolder = new FileManager("onlyblock", event.getServer().getDataDirectory(), "1.5");
         this.blockManager = new BlockManager(this);
     }
 

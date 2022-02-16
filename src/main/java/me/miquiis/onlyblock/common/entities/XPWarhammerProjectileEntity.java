@@ -1,13 +1,16 @@
 package me.miquiis.onlyblock.common.entities;
 
+import me.miquiis.onlyblock.common.classes.ExpExplosion;
 import me.miquiis.onlyblock.common.registries.EntityRegister;
 import me.miquiis.onlyblock.common.registries.ItemRegister;
+import me.miquiis.onlyblock.common.utils.MathUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.item.ExperienceOrbEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.DamagingProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
@@ -21,6 +24,7 @@ import net.minecraft.util.HandSide;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 import software.bernie.geckolib3.core.IAnimatable;
@@ -78,12 +82,51 @@ public class XPWarhammerProjectileEntity extends ThrowableEntity implements IAni
 
     @Override
     protected void onImpact(RayTraceResult result) {
+
+        if (!isReturning && result.getType() == RayTraceResult.Type.BLOCK)
+        {
+            createExplosion();
+        }
+
+        if (!isReturning && result.getType() == RayTraceResult.Type.ENTITY)
+        {
+            EntityRayTraceResult entityRayTraceResult = (EntityRayTraceResult)result;
+            if (entityRayTraceResult.getEntity() instanceof XPWarhammerProjectileEntity) return;
+            if (entityRayTraceResult.getEntity() instanceof PlayerEntity) return;
+
+            createExplosion();
+        }
+
         isReturning = true;
         super.onImpact(result);
     }
 
+    private void createExplosion()
+    {
+        ExpExplosion expExplosion = new ExpExplosion(world, null, null ,null, getPosX(), getPosY(), getPosZ(), 3f, false, Explosion.Mode.DESTROY, true);
+        expExplosion.doExplosionA();
+        expExplosion.doExplosionB(true);
+
+        for (int i = 0; i < 25; i++)
+        {
+            if (!world.isRemote)
+            {
+                ExperienceOrbEntity experienceOrbEntity = new ExperienceOrbEntity(world, getPosX(), getPosY(), getPosZ(), 5);
+                experienceOrbEntity.setVelocity(MathUtils.getRandomMinMax(-0.2, 0.2), MathUtils.getRandomMinMax(0.5, 0.8), MathUtils.getRandomMinMax(-0.2, 0.2));
+                world.addEntity(experienceOrbEntity);
+            }
+        }
+    }
+
     @Override
     protected void onEntityHit(EntityRayTraceResult result) {
+        if (result.getEntity() instanceof XPWarhammerProjectileEntity) return;
+        if (result.getEntity() instanceof PlayerEntity) return;
+
+        ExpExplosion expExplosion = new ExpExplosion(world, null, null ,null, getPosX(), getPosY(), getPosZ(), 5f, false, Explosion.Mode.DESTROY, true);
+        expExplosion.doExplosionA();
+        expExplosion.doExplosionB(true);
+
         super.onEntityHit(result);
     }
 

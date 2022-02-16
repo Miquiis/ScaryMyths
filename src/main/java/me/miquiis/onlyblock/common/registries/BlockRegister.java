@@ -48,6 +48,11 @@ public class BlockRegister {
             new XPBlock(AbstractBlock.Properties.create(Material.GLASS).hardnessAndResistance(2f).sound(SoundType.GLASS).setLightLevel((state) -> 15))
     );
 
+    public static final RegistryObject<Block> ENERGY_XP_BLOCK = registerBlock("energy_xp_block", () ->
+            new XPBlock(AbstractBlock.Properties.create(Material.GLASS).hardnessAndResistance(2f).sound(SoundType.GLASS).setLightLevel((state) -> 15))
+    );
+
+
     public static final RegistryObject<Block> XP_MINER = registerBlock("xp_miner", () ->
             new XpMinerBlock(AbstractBlock.Properties.create(Material.ANVIL).hardnessAndResistance(3f).sound(SoundType.ANVIL).notSolid())
     );

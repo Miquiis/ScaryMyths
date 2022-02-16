@@ -31,6 +31,7 @@ public class ModClientEvents {
     {
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.FAKE_EXPERIENCE_ORB.get(), FakeExperienceOrbRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.DAMAGEABLE_EXPERIENCE_ORB.get(), DamageableExperienceOrbRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.CUSTOM_FALLING_BLOCK.get(), CustomFallingBlockRenderer::new);
 
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.XP_TNT.get(), XPTNTRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.MINI_XP_TNT.get(), MiniXPTNTRenderer::new);
@@ -45,6 +46,7 @@ public class ModClientEvents {
 
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.XP_KING.get(), XPKingRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.XP_WARHAMMER_PROJECTILE.get(), XPWarhammerRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.XP_BEAM_PROJECTILE.get(), XPBeamRenderer::new);
 
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.XP_CHICKEN.get(), XpChickenRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.XP_COW.get(), XpCowRenderer::new);
