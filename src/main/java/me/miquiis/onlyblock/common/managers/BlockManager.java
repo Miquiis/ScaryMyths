@@ -24,12 +24,9 @@ import java.util.*;
 
 public class BlockManager {
 
-    //private static final UUID BAR_UUID = UUID.fromString("5c429c2f-fc87-49b8-a438-90c87cf6b676");
-
     private OnlyBlock mod;
     private FileManager folderReference;
     private Set<LootTable> cachedLootTables;
-    private Map<UUID, Integer> clickCheck;
     private float globalMultiplier;
 
     public BlockManager(OnlyBlock mod)
@@ -37,35 +34,17 @@ public class BlockManager {
         this.mod = mod;
         this.folderReference = mod.getOnlyBlockFolder();
         this.cachedLootTables = new HashSet<>();
-        this.clickCheck = new HashMap<>();
         this.globalMultiplier = 1f;
         setupFolder();
-        setupBar();
     }
 
-    public void onXPInteractEvent(PlayerInteractEvent event)
+    public void onBlockBreak(PlayerInteractEvent event)
     {
         final BlockState state = event.getWorld().getBlockState(event.getPos());
-        if (!clickCheck.containsKey(event.getPlayer().getUniqueID()))
-        {
-            clickCheck.put(event.getPlayer().getUniqueID(), 2);
-            return;
-        }
-
-        clickCheck.computeIfPresent(event.getPlayer().getUniqueID(), (uuid, integer) -> {
-           if (integer == 2)
-           {
-               dropItems((ServerPlayerEntity)event.getPlayer(), (ServerWorld)event.getWorld(), event.getPos(),  state.getBlock() == BlockRegister.ENERGY_XP_BLOCK.get());
-               return 1;
-           }
-           else
-           {
-               return 2;
-           }
-        });
+        dropItems((ServerPlayerEntity)event.getPlayer(), (ServerWorld)event.getWorld(), event.getPos());
     }
 
-    private void dropItems(ServerPlayerEntity player, ServerWorld world, BlockPos blockPos, boolean isEnergy)
+    private void dropItems(ServerPlayerEntity player, ServerWorld world, BlockPos blockPos)
     {
         LootTable.Loot loot = getLootFromLevel(player.experienceLevel);
         if (loot != null)
@@ -76,13 +55,12 @@ public class BlockManager {
             world.addEntity(itemEntity);
         }
 
-        ExperienceOrbEntity experienceOrbEntity = new ExperienceOrbEntity(world, blockPos.getX() + 0.5, blockPos.getY() + 1.1, blockPos.getZ() + 0.5, isEnergy ? 5 : 1);
+        ExperienceOrbEntity experienceOrbEntity = new ExperienceOrbEntity(world, blockPos.getX() + 0.5, blockPos.getY() + 1.1, blockPos.getZ() + 0.5, 1);
         world.addEntity(experienceOrbEntity);
     }
 
     private LootTable.Loot getLootFromLevel(int level)
     {
-
         if (level < 7) {
             if (MathUtils.chance(95)) return null;
             return getLootTable("level_3").getLoot();
@@ -110,42 +88,6 @@ public class BlockManager {
         }
     }
 
-    public void onLavaBlockBreak(BlockEvent.BreakEvent event)
-    {
-        if (event.getPlayer().isCreative()) return;
-        event.setCanceled(true);
-
-        double d0 = (double)(event.getPlayer().world.rand.nextFloat() * 0.5F) + 0.25D;
-        double d1 = (double)(event.getPlayer().world.rand.nextFloat() * 0.5F) + 0.5D;
-        double d2 = (double)(event.getPlayer().world.rand.nextFloat() * 0.5F) + 0.25D;
-
-        ItemStack toDrop;
-        if (event.getPlayer().getHeldItemMainhand().getItem() == Items.AIR)
-        {
-            LootTable.Loot loot = getLootTable("bare_hands").getLoot();
-            toDrop = new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation(loot.getLootResource())), loot.getLootAmount());
-        } else
-        {
-            return;
-        }
-
-        ItemEntity itemEntity = new ItemEntity(event.getPlayer().world, event.getPos().getX() + d0, event.getPos().getY() + d1, event.getPos().getZ() + d2, toDrop);
-        itemEntity.setDefaultPickupDelay();
-        event.getWorld().addEntity(itemEntity);
-    }
-
-    private void setupBar()
-    {
-//        BarManager.addBar(
-//                UUID.randomUUID(),
-//                new StringTextComponent("Lava Progress"),
-//                0f,
-//                new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/lava_bar.png"),
-//                new int[]{240, 89, 34},
-//                false
-//        );
-    }
-
     private void setupFolder()
     {
         if (folderReference.isFirstTime())
@@ -158,50 +100,11 @@ public class BlockManager {
 
     private void setupDefaultLootTable()
     {
-        LootTable level3 = new LootTable("level_3", new ArrayList<>(Arrays.asList(
-                new LootTable.Loot(BlockRegister.ENCHANTED_DIRT.get().getRegistryName().toString(), 1)
-        )));
-
-        LootTable level7 = new LootTable("level_7", new ArrayList<>(Arrays.asList(
-                new LootTable.Loot(BlockRegister.ENCHANTED_OAK_PLANKS.get().getRegistryName().toString(), 1)
-        )), level3);
-
-        LootTable level10 = new LootTable("level_10", new ArrayList<>(Arrays.asList(
-                new LootTable.Loot(ItemRegister.XP_INGOT.get().getRegistryName().toString(), 1),
-                new LootTable.Loot(ItemRegister.XP_INGOT.get().getRegistryName().toString(), 2)
-        )), level7);
-
-        LootTable level12 = new LootTable("level_12", new ArrayList<>(Arrays.asList(
-                new LootTable.Loot(BlockRegister.ENCHANTED_COBBLESTONE.get().getRegistryName().toString(), 1)
-        )), level10);
-
-        LootTable level20 = new LootTable("level_20", new ArrayList<>(Arrays.asList(
-                new LootTable.Loot(ItemRegister.XP_COW_EGG.get().getRegistryName().toString(), 1),
-                new LootTable.Loot(ItemRegister.XP_SHEEP_EGG.get().getRegistryName().toString(), 1),
-                new LootTable.Loot(ItemRegister.XP_CHICKEN_EGG.get().getRegistryName().toString(), 1)
-        )), level12);
-
-        LootTable level25 = new LootTable("level_25", new ArrayList<>(Arrays.asList(
-                new LootTable.Loot(BlockRegister.XP_BLOCK.get().getRegistryName().toString(), 1)
-        )), level20);
-
-        LootTable level30 = new LootTable("level_30", new ArrayList<>(Arrays.asList(
-                new LootTable.Loot(Items.SAND.toString(), 1),
-                new LootTable.Loot(Items.SAND.toString(), 2)
-        )), level25);
-
-        LootTable level60 = new LootTable("level_60", new ArrayList<>(Arrays.asList(
-                new LootTable.Loot(BlockRegister.ENERGY_XP_BLOCK.get().getRegistryName().toString(), 1)
-        )), level30);
-
-        folderReference.saveObject("level_3", level3);
-        folderReference.saveObject("level_7", level7);
-        folderReference.saveObject("level_10", level10);
-        folderReference.saveObject("level_12", level12);
-        folderReference.saveObject("level_20", level20);
-        folderReference.saveObject("level_25", level25);
-        folderReference.saveObject("level_30", level30);
-        folderReference.saveObject("level_60", level60);
+//        LootTable level3 = new LootTable("level_3", new ArrayList<>(Arrays.asList(
+//                new LootTable.Loot(BlockRegister.ENCHANTED_DIRT.get().getRegistryName().toString(), 1)
+//        )));
+//
+//        folderReference.saveObject("level_3", level3);
     }
 
     public LootTable getLootTable(String lootKey) {

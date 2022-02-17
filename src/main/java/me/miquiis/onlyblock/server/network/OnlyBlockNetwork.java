@@ -1,7 +1,6 @@
 package me.miquiis.onlyblock.server.network;
 
 import me.miquiis.onlyblock.OnlyBlock;
-import me.miquiis.onlyblock.server.network.messages.*;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;

@@ -34,7 +34,7 @@ public class OnlyBlock
         ParticleRegister.PARTICLES.register(modEventBus);
         EntityRegister.register(modEventBus);
         SoundRegister.register(modEventBus);
-        ModTileEntity.register(modEventBus);
+        TileEntityRegister.register(modEventBus);
         EffectRegister.register(modEventBus);
         ItemRegister.register(modEventBus);
         BlockRegister.register(modEventBus);

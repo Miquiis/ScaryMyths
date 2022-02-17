@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/cube_column",
-  "textures": {
-    "end": "onlyblock:block/lava_log_top",
-    "side": "onlyblock:block/lava_log"
-  }
-}

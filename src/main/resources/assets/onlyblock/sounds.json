@@ -1,9 +1,3 @@
 {
-  "unlock": {
-    "category": "blocks",
-    "subtitle": "onlyblock.unlock",
-    "sounds": [
-      "onlyblock:unlock"
-    ]
-  }
+
 }

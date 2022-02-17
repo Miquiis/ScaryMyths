@@ -32,7 +32,7 @@ import net.minecraftforge.fml.network.NetworkHooks;
 import java.util.List;
 
 public class CustomFallingBlockEntity extends Entity {
-   private BlockState fallTile = BlockRegister.XP_BLOCK.get().getDefaultState();
+   private BlockState fallTile = Blocks.SAND.getDefaultState();
    public int fallTime;
    public boolean shouldDropItem = true;
    private boolean dontSetBlock;
