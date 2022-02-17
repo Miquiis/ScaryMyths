@@ -1,29 +1,19 @@
 package me.miquiis.onlyblock;
 
-import me.miquiis.custombar.CustomBar;
-import me.miquiis.custombar.common.BarManager;
-import me.miquiis.onlyblock.common.entities.renderer.FakeExperienceOrbRenderer;
 import me.miquiis.onlyblock.common.managers.BlockManager;
 import me.miquiis.onlyblock.common.managers.FileManager;
 import me.miquiis.onlyblock.common.registries.*;
-import me.miquiis.onlyblock.common.tileentity.ModTileEntity;
 import me.miquiis.onlyblock.server.network.OnlyBlockNetwork;
-import net.minecraft.entity.Entity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import software.bernie.geckolib3.GeckoLib;
-
-import java.lang.ref.Reference;
 
 @Mod(OnlyBlock.MOD_ID)
 public class OnlyBlock

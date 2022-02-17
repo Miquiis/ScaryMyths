@@ -8,5 +8,5 @@ import net.minecraft.util.ResourceLocation;
 import java.util.List;
 
 public class CustomBlockTags {
-    public static final ITag<Block> ENCHANTED = BlockTags.getCollection().get(new ResourceLocation(OnlyBlock.MOD_ID, "enchanted"));
+    public static final ITag<Block> EXAMPLE = BlockTags.getCollection().get(new ResourceLocation(OnlyBlock.MOD_ID, "example"));
 }

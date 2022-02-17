@@ -13,7 +13,4 @@ import net.minecraftforge.registries.ForgeRegistries;
 public class ParticleRegister {
 
     public static final DeferredRegister<ParticleType<?>> PARTICLES = DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, OnlyBlock.MOD_ID);
-
-    public static final RegistryObject<BasicParticleType> EXP_EXPLOSION = PARTICLES.register("exp_explosion", () -> new BasicParticleType(true));
-
 }

@@ -24,7 +24,7 @@ public class ModSpawnEgg extends SpawnEggItem {
         UNADDED_EGGS.add(this);
     }
 
-    public static void initSoawnEggs()
+    public static void initSpawnEggs()
     {
         final Map<EntityType<?>, SpawnEggItem> EGGS = ObfuscationReflectionHelper.getPrivateValue(SpawnEggItem.class, null, "field_195987_b");
 

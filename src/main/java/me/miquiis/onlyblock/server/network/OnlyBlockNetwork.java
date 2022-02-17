@@ -16,12 +16,7 @@ public class OnlyBlockNetwork {
     );
 
     public static void init() {
-        CHANNEL.registerMessage(0, OpenLavaBookMessage.class, OpenLavaBookMessage::encode, OpenLavaBookMessage::decode, OpenLavaBookMessage::handle);
-        CHANNEL.registerMessage(1, OpenCobblestoneBookMessage.class, OpenCobblestoneBookMessage::encode, OpenCobblestoneBookMessage::decode, OpenCobblestoneBookMessage::handle);
-        CHANNEL.registerMessage(2, OpenAshBookMessage.class, OpenAshBookMessage::encode, OpenAshBookMessage::decode, OpenAshBookMessage::handle);
-        CHANNEL.registerMessage(3, OpenFrostBookMessage.class, OpenFrostBookMessage::encode, OpenFrostBookMessage::decode, OpenFrostBookMessage::handle);
-        CHANNEL.registerMessage(4, OpenCraftBookMessage.class, OpenCraftBookMessage::encode, OpenCraftBookMessage::decode, OpenCraftBookMessage::handle);
-        CHANNEL.registerMessage(5, OpenRecipeWorkbenchMessage.class, OpenRecipeWorkbenchMessage::encode, OpenRecipeWorkbenchMessage::decode, OpenRecipeWorkbenchMessage::handle);
+
     }
 
 }

@@ -1,6 +1,5 @@
 package me.miquiis.onlyblock.common.entities;
 
-import me.miquiis.onlyblock.common.classes.ExpExplosion;
 import me.miquiis.onlyblock.common.registries.EntityRegister;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
@@ -9,7 +8,6 @@ import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.effect.LightningBoltEntity;
 import net.minecraft.entity.monster.CreeperEntity;
 import net.minecraft.entity.monster.MonsterEntity;
-import net.minecraft.entity.monster.ZombieEntity;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.passive.OcelotEntity;
 import net.minecraft.entity.player.PlayerEntity;
