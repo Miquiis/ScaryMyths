@@ -2,6 +2,8 @@ package me.miquiis.onlyblock.common.events;
 
 import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.common.blocks.CustomBlockTags;
+import me.miquiis.onlyblock.common.capability.CurrencyCapability;
+import me.miquiis.onlyblock.common.capability.interfaces.ICurrency;
 import me.miquiis.onlyblock.common.entities.*;
 import me.miquiis.onlyblock.common.managers.BlockManager;
 import me.miquiis.onlyblock.common.registries.*;
@@ -32,6 +34,7 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.common.util.NonNullConsumer;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;

@@ -1,6 +1,8 @@
 package me.miquiis.onlyblock.server.network;
 
 import me.miquiis.onlyblock.OnlyBlock;
+import me.miquiis.onlyblock.common.capability.models.Currency;
+import me.miquiis.onlyblock.server.network.messages.CurrencyPacket;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
@@ -15,7 +17,7 @@ public class OnlyBlockNetwork {
     );
 
     public static void init() {
-
+        CHANNEL.registerMessage(0, CurrencyPacket.class, CurrencyPacket::encode, CurrencyPacket::decode, CurrencyPacket::handle);
     }
 
 }
