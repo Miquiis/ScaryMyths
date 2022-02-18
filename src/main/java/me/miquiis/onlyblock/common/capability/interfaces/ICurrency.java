@@ -12,5 +12,7 @@ public interface ICurrency {
     public CompoundNBT serializeNBT();
     public void deserializeNBT(CompoundNBT data);
     public void setPlayer(ServerPlayerEntity player);
+    public int getLastAmount();
+    public float getLerp();
 
 }

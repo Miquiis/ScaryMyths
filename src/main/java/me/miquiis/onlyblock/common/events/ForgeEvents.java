@@ -39,6 +39,7 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerXpEvent;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
@@ -61,62 +62,112 @@ public class ForgeEvents {
     }
 
     @SubscribeEvent
+    public static void onPlayerTick(TickEvent.PlayerTickEvent event)
+    {
+        if (!event.player.world.isRemote && event.player.world.getGameTime() % 10 == 0)
+        {
+//            event.player.getCapability(CurrencyCapability.CURRENCY_CAPABILITY).ifPresent(iCurrency -> {
+//                iCurrency.addOrSubtractAmount(1);
+//            });
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerClone(PlayerEvent.Clone event)
+    {
+        event.getOriginal().getCapability(CurrencyCapability.CURRENCY_CAPABILITY).ifPresent(oldCurrency -> {
+            event.getPlayer().getCapability(CurrencyCapability.CURRENCY_CAPABILITY).ifPresent(iCurrency -> {
+                iCurrency.setAmount(oldCurrency.getAmount(), false);
+            });
+        });
+    }
+
+    @SubscribeEvent
+    public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event)
+    {
+        event.getPlayer().getCapability(CurrencyCapability.CURRENCY_CAPABILITY).ifPresent(iCurrency -> {
+            iCurrency.sync((ServerPlayerEntity) event.getPlayer());
+        });
+    }
+
+    @SubscribeEvent
+    public static void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event)
+    {
+        if (!event.getPlayer().world.isRemote)
+        {
+            event.getPlayer().getCapability(CurrencyCapability.CURRENCY_CAPABILITY).ifPresent(iCurrency -> {
+                iCurrency.sync((ServerPlayerEntity)event.getPlayer());
+            });
+        }
+    }
+
+    @SubscribeEvent
+    public static void changeDimesionEvent(final PlayerEvent.PlayerChangedDimensionEvent event) {
+        if (!event.getPlayer().world.isRemote)
+        {
+            event.getPlayer().getCapability(CurrencyCapability.CURRENCY_CAPABILITY).ifPresent(iCurrency -> {
+                iCurrency.sync((ServerPlayerEntity)event.getPlayer());
+            });
+        }
+    }
+
+    @SubscribeEvent
     public static void onEntityJoinWorld(EntityJoinWorldEvent event)
     {
-        if (event.getWorld().isRemote) return;
-        if (!event.getWorld().isAreaLoaded(event.getEntity().getPosition(), 1)) return;
-        if (event.getEntity() instanceof IXPMob) return;
-        final ServerWorld serverWorld = (ServerWorld) event.getWorld();
-
-        if (event.getEntity() instanceof ZombieEntity)
-        {
-            event.setCanceled(true);
-            XPZombieEntity zombieEntity = new XPZombieEntity(event.getWorld());
-            zombieEntity.onInitialSpawn(serverWorld, serverWorld.getDifficultyForLocation(event.getEntity().getPosition()), SpawnReason.NATURAL, null, null);
-            zombieEntity.setPositionAndRotation(event.getEntity().getPosX(), event.getEntity().getPosY(), event.getEntity().getPosZ(), event.getEntity().rotationYaw, event.getEntity().rotationPitch);
-            event.getWorld().addEntity(zombieEntity);
-            return;
-        }
-
-        if (event.getEntity() instanceof CreeperEntity)
-        {
-            event.setCanceled(true);
-            XPCreeperEntity customEntity = new XPCreeperEntity(event.getWorld());
-            customEntity.onInitialSpawn(serverWorld, serverWorld.getDifficultyForLocation(event.getEntity().getPosition()), SpawnReason.NATURAL, null, null);
-            customEntity.setPositionAndRotation(event.getEntity().getPosX(), event.getEntity().getPosY(), event.getEntity().getPosZ(), event.getEntity().rotationYaw, event.getEntity().rotationPitch);
-            event.getWorld().addEntity(customEntity);
-            return;
-        }
-
-        if (event.getEntity() instanceof SkeletonEntity)
-        {
-            event.setCanceled(true);
-            XPSkeletonEntity customEntity = new XPSkeletonEntity(event.getWorld());
-            customEntity.onInitialSpawn(serverWorld, serverWorld.getDifficultyForLocation(event.getEntity().getPosition()), SpawnReason.NATURAL, null, null);
-            customEntity.setPositionAndRotation(event.getEntity().getPosX(), event.getEntity().getPosY(), event.getEntity().getPosZ(), event.getEntity().rotationYaw, event.getEntity().rotationPitch);
-            event.getWorld().addEntity(customEntity);
-            return;
-        }
-
-        if (event.getEntity() instanceof EndermanEntity)
-        {
-            event.setCanceled(true);
-            XPEndermanEntity customEntity = new XPEndermanEntity(event.getWorld());
-            customEntity.onInitialSpawn(serverWorld, serverWorld.getDifficultyForLocation(event.getEntity().getPosition()), SpawnReason.NATURAL, null, null);
-            customEntity.setPositionAndRotation(event.getEntity().getPosX(), event.getEntity().getPosY(), event.getEntity().getPosZ(), event.getEntity().rotationYaw, event.getEntity().rotationPitch);
-            event.getWorld().addEntity(customEntity);
-            return;
-        }
-
-        if (event.getEntity() instanceof SpiderEntity)
-        {
-            event.setCanceled(true);
-            XPSpiderEntity customEntity = new XPSpiderEntity(event.getWorld());
-            customEntity.onInitialSpawn(serverWorld, serverWorld.getDifficultyForLocation(event.getEntity().getPosition()), SpawnReason.NATURAL, null, null);
-            customEntity.setPositionAndRotation(event.getEntity().getPosX(), event.getEntity().getPosY(), event.getEntity().getPosZ(), event.getEntity().rotationYaw, event.getEntity().rotationPitch);
-            event.getWorld().addEntity(customEntity);
-            return;
-        }
+//        if (event.getWorld().isRemote) return;
+//        if (!event.getWorld().isAreaLoaded(event.getEntity().getPosition(), 1)) return;
+//        if (event.getEntity() instanceof IXPMob) return;
+//        final ServerWorld serverWorld = (ServerWorld) event.getWorld();
+//
+//        if (event.getEntity() instanceof ZombieEntity)
+//        {
+//            event.setCanceled(true);
+//            XPZombieEntity zombieEntity = new XPZombieEntity(event.getWorld());
+//            zombieEntity.onInitialSpawn(serverWorld, serverWorld.getDifficultyForLocation(event.getEntity().getPosition()), SpawnReason.NATURAL, null, null);
+//            zombieEntity.setPositionAndRotation(event.getEntity().getPosX(), event.getEntity().getPosY(), event.getEntity().getPosZ(), event.getEntity().rotationYaw, event.getEntity().rotationPitch);
+//            event.getWorld().addEntity(zombieEntity);
+//            return;
+//        }
+//
+//        if (event.getEntity() instanceof CreeperEntity)
+//        {
+//            event.setCanceled(true);
+//            XPCreeperEntity customEntity = new XPCreeperEntity(event.getWorld());
+//            customEntity.onInitialSpawn(serverWorld, serverWorld.getDifficultyForLocation(event.getEntity().getPosition()), SpawnReason.NATURAL, null, null);
+//            customEntity.setPositionAndRotation(event.getEntity().getPosX(), event.getEntity().getPosY(), event.getEntity().getPosZ(), event.getEntity().rotationYaw, event.getEntity().rotationPitch);
+//            event.getWorld().addEntity(customEntity);
+//            return;
+//        }
+//
+//        if (event.getEntity() instanceof SkeletonEntity)
+//        {
+//            event.setCanceled(true);
+//            XPSkeletonEntity customEntity = new XPSkeletonEntity(event.getWorld());
+//            customEntity.onInitialSpawn(serverWorld, serverWorld.getDifficultyForLocation(event.getEntity().getPosition()), SpawnReason.NATURAL, null, null);
+//            customEntity.setPositionAndRotation(event.getEntity().getPosX(), event.getEntity().getPosY(), event.getEntity().getPosZ(), event.getEntity().rotationYaw, event.getEntity().rotationPitch);
+//            event.getWorld().addEntity(customEntity);
+//            return;
+//        }
+//
+//        if (event.getEntity() instanceof EndermanEntity)
+//        {
+//            event.setCanceled(true);
+//            XPEndermanEntity customEntity = new XPEndermanEntity(event.getWorld());
+//            customEntity.onInitialSpawn(serverWorld, serverWorld.getDifficultyForLocation(event.getEntity().getPosition()), SpawnReason.NATURAL, null, null);
+//            customEntity.setPositionAndRotation(event.getEntity().getPosX(), event.getEntity().getPosY(), event.getEntity().getPosZ(), event.getEntity().rotationYaw, event.getEntity().rotationPitch);
+//            event.getWorld().addEntity(customEntity);
+//            return;
+//        }
+//
+//        if (event.getEntity() instanceof SpiderEntity)
+//        {
+//            event.setCanceled(true);
+//            XPSpiderEntity customEntity = new XPSpiderEntity(event.getWorld());
+//            customEntity.onInitialSpawn(serverWorld, serverWorld.getDifficultyForLocation(event.getEntity().getPosition()), SpawnReason.NATURAL, null, null);
+//            customEntity.setPositionAndRotation(event.getEntity().getPosX(), event.getEntity().getPosY(), event.getEntity().getPosZ(), event.getEntity().rotationYaw, event.getEntity().rotationPitch);
+//            event.getWorld().addEntity(customEntity);
+//            return;
+//        }
     }
 
     public static void spawnItem(World worldIn, BlockPos pos, ItemStack stack) {

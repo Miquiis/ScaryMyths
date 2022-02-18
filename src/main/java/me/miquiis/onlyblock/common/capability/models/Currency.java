@@ -11,6 +11,8 @@ public class Currency implements ICurrency {
 
     private ServerPlayerEntity player;
     private int amount = 0;
+    private float lerp = 0;
+    private int prevAmount = 0;
 
     @Override
     public int getAmount() {
@@ -48,11 +50,36 @@ public class Currency implements ICurrency {
 
     @Override
     public void deserializeNBT(CompoundNBT data) {
+        smooth();
         this.amount = data.getInt("currency");
     }
 
     public void setPlayer(ServerPlayerEntity player)
     {
         this.player = player;
+    }
+
+    @Override
+    public int getLastAmount() {
+        return prevAmount;
+    }
+
+    public void smooth()
+    {
+        lerp = 0;
+        prevAmount = amount;
+    }
+
+    @Override
+    public float getLerp()
+    {
+        if (lerp >= 1f)
+        {
+            lerp = 1f;
+        } else
+        {
+            lerp+= 0.025;
+        }
+        return lerp;
     }
 }
