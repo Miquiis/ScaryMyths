@@ -50,8 +50,9 @@ public class Currency implements ICurrency {
 
     @Override
     public void deserializeNBT(CompoundNBT data) {
-        smooth();
-        this.amount = data.getInt("currency");
+        int amount = data.getInt("currency");
+        smooth(amount);
+        this.amount = amount;
     }
 
     public void setPlayer(ServerPlayerEntity player)
@@ -64,9 +65,14 @@ public class Currency implements ICurrency {
         return prevAmount;
     }
 
-    public void smooth()
+    public void smooth(int newAmount)
     {
-        lerp = 0;
+        if (Math.abs(newAmount - amount) == 1)
+        {
+            lerp = 1;
+        } else {
+            lerp = 0;
+        }
         prevAmount = amount;
     }
 

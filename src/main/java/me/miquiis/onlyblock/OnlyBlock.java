@@ -8,6 +8,7 @@ import me.miquiis.onlyblock.server.network.OnlyBlockNetwork;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
@@ -34,6 +35,7 @@ public class OnlyBlock
 
         ParticleRegister.PARTICLES.register(modEventBus);
         EntityRegister.register(modEventBus);
+        ContainerRegister.register(modEventBus);
         SoundRegister.register(modEventBus);
         TileEntityRegister.register(modEventBus);
         EffectRegister.register(modEventBus);

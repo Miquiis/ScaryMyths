@@ -3,18 +3,14 @@ package me.miquiis.onlyblock.client.events;
 import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.common.capability.CurrencyCapability;
 import me.miquiis.onlyblock.common.capability.interfaces.ICurrency;
-import me.miquiis.onlyblock.common.classes.EasyGUI;
+import me.miquiis.onlyblock.common.classes.OldEasyGUI;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import software.bernie.shadowed.eliotlash.mclib.math.functions.limit.Min;
 
 import java.awt.*;
-import java.text.NumberFormat;
-import java.util.Locale;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = OnlyBlock.MOD_ID, value = Dist.CLIENT)
 public class ClientEvents {
@@ -47,8 +43,8 @@ public class ClientEvents {
 //            String amount = NumberFormat.getCurrencyInstance(new Locale("en", "US")).format(100000000);
 //            amount = amount.substring(0, amount.length() - 3);
 
-            EasyGUI.StringGUIElement stringGUIElement = new EasyGUI.StringGUIElement(
-                    new EasyGUI.Anchor(EasyGUI.VAnchor.BOTTOM, EasyGUI.HAnchor.CENTER),
+            OldEasyGUI.StringGUIElement stringGUIElement = new OldEasyGUI.StringGUIElement(
+                    new OldEasyGUI.Anchor(OldEasyGUI.VAnchor.BOTTOM, OldEasyGUI.HAnchor.CENTER),
                     event.getMatrixStack(), event.getWindow(), Minecraft.getInstance().fontRenderer,
                     "$" + amount,
                     true,

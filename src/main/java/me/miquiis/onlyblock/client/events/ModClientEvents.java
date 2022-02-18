@@ -1,9 +1,13 @@
 package me.miquiis.onlyblock.client.events;
 
 import me.miquiis.onlyblock.OnlyBlock;
+import me.miquiis.onlyblock.client.gui.MinazonScreen;
+import me.miquiis.onlyblock.common.containers.MinazonContainer;
 import me.miquiis.onlyblock.common.entities.renderer.*;
 import me.miquiis.onlyblock.common.items.ModSpawnEgg;
+import me.miquiis.onlyblock.common.registries.ContainerRegister;
 import me.miquiis.onlyblock.common.registries.EntityRegister;
+import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.entity.EntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
@@ -31,6 +35,8 @@ public class ModClientEvents {
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.XP_CHICKEN.get(), XpChickenRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.XP_COW.get(), XpCowRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.XP_SHEEP.get(), XpSheepRenderer::new);
+
+        ScreenManager.registerFactory(ContainerRegister.MINAZON_CONTAINER.get(), MinazonScreen::new);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
