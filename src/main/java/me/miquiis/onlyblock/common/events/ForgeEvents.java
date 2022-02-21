@@ -10,6 +10,8 @@ import me.miquiis.onlyblock.common.managers.BlockManager;
 import me.miquiis.onlyblock.common.registries.*;
 import me.miquiis.onlyblock.common.utils.MathUtils;
 import me.miquiis.onlyblock.server.commands.OnlyBlockCommand;
+import me.miquiis.onlyblock.server.network.OnlyBlockNetwork;
+import me.miquiis.onlyblock.server.network.messages.OpenShopPacket;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -54,6 +56,7 @@ import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.server.command.ConfigCommand;
 
 import javax.annotation.Nullable;
@@ -78,18 +81,7 @@ public class ForgeEvents {
         {
             if (event.getEntity() != null)
             {
-                NetworkHooks.openGui((ServerPlayerEntity) event.getPlayer(), new INamedContainerProvider() {
-                    @Override
-                    public ITextComponent getDisplayName() {
-                        return new TranslationTextComponent("screen.onlyblock.minazon");
-                    }
-
-                    @Nullable
-                    @Override
-                    public Container createMenu(int p_createMenu_1_, PlayerInventory p_createMenu_2_, PlayerEntity p_createMenu_3_) {
-                        return new MinazonContainer(p_createMenu_1_, event.getEntityLiving(), p_createMenu_3_, p_createMenu_2_);
-                    }
-                });
+                //OnlyBlockNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) event.getPlayer()), new OpenShopPacket());
             }
         }
     }

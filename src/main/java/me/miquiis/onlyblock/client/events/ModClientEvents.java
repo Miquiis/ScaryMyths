@@ -7,6 +7,9 @@ import me.miquiis.onlyblock.common.entities.renderer.*;
 import me.miquiis.onlyblock.common.items.ModSpawnEgg;
 import me.miquiis.onlyblock.common.registries.ContainerRegister;
 import me.miquiis.onlyblock.common.registries.EntityRegister;
+import me.miquiis.onlyblock.common.registries.TileEntityRegister;
+import me.miquiis.onlyblock.common.tileentities.MoneyPrinterTileEntity;
+import me.miquiis.onlyblock.common.tileentities.renderer.MoneyPrinterTileRenderer;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.entity.EntityType;
 import net.minecraftforge.api.distmarker.Dist;
@@ -14,6 +17,7 @@ import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -26,6 +30,8 @@ public class ModClientEvents {
     {
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.CUSTOM_FALLING_BLOCK.get(), CustomFallingBlockRenderer::new);
 
+        ClientRegistry.bindTileEntityRenderer(TileEntityRegister.MONEY_PRINTER_TILE_ENTITY.get(), MoneyPrinterTileRenderer::new);
+
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.XP_ZOMBIE.get(), XPZombieRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.XP_CREEPER.get(), XPCreeperRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.XP_SKELETON.get(), XPSkeletonRenderer::new);
@@ -35,8 +41,6 @@ public class ModClientEvents {
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.XP_CHICKEN.get(), XpChickenRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.XP_COW.get(), XpCowRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.XP_SHEEP.get(), XpSheepRenderer::new);
-
-        ScreenManager.registerFactory(ContainerRegister.MINAZON_CONTAINER.get(), MinazonScreen::new);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)

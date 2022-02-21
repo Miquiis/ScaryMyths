@@ -52,6 +52,15 @@ public class JHTML {
         public double nextDrawX;
         public double nextDrawY;
 
+        public double realX;
+        public double realY;
+        public double realW;
+        public double realH;
+
+        public boolean isActive = true;
+
+        public OnRender onRenderEvent = (x, y, w, h) -> {};
+
         public Canvas(double width, double height, boolean column, Canvas... canvasChild)
         {
             this.width = width;
@@ -100,14 +109,27 @@ public class JHTML {
             this.child = new ArrayList<>(Arrays.asList(canvasChild));
         }
 
+        public Canvas setOnRenderEvent(OnRender onRenderEvent)
+        {
+            this.onRenderEvent = onRenderEvent;
+            return this;
+        }
+
         protected void renderBackground(MatrixStack matrixStack, Minecraft minecraft, double x, double y)
         {
+            if (!isActive) return;
             final MainWindow mainWindow = minecraft.getMainWindow();
             final float resScale = mainWindow.getFramebufferWidth() / (float)WIDTH_REFERENCE;
             final float yResScale = mainWindow.getFramebufferHeight() / (float)HEIGHT_REFERENCE;
             matrixStack.push();
             matrixStack.scale(1f / (float)mainWindow.getGuiScaleFactor() * resScale, 1f / (float)mainWindow.getGuiScaleFactor() * yResScale, 1);
             matrixStack.translate(x, y, 1);
+
+            this.realX = x / 1f / (float)mainWindow.getGuiScaleFactor() * resScale;
+            this.realY = y / 1f / (float)mainWindow.getGuiScaleFactor() * yResScale;
+            this.realW = width / 1f / (float)mainWindow.getGuiScaleFactor() * resScale;
+            this.realH = height / 1f / (float)mainWindow.getGuiScaleFactor() * yResScale;
+
             renderSelf(matrixStack, minecraft);
             posRenderBackground(matrixStack);
         }
@@ -118,6 +140,7 @@ public class JHTML {
         }
 
         protected void renderSelf(MatrixStack matrixStack, Minecraft minecraft) {
+            onRenderEvent.onRender(realX, realY, realW, realH);
             //AbstractGui.fill(matrixStack, 0, 0, width, height, Color.BLACK.getRGB());
         }
 
@@ -185,6 +208,12 @@ public class JHTML {
             }
         }
 
+        public Canvas setActive(boolean active)
+        {
+            this.isActive = active;
+            return this;
+        }
+
         public Canvas getFirstParent()
         {
             Canvas firstParent = parent;
@@ -247,6 +276,11 @@ public class JHTML {
 
     }
 
+    public interface OnRender
+    {
+        public void onRender(double x, double y, double width, double height);
+    }
+
     public static class Box extends Canvas {
         public int color;
 
@@ -272,6 +306,7 @@ public class JHTML {
 
         @Override
         protected void renderSelf(MatrixStack matrixStack, Minecraft minecraft) {
+            super.renderSelf(matrixStack, minecraft);
             AbstractGui.fill(matrixStack, 0, 0, (int)getWidth(), (int)getHeight(), color);
         }
     }
@@ -307,6 +342,7 @@ public class JHTML {
 
         @Override
         protected void renderSelf(MatrixStack matrixStack, Minecraft minecraft) {
+            super.renderSelf(matrixStack, minecraft);
             minecraft.getTextureManager().bindTexture(texture);
             RenderSystem.enableBlend();
             AbstractGui.blit(matrixStack, 0, 0, 0, 0, (int)width, (int)height, uWidth, vHeight);
@@ -339,6 +375,7 @@ public class JHTML {
 
         @Override
         protected void renderSelf(MatrixStack matrixStack, Minecraft minecraft) {
+            super.renderSelf(matrixStack, minecraft);
             minecraft.getTextureManager().bindTexture(texture);
             RenderSystem.enableBlend();
             AbstractGui.blit(matrixStack, 0, 0, 0, 0, (int)width, (int)height, (int)width, (int)height);
@@ -363,6 +400,7 @@ public class JHTML {
 
         @Override
         protected void renderSelf(MatrixStack matrixStack, Minecraft minecraft) {
+            super.renderSelf(matrixStack, minecraft);
             matrixStack.push();
             matrixStack.scale(scale, scale, 1f);
             renderItemModelIntoGUI(itemStack, minecraft, matrixStack, nextDrawX, nextDrawY, 0, 0,  minecraft.getItemRenderer().getItemModelWithOverrides(itemStack, (World)null, (LivingEntity)null));
@@ -427,6 +465,7 @@ public class JHTML {
 
         @Override
         protected void renderSelf(MatrixStack matrixStack, Minecraft minecraft) {
+            super.renderSelf(matrixStack, minecraft);
             matrixStack.push();
             matrixStack.scale(scale, scale, 0);
             if (hasShadow)
