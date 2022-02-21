@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "onlyblock:block/server_block" },
+    "facing=south": { "model": "onlyblock:block/server_block", "y": 180},
+    "facing=west": { "model": "onlyblock:block/server_block", "y": 270},
+    "facing=east": { "model": "onlyblock:block/server_block", "y": 90}
+  }
+}

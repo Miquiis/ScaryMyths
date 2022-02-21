@@ -1,6 +1,7 @@
 package me.miquiis.onlyblock.common.registries;
 
 import me.miquiis.onlyblock.OnlyBlock;
+import me.miquiis.onlyblock.common.blocks.BaseHorizontalBlock;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
@@ -21,8 +22,20 @@ public class BlockRegister {
     public static final DeferredRegister<Block> BLOCKS
             = DeferredRegister.create(ForgeRegistries.BLOCKS, OnlyBlock.MOD_ID);
 
+    public static final RegistryObject<Block> SERVER_BLOCK = registerBlock("server_block", () ->
+            new BaseHorizontalBlock(AbstractBlock.Properties.create(Material.GLASS).hardnessAndResistance(0.5f).sound(SoundType.GLASS).notSolid().setOpaque(BlockRegister::isntSolid).setSuffocates(BlockRegister::isntSolid).setBlocksVision(BlockRegister::isntSolid))
+    );
+
+    public static final RegistryObject<Block> TERMINAL_PANEL = registerBlock("terminal_panel", () ->
+            new BaseHorizontalBlock(AbstractBlock.Properties.create(Material.GLASS).hardnessAndResistance(0.5f).sound(SoundType.GLASS).notSolid().setOpaque(BlockRegister::isntSolid).setSuffocates(BlockRegister::isntSolid).setBlocksVision(BlockRegister::isntSolid))
+    );
+
     private static boolean needsPostProcessing(BlockState state, IBlockReader reader, BlockPos pos) {
         return true;
+    }
+
+    private static boolean isntSolid(BlockState state, IBlockReader reader, BlockPos pos) {
+        return false;
     }
 
     private static boolean isOpaque(BlockState state, IBlockReader reader, BlockPos pos) {

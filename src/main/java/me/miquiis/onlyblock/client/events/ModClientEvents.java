@@ -5,9 +5,12 @@ import me.miquiis.onlyblock.client.gui.MinazonScreen;
 import me.miquiis.onlyblock.common.containers.MinazonContainer;
 import me.miquiis.onlyblock.common.entities.renderer.*;
 import me.miquiis.onlyblock.common.items.ModSpawnEgg;
+import me.miquiis.onlyblock.common.registries.BlockRegister;
 import me.miquiis.onlyblock.common.registries.ContainerRegister;
 import me.miquiis.onlyblock.common.registries.EntityRegister;
 import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.entity.EntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
@@ -37,6 +40,9 @@ public class ModClientEvents {
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.XP_SHEEP.get(), XpSheepRenderer::new);
 
         ScreenManager.registerFactory(ContainerRegister.MINAZON_CONTAINER.get(), MinazonScreen::new);
+
+        RenderTypeLookup.setRenderLayer(BlockRegister.SERVER_BLOCK.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(BlockRegister.TERMINAL_PANEL.get(), RenderType.getCutout());
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
