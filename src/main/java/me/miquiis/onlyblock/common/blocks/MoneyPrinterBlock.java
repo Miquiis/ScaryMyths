@@ -12,7 +12,7 @@ import net.minecraft.world.IBlockReader;
 
 import javax.annotation.Nullable;
 
-public class MoneyPrinterBlock extends Block {
+public class MoneyPrinterBlock extends BaseHorizontalBlock {
 
     protected static final VoxelShape BOTTOM_SHAPE = Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D);
 

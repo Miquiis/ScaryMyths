@@ -8,7 +8,7 @@ import software.bernie.geckolib3.model.AnimatedGeoModel;
 public class MoneyPrinterModel extends AnimatedGeoModel<MoneyPrinterTileEntity> {
     @Override
     public ResourceLocation getModelLocation(MoneyPrinterTileEntity object) {
-        return new ResourceLocation(OnlyBlock.MOD_ID, "geo/money_printer.geo.json");
+        return new ResourceLocation(OnlyBlock.MOD_ID, "geo/old_money_printer.geo.json");
     }
 
     @Override

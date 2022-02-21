@@ -28,6 +28,7 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.play.server.STitlePacket;
 import net.minecraft.potion.EffectInstance;
@@ -74,14 +75,15 @@ public class ForgeEvents {
     }
 
     @SubscribeEvent
-    public static void onPlayerInteract(PlayerInteractEvent event)
+    public static void onPlayerInteract(PlayerInteractEvent.EntityInteract event)
     {
+        if (event.getTarget() == null) return;
         if (event.getWorld().isRemote) return;
         if (event.getHand() == Hand.MAIN_HAND)
         {
             if (event.getEntity() != null)
             {
-                //OnlyBlockNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) event.getPlayer()), new OpenShopPacket());
+                OnlyBlockNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) event.getPlayer()), new OpenShopPacket());
             }
         }
     }

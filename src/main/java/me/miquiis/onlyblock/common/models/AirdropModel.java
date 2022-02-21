@@ -5,11 +5,12 @@ package me.miquiis.onlyblock.common.models;// Made with Blockbench 4.1.5
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import me.miquiis.onlyblock.common.entities.AirdropEntity;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 
-public class AirdropModel extends EntityModel<Entity> {
+public class AirdropModel extends EntityModel<AirdropEntity> {
 	private final ModelRenderer Bars;
 	private final ModelRenderer Bars2;
 	private final ModelRenderer Bars3;
@@ -191,7 +192,7 @@ public class AirdropModel extends EntityModel<Entity> {
 	}
 
 	@Override
-	public void setRotationAngles(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch){
+	public void setRotationAngles(AirdropEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch){
 		//previously the render function, render code was moved to a method below
 	}
 

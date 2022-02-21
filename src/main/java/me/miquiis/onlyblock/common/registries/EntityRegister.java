@@ -24,6 +24,13 @@ public class EntityRegister {
                     .build(new ResourceLocation(OnlyBlock.MOD_ID, "custom_falling_block").toString())
     );
 
+    public static final RegistryObject<EntityType<AirdropEntity>> AIRDROP = ENTITIES.register("airdrop",
+            () -> EntityType.Builder.<AirdropEntity>create(AirdropEntity::new, EntityClassification.MISC)
+                    .size(1.0F, 4F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "airdrop").toString())
+    );
+
     public static final RegistryObject<EntityType<XPZombieEntity>> XP_ZOMBIE = ENTITIES.register("xp_zombie",
             () -> EntityType.Builder.<XPZombieEntity>create(XPZombieEntity::new, EntityClassification.MONSTER)
                     .size(0.6F, 1.95F)
@@ -97,6 +104,8 @@ public class EntityRegister {
         event.put(XP_ENDERMAN.get(), XPEndermanEntity.func_234287_m_().create());
         event.put(XP_SPIDER.get(), XPSpiderEntity.func_234305_eI_().create());
         event.put(XP_CREEPER.get(), XPCreeperEntity.registerAttributes().create());
+
+        event.put(AIRDROP.get(), AirdropEntity.registerAttributes().create());
     }
 
 }

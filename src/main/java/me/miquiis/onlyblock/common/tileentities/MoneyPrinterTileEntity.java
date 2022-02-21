@@ -41,25 +41,21 @@ public class MoneyPrinterTileEntity extends TileEntity implements IAnimatable, I
         if (lastPrintTick >= 20)
         {
             lastPrintTick = 0;
-            System.out.println("Drop");
         }
 
         lastPrintTick++;
     }
 
     private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
-        System.out.println("here");
         switch (currentState)
         {
             case IDLE:
             {
-                System.out.println("idle");
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("idle", true));
                 break;
             }
             case PRINTING:
             {
-                System.out.println("printing");
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("print", true));
                 break;
             }
