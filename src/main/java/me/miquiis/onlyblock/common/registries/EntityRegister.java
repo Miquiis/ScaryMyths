@@ -31,6 +31,34 @@ public class EntityRegister {
                     .build(new ResourceLocation(OnlyBlock.MOD_ID, "airdrop").toString())
     );
 
+    public static final RegistryObject<EntityType<Noob1234>> NOOB = ENTITIES.register("noob",
+            () -> EntityType.Builder.<Noob1234>create(Noob1234::new, EntityClassification.MISC)
+                    .size(1.0F, 2.0F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "noob").toString())
+    );
+
+    public static final RegistryObject<EntityType<NoobBezos>> NOOB_BEZOS = ENTITIES.register("noob_bezos",
+            () -> EntityType.Builder.<NoobBezos>create(NoobBezos::new, EntityClassification.MISC)
+                    .size(1.0F, 2.0F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "noob_bezos").toString())
+    );
+
+    public static final RegistryObject<EntityType<ElonMusk>> ELON_MUSK = ENTITIES.register("elon_musk",
+            () -> EntityType.Builder.<ElonMusk>create(ElonMusk::new, EntityClassification.MISC)
+                    .size(1.0F, 2.0F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "elon_musk").toString())
+    );
+
+    public static final RegistryObject<EntityType<BankOwner>> BANK_OWNER = ENTITIES.register("bank_owner",
+            () -> EntityType.Builder.<BankOwner>create(BankOwner::new, EntityClassification.MISC)
+                    .size(1.0F, 2.0F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "bank_owner").toString())
+    );
+
     public static final RegistryObject<EntityType<XPZombieEntity>> XP_ZOMBIE = ENTITIES.register("xp_zombie",
             () -> EntityType.Builder.<XPZombieEntity>create(XPZombieEntity::new, EntityClassification.MONSTER)
                     .size(0.6F, 1.95F)
@@ -104,6 +132,11 @@ public class EntityRegister {
         event.put(XP_ENDERMAN.get(), XPEndermanEntity.func_234287_m_().create());
         event.put(XP_SPIDER.get(), XPSpiderEntity.func_234305_eI_().create());
         event.put(XP_CREEPER.get(), XPCreeperEntity.registerAttributes().create());
+
+        event.put(NOOB.get(), Noob1234.registerAttributes().create());
+        event.put(NOOB_BEZOS.get(), NoobBezos.registerAttributes().create());
+        event.put(ELON_MUSK.get(), ElonMusk.registerAttributes().create());
+        event.put(BANK_OWNER.get(), BankOwner.registerAttributes().create());
 
         event.put(AIRDROP.get(), AirdropEntity.registerAttributes().create());
     }

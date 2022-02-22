@@ -145,7 +145,7 @@ public class MinazonScreen extends Screen {
         //super.render(matrixStack, mouseX, mouseY, partialTicks);
 
         JHTML.Canvas(1920, 1080, true,
-                JHTML.Box(1920,1080,true, new Color(0,0,0,190).getRGB(),
+                JHTML.Box(1920,1080,true, new Color(0,0,0,150).getRGB(),
                         JHTML.Canvas(1920,220,true,
                                 JHTML.Text(0, 0, 160, 0, 0, "$" + (getCurrency() != null ? getCurrency().getAmount() : "0"), 5f, true, new Color(46, 217, 91).getRGB()).setCenteredHorizontally()
                         ),

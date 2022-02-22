@@ -2,6 +2,7 @@ package me.miquiis.onlyblock.common.registries;
 
 import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.common.blocks.BaseHorizontalBlock;
+import me.miquiis.onlyblock.common.blocks.BuySignBlock;
 import me.miquiis.onlyblock.common.blocks.MoneyPrinterBlock;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
@@ -23,6 +24,10 @@ public class BlockRegister {
     public static final DeferredRegister<Block> BLOCKS
             = DeferredRegister.create(ForgeRegistries.BLOCKS, OnlyBlock.MOD_ID);
 
+    public static final RegistryObject<Block> BUY_SIGN = registerBlock("sign", () ->
+            new BuySignBlock(AbstractBlock.Properties.create(Material.WOOD).setNeedsPostProcessing(BlockRegister::needsPostProcessing).hardnessAndResistance(0.5f).sound(SoundType.WOOD))
+    );
+
     public static final RegistryObject<Block> SERVER_BLOCK = registerBlock("server_block", () ->
             new BaseHorizontalBlock(AbstractBlock.Properties.create(Material.GLASS).hardnessAndResistance(0.5f).sound(SoundType.GLASS).notSolid().setOpaque(BlockRegister::isntSolid).setSuffocates(BlockRegister::isntSolid).setBlocksVision(BlockRegister::isntSolid))
     );
@@ -33,6 +38,18 @@ public class BlockRegister {
 
     public static final RegistryObject<Block> MONEY_PRINTER = registerBlock("money_printer", () ->
             new MoneyPrinterBlock(AbstractBlock.Properties.create(Material.ANVIL).hardnessAndResistance(3f).sound(SoundType.ANVIL).notSolid())
+    );
+
+    public static final RegistryObject<Block> GOLD_PILE = registerBlock("gold_pile", () ->
+            new Block(AbstractBlock.Properties.create(Material.IRON).hardnessAndResistance(0.5f).sound(SoundType.ANVIL).notSolid())
+    );
+
+    public static final RegistryObject<Block> BIG_CASH_PILE = registerBlock("big_cash_pile", () ->
+            new Block(AbstractBlock.Properties.create(Material.CAKE).hardnessAndResistance(0.5f).sound(SoundType.PLANT).notSolid())
+    );
+
+    public static final RegistryObject<Block> SMALL_CASH_PILE = registerBlock("small_cash_pile", () ->
+            new Block(AbstractBlock.Properties.create(Material.CAKE).hardnessAndResistance(0.5f).sound(SoundType.PLANT).notSolid())
     );
 
     private static boolean needsPostProcessing(BlockState state, IBlockReader reader, BlockPos pos) {
