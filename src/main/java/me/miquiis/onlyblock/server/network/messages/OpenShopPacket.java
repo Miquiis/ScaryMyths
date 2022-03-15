@@ -1,5 +1,6 @@
 package me.miquiis.onlyblock.server.network.messages;
 
+import me.miquiis.onlyblock.client.gui.LaptopScreen;
 import me.miquiis.onlyblock.client.gui.MinazonScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
@@ -23,7 +24,7 @@ public class OpenShopPacket {
     public static void handle(final OpenShopPacket msg, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-                Minecraft.getInstance().displayGuiScreen(new MinazonScreen());
+                Minecraft.getInstance().displayGuiScreen(new LaptopScreen());
             });
         });
         ctx.get().setPacketHandled(true);

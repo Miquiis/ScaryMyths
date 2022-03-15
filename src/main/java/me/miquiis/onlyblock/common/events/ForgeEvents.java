@@ -83,6 +83,9 @@ public class ForgeEvents {
         {
             if (event.getEntity() != null)
             {
+//                StockEntity stockEntity = new StockEntity(event.getWorld());
+//                stockEntity.setPosition(event.getPlayer().getPosX(), event.getPlayer().getPosY(), event.getPlayer().getPosZ());
+//                event.getWorld().addEntity(stockEntity);
                 OnlyBlockNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) event.getPlayer()), new OpenShopPacket());
             }
         }

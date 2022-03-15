@@ -1,12 +1,25 @@
 package me.miquiis.onlyblock.client.events;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.common.capability.CurrencyCapability;
 import me.miquiis.onlyblock.common.capability.interfaces.ICurrency;
 import me.miquiis.onlyblock.common.classes.OldEasyGUI;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -53,6 +66,56 @@ public class ClientEvents {
                     new Color(46, 217, 91).getRGB());
             stringGUIElement.render(null);
         }
+    }
+
+    @SubscribeEvent
+    public static void onWorldLastRender(RenderWorldLastEvent renderWorldLastEvent)
+    {
+        renderName(renderWorldLastEvent);
+    }
+
+    protected static void renderName(RenderWorldLastEvent event) {
+        Vector3d view = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+
+        MatrixStack stack = event.getMatrixStack();
+        stack.translate(-view.x, -view.y, -view.z); // translate
+
+        RenderSystem.pushMatrix();
+        RenderSystem.multMatrix(stack.getLast().getMatrix());
+
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder buffer = tessellator.getBuffer();
+        FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
+
+        RenderSystem.pushMatrix();
+        RenderSystem.translated(100, 100, 100);
+
+        RenderSystem.scaled(-2, -2, -2);
+        fontRenderer.func_243247_a(new StringTextComponent("Test"), 0, 0, 0, true, event.getMatrixStack().getLast().getMatrix(), Minecraft.getInstance().getRenderTypeBuffers().getBufferSource(), true, 0, 0);
+
+        RenderSystem.popMatrix();
+        RenderSystem.popMatrix();
+
+
+
+//        Vector3d view = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+//        matrixStackIn.push();
+//        matrixStackIn.translate(-view.x, -view.y, -view.z);
+//        matrixStackIn.translate(100, 100, 100);
+//        matrixStackIn.rotate(Minecraft.getInstance().getRenderManager().getCameraOrientation());
+//        matrixStackIn.scale(-0.5F, -0.5F, -0.5F);
+//        Matrix4f matrix4f = matrixStackIn.getLast().getMatrix();
+//        float f1 = Minecraft.getInstance().gameSettings.getTextBackgroundOpacity(0.25F);
+//        int j = (int)(f1 * 255.0F) << 24;
+//        FontRenderer fontrenderer = Minecraft.getInstance().fontRenderer;
+//        float f2 = (float)(-fontrenderer.getStringPropertyWidth(displayNameIn) / 2);
+//        fontrenderer.func_243247_a(displayNameIn, f2, (float)0, 553648127, false, matrix4f, bufferIn, false, j, packedLightIn);
+//
+////        if (flag) {
+////            fontrenderer.func_243247_a(displayNameIn, f2, (float)i, -1, false, matrix4f, bufferIn, false, 0, packedLightIn);
+////        }
+//
+//        matrixStackIn.pop();
     }
 
 }

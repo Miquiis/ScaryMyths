@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "onlyblock:block/empty_amazon_package",
+    "north": "onlyblock:block/front_amazon_package",
+    "south": "onlyblock:block/empty_amazon_package",
+    "east": "onlyblock:block/side_amazon_package",
+    "west": "onlyblock:block/side_amazon_package",
+    "up": "onlyblock:block/top_amazon_package",
+    "down": "onlyblock:block/empty_amazon_package"
+  }
+}

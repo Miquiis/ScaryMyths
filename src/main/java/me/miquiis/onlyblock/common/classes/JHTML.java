@@ -47,6 +47,8 @@ public class JHTML {
         public boolean isCenteredY;
         public boolean floatRight;
 
+        public boolean absolutePosition;
+
         public List<Canvas> child;
 
         public double nextDrawX;
@@ -119,6 +121,7 @@ public class JHTML {
         {
             if (!isActive) return;
             final MainWindow mainWindow = minecraft.getMainWindow();
+
             final float resScale = mainWindow.getFramebufferWidth() / (float)WIDTH_REFERENCE;
             final float yResScale = mainWindow.getFramebufferHeight() / (float)HEIGHT_REFERENCE;
             matrixStack.push();
@@ -187,12 +190,24 @@ public class JHTML {
                 if (biggestY < child.height) biggestY = child.height;
                 if (column)
                 {
-                    child.render(matrixStack, minecraft, nextDrawX, nextDrawY);
-                    nextDrawY += child.height + child.marginTop;
+                    if (child.absolutePosition)
+                    {
+                        child.render(matrixStack, minecraft, initialX, initialY);
+                    } else
+                    {
+                        child.render(matrixStack, minecraft, nextDrawX, nextDrawY);
+                        nextDrawY += child.height + child.marginTop;
+                    }
                 } else
                 {
-                    child.render(matrixStack, minecraft, nextDrawX, nextDrawY);
-                    nextDrawX += child.width + child.marginLeft;
+                    if (child.absolutePosition)
+                    {
+                        child.render(matrixStack, minecraft, initialX, initialY);
+                    } else
+                    {
+                        child.render(matrixStack, minecraft, nextDrawX, nextDrawY);
+                        nextDrawX += child.width + child.marginLeft;
+                    }
                 }
             }
         }
@@ -246,6 +261,12 @@ public class JHTML {
         public Canvas setFlexHeight()
         {
             this.isFlexHeight = true;
+            return this;
+        }
+
+        public Canvas setAbsolutePosition()
+        {
+            this.absolutePosition = true;
             return this;
         }
 

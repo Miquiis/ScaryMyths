@@ -1,6 +1,7 @@
 package me.miquiis.onlyblock.common.registries;
 
 import me.miquiis.onlyblock.OnlyBlock;
+import me.miquiis.onlyblock.common.blocks.AmazonTNTBlock;
 import me.miquiis.onlyblock.common.blocks.BaseHorizontalBlock;
 import me.miquiis.onlyblock.common.blocks.BuySignBlock;
 import me.miquiis.onlyblock.common.blocks.MoneyPrinterBlock;
@@ -26,6 +27,14 @@ public class BlockRegister {
 
     public static final RegistryObject<Block> BUY_SIGN = registerBlock("sign", () ->
             new BuySignBlock(AbstractBlock.Properties.create(Material.WOOD).setNeedsPostProcessing(BlockRegister::needsPostProcessing).hardnessAndResistance(0.5f).sound(SoundType.WOOD))
+    );
+
+    public static final RegistryObject<Block> AMAZON_PACKAGE = registerBlock("amazon_package", () ->
+            new BaseHorizontalBlock(AbstractBlock.Properties.create(Material.WOOD).hardnessAndResistance(0.5f).sound(SoundType.PLANT))
+    );
+
+    public static final RegistryObject<Block> AMAZON_PACKAGE_TNT = registerBlock("tnt_amazon_package", () ->
+            new AmazonTNTBlock(AbstractBlock.Properties.create(Material.TNT).zeroHardnessAndResistance().sound(SoundType.PLANT))
     );
 
     public static final RegistryObject<Block> SERVER_BLOCK = registerBlock("server_block", () ->

@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "onlyblock:block/amazon_package" },
+    "facing=south": { "model": "onlyblock:block/amazon_package", "y": 180},
+    "facing=west": { "model": "onlyblock:block/amazon_package", "y": 270},
+    "facing=east": { "model": "onlyblock:block/amazon_package", "y": 90}
+  }
+}

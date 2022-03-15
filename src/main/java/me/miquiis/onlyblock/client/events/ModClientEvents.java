@@ -3,6 +3,8 @@ package me.miquiis.onlyblock.client.events;
 import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.client.gui.MinazonScreen;
 import me.miquiis.onlyblock.common.containers.MinazonContainer;
+import me.miquiis.onlyblock.common.entities.OneMilEntity;
+import me.miquiis.onlyblock.common.entities.StockEntity;
 import me.miquiis.onlyblock.common.entities.renderer.*;
 import me.miquiis.onlyblock.common.items.JetpackArmorItem;
 import me.miquiis.onlyblock.common.items.ModSpawnEgg;
@@ -12,9 +14,11 @@ import me.miquiis.onlyblock.common.registries.ContainerRegister;
 import me.miquiis.onlyblock.common.registries.EntityRegister;
 import me.miquiis.onlyblock.common.registries.TileEntityRegister;
 import me.miquiis.onlyblock.common.tileentities.renderer.MoneyPrinterTileRenderer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
+import net.minecraft.client.renderer.entity.*;
 import net.minecraft.entity.EntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
@@ -22,6 +26,7 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.client.registry.IRenderFactory;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -50,6 +55,8 @@ public class ModClientEvents {
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.ELON_MUSK.get(), ElonMuskRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.BANK_OWNER.get(), BankOwnerRenderer::new);
 
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.ONE_MIL.get(), OneMilRenderer::new);
+
         GeoArmorRenderer.registerArmorRenderer(JetpackArmorItem.class, new JetpackArmorRenderer());
 
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.AIRDROP.get(), AirdropRenderer::new);
@@ -57,6 +64,18 @@ public class ModClientEvents {
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.XP_CHICKEN.get(), XpChickenRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.XP_COW.get(), XpCowRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.XP_SHEEP.get(), XpSheepRenderer::new);
+
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.STOCK_GHAST.get(), GhastRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.AMAZON_TNT.get(), AmazonTNTRenderer::new);
+
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.STOCK_ENTITY.get(), new IRenderFactory<StockEntity>() {
+            @Override
+            public EntityRenderer<? super StockEntity> createRenderFor(EntityRendererManager manager) {
+                return new SpriteRenderer<StockEntity>(manager, Minecraft.getInstance().getItemRenderer(), 3F, true);
+            }
+        });
+
+        //RenderingRegistry.registerEntityRenderingHandler(EntityRegister.STOCK_ENTITY.get(), manager -> new SpriteRenderer<>(manager, event.getMinecraftSupplier().get().getItemRenderer(), 3f, true));
 
         RenderTypeLookup.setRenderLayer(BlockRegister.SERVER_BLOCK.get(), RenderType.getCutout());
         RenderTypeLookup.setRenderLayer(BlockRegister.TERMINAL_PANEL.get(), RenderType.getCutout());
