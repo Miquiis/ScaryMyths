@@ -33,6 +33,10 @@ public class BlockRegister {
             new BaseHorizontalBlock(AbstractBlock.Properties.create(Material.WOOD).hardnessAndResistance(0.5f).sound(SoundType.PLANT))
     );
 
+    public static final RegistryObject<Block> ROAD_DIRECTION = registerBlock("road_direction", () ->
+            new BaseHorizontalBlock(AbstractBlock.Properties.create(Material.ROCK).hardnessAndResistance(0.5f).sound(SoundType.STONE))
+    );
+
     public static final RegistryObject<Block> AMAZON_PACKAGE_TNT = registerBlock("tnt_amazon_package", () ->
             new AmazonTNTBlock(AbstractBlock.Properties.create(Material.TNT).zeroHardnessAndResistance().sound(SoundType.PLANT))
     );

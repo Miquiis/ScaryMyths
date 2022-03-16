@@ -45,6 +45,13 @@ public class EntityRegister {
                     .build(new ResourceLocation(OnlyBlock.MOD_ID, "noob").toString())
     );
 
+    public static final RegistryObject<EntityType<VanEntity>> VAN = ENTITIES.register("van",
+            () -> EntityType.Builder.<VanEntity>create(VanEntity::new, EntityClassification.MISC)
+                    .size(4.0F, 2.0F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "van").toString())
+    );
+
     public static final RegistryObject<EntityType<NoobBezos>> NOOB_BEZOS = ENTITIES.register("noob_bezos",
             () -> EntityType.Builder.<NoobBezos>create(NoobBezos::new, EntityClassification.MISC)
                     .size(1.0F, 2.0F)
@@ -167,6 +174,8 @@ public class EntityRegister {
         event.put(NOOB_BEZOS.get(), NoobBezos.registerAttributes().create());
         event.put(ELON_MUSK.get(), ElonMusk.registerAttributes().create());
         event.put(BANK_OWNER.get(), BankOwner.registerAttributes().create());
+
+        event.put(VAN.get(), VanEntity.func_233666_p_().create());
 
         event.put(ONE_MIL.get(), OneMilEntity.registerAttributes().create());
 

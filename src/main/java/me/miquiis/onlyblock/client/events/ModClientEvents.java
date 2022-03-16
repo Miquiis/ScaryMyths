@@ -55,6 +55,8 @@ public class ModClientEvents {
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.ELON_MUSK.get(), ElonMuskRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.BANK_OWNER.get(), BankOwnerRenderer::new);
 
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.VAN.get(), VanRenderer::new);
+
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.ONE_MIL.get(), OneMilRenderer::new);
 
         GeoArmorRenderer.registerArmorRenderer(JetpackArmorItem.class, new JetpackArmorRenderer());

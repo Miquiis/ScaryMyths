@@ -16,62 +16,38 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.*;
 import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.gui.GuiUtils;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.Color;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class LaptopScreen extends Screen {
 
-    public static class ItemSlot {
-        public static final ItemSlot EMPTY = new ItemSlot(ItemStack.EMPTY, -1, 0);
-        public static final ItemSlot NO_STOCK = new ItemSlot(new ItemStack(Items.BARRIER), -1, 0);
-
-        private ItemStack itemStack;
-        private int slot;
-        private int value;
-
-        public ItemSlot(ItemStack itemStack, int slot, int value)
-        {
-            this.itemStack = itemStack;
-            this.slot = slot;
-            this.value = value;
-        }
+    enum LaptopPage {
+        LOGIN_PAGE,
+        PC,
+        AMAZON_PAGE
     }
-
-    public static class ItemButton extends Button {
-
-        private ItemSlot itemSlot;
-
-        public ItemButton(int x, int y, int width, int height, ItemSlot itemSlot, IPressable pressedAction) {
-            super(x, y, width, height, new StringTextComponent("item"), pressedAction);
-            this.itemSlot = itemSlot;
-        }
-    }
-
-    private Button buyItems;
-    private Button sellItems;
-    private Button purchaseButton;
-    private Button sellButton;
-    private Button sellAllButton;
-    private boolean isBuyActive;
-
-    private List<ItemSlot> buyStore;
-
-    private List<ItemButton> itemButtons;
-
-    private ItemSlot selectedItem;
 
     private static final int PC_BACKGROUND = new Color(35, 35, 35).getRGB();
+    private static final int WINDOW_SEARCH_BAR = new Color(77, 77, 77).getRGB();
     private static final int TOOL_BAR = new Color(54, 54, 54).getRGB();
+
+    private static final int AMAZON_TOP_BAR = new Color(19, 26, 34).getRGB();
+    private static final int AMAZON_MID_BAR = new Color(35, 47, 62).getRGB();
+    private static final int AMAZON_BOTTOM_BAR = new Color(55, 71, 90).getRGB();
 
     private static final ResourceLocation FILE_EXPLORER_ICON = new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/laptop/explorer.png");
     private static final ResourceLocation CHROME_ICON = new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/laptop/chrome.png");
@@ -79,71 +55,211 @@ public class LaptopScreen extends Screen {
     private static final ResourceLocation TRASH_ICON = new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/laptop/trash.png");
     private static final ResourceLocation WINDOWS_ICON = new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/laptop/windows.png");
 
+    private static final ResourceLocation WINDOW_CLOSE = new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/laptop/window_close.png");
+    private static final ResourceLocation WINDOW_MINIMIZE = new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/laptop/window_minimize.png");
+    private static final ResourceLocation WINDOW_ADJUST = new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/laptop/window_adjust.png");
+
+    private static final ResourceLocation LOGIN_AVATAR = new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/laptop/login_avatar.png");
+    private static final ResourceLocation LOGIN_ARROW = new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/laptop/login_arrow.png");
+
     public static final int DEFAULT_BACKGROUND_COLOR = 0xF0100010;
     public static final int DEFAULT_BORDER_COLOR_START = 0x505000FF;
     public static final int DEFAULT_BORDER_COLOR_END = (DEFAULT_BORDER_COLOR_START & 0xFEFEFE) >> 1 | DEFAULT_BORDER_COLOR_START & 0xFF000000;
 
+    private LaptopPage currentPage;
+    private String currentPassword;
+
+    private Button loginButton;
+    private Button chromeButton;
+    private Button closeWindowButton;
 
     public LaptopScreen() {
         super(new StringTextComponent("Laptop"));
-        this.isBuyActive = true;
-        buyStore = createBuyStore();
-        selectedItem = ItemSlot.EMPTY;
-        itemButtons = new ArrayList<>();
+        this.currentPage = LaptopPage.LOGIN_PAGE;
+        this.currentPassword = "";
         init();
-    }
-
-    private List<ItemSlot> createBuyStore()
-    {
-        final List<ItemSlot> store = new ArrayList<>();
-
-        for (int i = 0; i < 30; i++)
-        {
-            store.add(new ItemSlot(new ItemStack(ForgeRegistries.ITEMS.getValues().stream().collect(Collectors.toList()).get(i)), i, MathUtils.getRandomMinMax(1000, 10000)));
-        }
-
-        return store;
     }
 
     @Override
     protected void init() {
         super.init();
-        this.buyItems = this.addButton(new Button(0, 0, 0, 0, new StringTextComponent("buy"), p_onPress_1_ -> {
-            isBuyActive = true;
-            selectedItem = ItemSlot.EMPTY;
+        this.loginButton = this.addButton(new Button(0, 0, 0, 0, new StringTextComponent("login"), p_onPress_1_ -> {
+            loginAttempt();
         }));
-        this.sellItems = this.addButton(new Button(0, 0, 0, 0, new StringTextComponent("buy"), p_onPress_1_ -> {
-            isBuyActive = false;
-            selectedItem = ItemSlot.EMPTY;
+        this.chromeButton = this.addButton(new Button(0, 0, 0, 0, new StringTextComponent("chrome"), p_onPress_1_ -> {
+            currentPage = LaptopPage.AMAZON_PAGE;
         }));
-        this.purchaseButton = this.addButton(new Button(0, 0, 0, 0, new StringTextComponent("purchase"), p_onPress_1_ -> {
-
-        }));
-        this.sellButton = this.addButton(new Button(0, 0, 0, 0, new StringTextComponent("sell"), p_onPress_1_ -> {
-
-        }));
-        this.sellAllButton = this.addButton(new Button(0, 0, 0, 0, new StringTextComponent("sell_all"), p_onPress_1_ -> {
-
+        this.closeWindowButton = this.addButton(new Button(0, 0, 0, 0, new StringTextComponent("close_window"), p_onPress_1_ -> {
+            currentPage = LaptopPage.PC;
         }));
     }
 
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        buttons.forEach(widget -> widget.active = false);
         JHTML.Canvas(1920, 1080, true,
-                JHTML.Box(1320, 800, PC_BACKGROUND,
-                        JHTML.Canvas(1320, 740, 0, 0, 20, 20,
-                                createIcon(FILE_EXPLORER_ICON),
-                                createIcon(CHROME_ICON),
-                                createIcon(MINECRAFT_ICON),
-                                createIcon(TRASH_ICON)
-                        ),
-                        JHTML.Box(1320, 60, TOOL_BAR,
-                                JHTML.Canvas(1320, 40, 10, 10, 0, 0,
-                                        JHTML.Image(37, 37, WINDOWS_ICON).setCenteredHorizontally().setCenteredVertically()
-                                )
-                        )
-                ).setCenteredHorizontally().setCenteredVertically()
+                currentPage == LaptopPage.AMAZON_PAGE ? getPCBackground(getAmazonTab()) : currentPage == LaptopPage.PC ? getPCBackground() : getLoginBackground()
         ).render(matrixStack, getMinecraft(), 0, 0);
+    }
+
+    @Override
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        if (currentPage == LaptopPage.LOGIN_PAGE)
+        {
+            if (keyCode == 259)
+            {
+                if (currentPassword.length() == 0) return super.keyReleased(keyCode, scanCode, modifiers);
+                currentPassword = currentPassword.substring(0, currentPassword.length() - 1);
+                minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK, 1f, 0.8f);
+                return super.keyReleased(keyCode, scanCode, modifiers);
+            }
+            if (keyCode == 257)
+            {
+                loginAttempt();
+                return super.keyReleased(keyCode, scanCode, modifiers);
+            }
+            if (currentPassword.length() >= 17) return super.keyReleased(keyCode, scanCode, modifiers);
+            if (KeyEvent.getKeyText(keyCode).contains("Unknown")) return super.keyReleased(keyCode, scanCode, modifiers);
+            minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK, 1f, 1.8f);
+            currentPassword += KeyEvent.getKeyText(keyCode);
+        }
+        return super.keyReleased(keyCode, scanCode, modifiers);
+    }
+
+    private void loginAttempt()
+    {
+        if (currentPage == LaptopPage.LOGIN_PAGE)
+        {
+            if (currentPassword.equalsIgnoreCase("richestmanalive"))
+            {
+                currentPage = LaptopPage.PC;
+            }
+            currentPassword = "";
+        }
+    }
+
+    private String getHiddenPassword()
+    {
+        return currentPassword;
+    }
+
+    private JHTML.Canvas getLoginBackground()
+    {
+        loginButton.active = true;
+        return JHTML.Box(1320, 800, PC_BACKGROUND,
+                JHTML.Canvas(400, 500,
+                        JHTML.Image(200, 200, LOGIN_AVATAR).setCenteredHorizontally(),
+                        JHTML.Text(0, 0, 30, 0, 0, "Jeff Bezos", 5f, true, Color.WHITE.getRGB()).setCenteredHorizontally(),
+                        JHTML.Canvas(400, 35, 0, 30, 0, 0, false,
+                                JHTML.Box(365, 35, Color.GRAY.getRGB(),
+                                        JHTML.Box(361, 31, Color.WHITE.getRGB(),
+                                                JHTML.Text(0, 10, 9, 0,0, getHiddenPassword(), 2f, false, Color.BLACK.getRGB())
+                                        ).setCenteredHorizontally().setCenteredVertically()
+                                ),
+                                JHTML.Box(35, 35, Color.WHITE.getRGB(),
+                                        JHTML.Box(33, 33, new Color(100, 100, 100, 100).getRGB(),
+                                                JHTML.Image(30, 30, LOGIN_ARROW)
+                                        ).setCenteredHorizontally().setCenteredVertically()
+                                ).setOnRenderEvent((x, y, width1, height1) -> {
+                                    this.loginButton.x = (int) x;
+                                    this.loginButton.y = (int)y;
+                                    this.loginButton.setHeight((int)height1);
+                                    this.loginButton.setWidth((int)width1);
+                                })
+                        )
+                ).setCenteredHorizontally().setCenteredVertically(),
+                JHTML.Canvas(1320, 240),
+                JHTML.Box(1320, 60, TOOL_BAR,
+                        JHTML.Canvas(1320, 40, 10, 10, 0, 0,
+                                JHTML.Image(37, 37, WINDOWS_ICON).setCenteredHorizontally().setCenteredVertically()
+                        )
+                )
+        ).setCenteredHorizontally().setCenteredVertically();
+    }
+
+    private JHTML.Canvas getPCBackground(JHTML.Canvas ...windowsOpened)
+    {
+        chromeButton.active = windowsOpened.length == 0;
+
+        return JHTML.Box(1320, 800, PC_BACKGROUND,
+                JHTML.Canvas(1320, 740, 0, 0, 20, 20,
+                        JHTML.Canvas(1320, 740, windowsOpened).setAbsolutePosition(),
+                        createIcon(FILE_EXPLORER_ICON),
+                        createIcon(CHROME_ICON).setOnRenderEvent((x, y, width1, height1) -> {
+                            this.chromeButton.x = (int) x;
+                            this.chromeButton.y = (int)y;
+                            this.chromeButton.setHeight((int)height1);
+                            this.chromeButton.setWidth((int)width1);
+                        }),
+                        createIcon(MINECRAFT_ICON),
+                        createIcon(TRASH_ICON)
+                ),
+                JHTML.Box(1320, 60, TOOL_BAR,
+                        JHTML.Canvas(1320, 40, 10, 10, 0, 0,
+                                JHTML.Image(37, 37, WINDOWS_ICON).setCenteredHorizontally().setCenteredVertically()
+                        )
+                )
+        ).setCenteredHorizontally().setCenteredVertically();
+    }
+
+    private JHTML.Canvas getAmazonTab()
+    {
+        return createWindow(
+                JHTML.Box(1070, 50, AMAZON_TOP_BAR),
+                JHTML.Box(1070, 30, AMAZON_MID_BAR),
+                JHTML.Box(1070, 30, AMAZON_BOTTOM_BAR),
+                JHTML.Box(1070, 440, false, Color.LIGHT_GRAY.getRGB(),
+                        createSellWindow(new ItemStack(Items.BARRIER), 0),
+                        createSellWindow(new ItemStack(Items.BARRIER), 0),
+                        createSellWindow(new ItemStack(Items.BARRIER), 0)
+                )
+        ).setAbsolutePosition();
+    }
+
+    private JHTML.Canvas createSellWindow(ItemStack itemIcon, int itemPrice)
+    {
+        return JHTML.Box(300, 400, 40, 20, 0, 0, Color.WHITE.getRGB(),
+                JHTML.Item(200, 200, 0, 20, 0,0, itemIcon, 2f).setCenteredHorizontally(),
+                JHTML.Text(0, 0, 20, 0, 0, "\u00A70*OUT OF ORDER*", 3f).setCenteredHorizontally(),
+                JHTML.Text(0, 0, 20, 0, 0, "\u00A72$" + itemPrice, 3f).setCenteredHorizontally(),
+                JHTML.Image(280, 40, 0, 30, 0, 0, false, new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/laptop/buy_button.png"),
+                        JHTML.Text(0, 0, 0,0, 0, "Buy", 3f, true, Color.WHITE.getRGB()).setCenteredHorizontally().setCenteredVertically()
+                ).setCenteredHorizontally()
+        );
+    }
+
+    private JHTML.Canvas createWindow(JHTML.Canvas... windowContent)
+    {
+        closeWindowButton.active = true;
+        if (windowContent == null)
+        {
+            return createNewWindow(JHTML.Box(1070, 550, Color.WHITE.getRGB()));
+        } else
+        {
+            return createNewWindow(windowContent);
+        }
+    }
+
+    private JHTML.Canvas createNewWindow(JHTML.Canvas... windowContent)
+    {
+        return JHTML.Canvas(1070, 640, 150, 20, 0, 0,
+                JHTML.Box(1070, 40, 0, 0, -10, 0, false, TOOL_BAR,
+                        JHTML.Image(14, 14, WINDOW_CLOSE).setFloatRight().setCenteredVertically().setOnRenderEvent((x, y, width1, height1) -> {
+                            this.closeWindowButton.x = (int) x;
+                            this.closeWindowButton.y = (int)y;
+                            this.closeWindowButton.setHeight((int)height1);
+                            this.closeWindowButton.setWidth((int)width1);
+                        }),
+                        JHTML.Image(14, 14, -10, 0, 0, 0, WINDOW_ADJUST).setFloatRight().setCenteredVertically(),
+                        JHTML.Image(14, 14, -10, 0, 0, 0, WINDOW_MINIMIZE).setFloatRight().setCenteredVertically()
+                ),
+                JHTML.Box(1070, 50, WINDOW_SEARCH_BAR,
+                        JHTML.Box(800, 30, TOOL_BAR).setCenteredHorizontally().setCenteredVertically()
+                ),
+                JHTML.Canvas(1070, 550,
+                        windowContent
+                )
+        );
     }
 
     private JHTML.Canvas createIcon(ResourceLocation icon)
@@ -151,112 +267,6 @@ public class LaptopScreen extends Screen {
         return JHTML.Canvas(100, 150, true,
                 JHTML.Image(100, 100, icon),
                 JHTML.Box(80, 20, 10, 10, 0, 0, new Color(255, 255, 255).getRGB())
-        );
-    }
-
-    private JHTML.Canvas createBuySellButton()
-    {
-        if (isBuyActive) return
-            JHTML.Image(250, 60, 0, 0, 0, 0, false, new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/button.png"),
-                    JHTML.Text(0, 0, 0,0, 0, "Purchase", 3f, true, Color.WHITE.getRGB()).setCenteredHorizontally().setCenteredVertically().setActive(selectedItem.itemStack != ItemStack.EMPTY)
-            ).setActive(selectedItem.itemStack != ItemStack.EMPTY).setOnRenderEvent((x, y, width1, height1) -> {
-                this.purchaseButton.x = (int) x;
-                this.purchaseButton.y = (int)y;
-                this.purchaseButton.setHeight((int)height1);
-                this.purchaseButton.setWidth((int)width1);
-            });
-        else return
-            JHTML.Canvas(200, 120, true,
-                    JHTML.Image(200, 60, 0, 0, 0, 0, false, new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/button.png"),
-                            JHTML.Text(0, 0, 0,0, 0, "Sell", 3f, true, Color.WHITE.getRGB()).setCenteredHorizontally().setCenteredVertically().setActive(selectedItem.itemStack != ItemStack.EMPTY)
-                    ).setCenteredHorizontally().setActive(selectedItem.itemStack != ItemStack.EMPTY).setOnRenderEvent((x, y, width1, height1) -> {
-                        this.sellButton.x = (int) x;
-                        this.sellButton.y = (int)y;
-                        this.sellButton.setHeight((int)height1);
-                        this.sellButton.setWidth((int)width1);
-                    }),
-                    JHTML.Image(250, 60, 0, 10, 0, 0, false, new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/button.png"),
-                            JHTML.Text(0, 0, 0,0, 0, "Sell All", 3f, true, Color.WHITE.getRGB()).setCenteredHorizontally().setCenteredVertically().setActive(selectedItem.itemStack != ItemStack.EMPTY)
-                    ).setCenteredHorizontally().setActive(selectedItem.itemStack != ItemStack.EMPTY).setOnRenderEvent((x, y, width1, height1) -> {
-                        this.sellAllButton.x = (int) x;
-                        this.sellAllButton.y = (int)y;
-                        this.sellAllButton.setHeight((int)height1);
-                        this.sellAllButton.setWidth((int)width1);
-                    })
-            ).setCenteredHorizontally();
-    }
-
-    private JHTML.Canvas getSelection(boolean isBuy)
-    {
-        if (isBuy)
-        {
-            return createSelect(true).setActive(isBuyActive);
-        } else
-        {
-            return createSelect(false).setActive(!isBuyActive);
-        }
-    }
-
-    private JHTML.Canvas createSelect(boolean isBuy)
-    {
-        JHTML.Box box = JHTML.Box(195, 5, isBuy ? -25 : 25, 2, 0, 0, Color.WHITE.getRGB());
-        return isBuy ? box.setFloatRight() : box;
-    }
-
-    private JHTML.Item createItem(ItemSlot itemSlot, ItemStack itemStack)
-    {
-        return (JHTML.Item) JHTML.Item(90, 90, 0, 0,0, 0, itemStack, 5f).setOnRenderEvent((x, y, width1, height1) -> {
-            itemButtons.add(this.addButton(new ItemButton((int)x, (int)y, (int)width1, (int)height1, itemSlot, (p_onPress_1_ -> {
-                selectedItem = itemSlot;
-            }))));
-        });
-    }
-
-    private JHTML.Canvas[] createItemRows()
-    {
-        itemButtons.clear();
-        List<JHTML.Canvas> rows = new ArrayList<>();
-        List<ItemSlot> items = new ArrayList<>();
-
-        int count = 0;
-        int totalCount = 0;
-        for (ItemSlot itemSlot : buyStore)
-        {
-            totalCount++;
-            items.add(itemSlot);
-            if (count == 5)
-            {
-                rows.add(createItemRow(items.toArray(new ItemSlot[0])));
-                items.clear();
-                count = 0;
-                continue;
-            } else
-            {
-                if (totalCount == buyStore.size())
-                {
-                    rows.add(createItemRow(items.toArray(new ItemSlot[0])));
-                    items.clear();
-                    count = 0;
-                    continue;
-                }
-            }
-            count++;
-        }
-
-        return rows.toArray(new JHTML.Canvas[0]);
-    }
-
-    private JHTML.Canvas createItemRow(ItemSlot[] itemSlots)
-    {
-        List<JHTML.Item> row = new ArrayList<>();
-
-        for (ItemSlot itemSlot : itemSlots)
-        {
-            row.add(createItem(itemSlot, itemSlot.itemStack));
-        }
-
-        return JHTML.Canvas(980, 90, false,
-                row.toArray(new JHTML.Canvas[0])
         );
     }
 

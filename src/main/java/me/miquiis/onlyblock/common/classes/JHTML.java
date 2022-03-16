@@ -206,7 +206,7 @@ public class JHTML {
                     } else
                     {
                         child.render(matrixStack, minecraft, nextDrawX, nextDrawY);
-                        nextDrawX += child.width + child.marginLeft;
+                        nextDrawX += (child.floatRight ? -1 : 1) * child.width + child.marginLeft;
                     }
                 }
             }
@@ -416,7 +416,7 @@ public class JHTML {
         public Item(int width, int height, int marginLeft, int marginTop, int paddingLeft, int paddingTop, ItemStack itemStack, float scale, Canvas... canvasChild) {
             super(width, height, marginLeft, marginTop, paddingLeft, paddingTop, canvasChild);
             this.itemStack = itemStack;
-            this.scale = scale;
+            this.scale = width / 16f;
         }
 
         @Override
