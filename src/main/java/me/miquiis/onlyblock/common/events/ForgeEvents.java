@@ -17,6 +17,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.trees.OakTree;
 import net.minecraft.block.trees.Tree;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.entity.*;
 import net.minecraft.entity.item.ExperienceOrbEntity;
 import net.minecraft.entity.item.ItemEntity;
@@ -44,6 +47,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.util.NonNullConsumer;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
@@ -61,6 +65,7 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.server.command.ConfigCommand;
 
 import javax.annotation.Nullable;
+import java.awt.*;
 import java.util.ArrayList;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = OnlyBlock.MOD_ID)
@@ -72,6 +77,24 @@ public class ForgeEvents {
         new OnlyBlockCommand(event.getDispatcher());
 
         ConfigCommand.register(event.getDispatcher());
+    }
+
+    @SubscribeEvent
+    public static void onWorldLastRender(RenderWorldLastEvent event)
+    {
+        Minecraft mc = Minecraft.getInstance();
+        IRenderTypeBuffer.Impl buffer = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
+        int combinedLights = mc.getRenderManager().getPackedLight(mc.player, event.getPartialTicks());
+        Vector3d cam = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+        event.getMatrixStack().push();
+        //event.getMatrixStack().rotate(mc.getRenderManager().getCameraOrientation());
+        event.getMatrixStack().translate(0, 50, 0);
+        event.getMatrixStack().scale(-2f, -2f, 0.025f);
+        FontRenderer fontRenderer = mc.fontRenderer;
+        fontRenderer.func_243247_a(new StringTextComponent("Test"), 0, 0, Color.RED.getRGB(), false, event.getMatrixStack().getLast().getMatrix(), buffer, true, 0, combinedLights);
+        //fontRenderer.drawText(event.getMatrixStack(), new StringTextComponent("Test"), 0, 0, Color.RED.getRGB());
+        event.getMatrixStack().pop();
+        buffer.finish();
     }
 
     @SubscribeEvent
