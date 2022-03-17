@@ -5,6 +5,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.common.capability.CurrencyCapability;
 import me.miquiis.onlyblock.common.capability.interfaces.ICurrency;
+import me.miquiis.onlyblock.common.capability.interfaces.IOnlyBlock;
+import me.miquiis.onlyblock.common.capability.models.OnlyBlockModel;
 import me.miquiis.onlyblock.common.classes.OldEasyGUI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -69,53 +71,40 @@ public class ClientEvents {
     }
 
     @SubscribeEvent
-    public static void onWorldLastRender(RenderWorldLastEvent renderWorldLastEvent)
+    public static void onLastWorldRender(RenderWorldLastEvent event)
     {
-        renderName(renderWorldLastEvent);
+        IOnlyBlock onlyBlockCap = OnlyBlockModel.getCapability(Minecraft.getInstance().player);
+        if (onlyBlockCap.getAmazonIsland().getCurrentDelivery() != null)
+        {
+            Vector3d currentDelivery = onlyBlockCap.getAmazonIsland().getCurrentDelivery();
+            double distance = Minecraft.getInstance().player.getPositionVec().distanceTo(currentDelivery);
+            float distanceScale = 0.05f + (float)distance / 300f;
+
+            renderTextInWorld(event.getMatrixStack(), new StringTextComponent(Math.round(distance) + "m"), currentDelivery.getX() + 0.5, currentDelivery.getY(), currentDelivery.getZ() + 0.5, 0, distanceScale, Color.WHITE.getRGB());
+            renderTextInWorld(event.getMatrixStack(), new StringTextComponent("Next Delivery"), currentDelivery.getX() + 0.5, currentDelivery.getY(), currentDelivery.getZ() + 0.5, 10.0, distanceScale, new Color(255,153,0).getRGB());
+        }
     }
 
-    protected static void renderName(RenderWorldLastEvent event) {
+    private static void renderTextInWorld(MatrixStack matrixStack, StringTextComponent text, double x, double y, double z, double offsetY, float scale, int color)
+    {
+        Minecraft mc = Minecraft.getInstance();
+        IRenderTypeBuffer.Impl buffer = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
         Vector3d view = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+        FontRenderer fontRenderer = mc.fontRenderer;
 
-        MatrixStack stack = event.getMatrixStack();
-        stack.translate(-view.x, -view.y, -view.z); // translate
+        RenderSystem.disableDepthTest();
+        RenderSystem.depthMask(false);
 
-        RenderSystem.pushMatrix();
-        RenderSystem.multMatrix(stack.getLast().getMatrix());
+        matrixStack.push();
+        matrixStack.translate(-view.x, -view.y, -view.z);
+        matrixStack.translate(x, y, z);
+        matrixStack.rotate(mc.getRenderManager().getCameraOrientation());
+        matrixStack.scale(-scale, -scale, 0.025f);
 
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuffer();
-        FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
+        float f2 = (float)(-fontRenderer.getStringPropertyWidth(text) / 2);
+        fontRenderer.func_243247_a(text, f2, (float) ((-fontRenderer.FONT_HEIGHT / 2) - offsetY), color, false, matrixStack.getLast().getMatrix(), buffer, true, 0, 15728880);
 
-        RenderSystem.pushMatrix();
-        RenderSystem.translated(100, 100, 100);
-
-        RenderSystem.scaled(-2, -2, -2);
-        fontRenderer.func_243247_a(new StringTextComponent("Test"), 0, 0, 0, true, event.getMatrixStack().getLast().getMatrix(), Minecraft.getInstance().getRenderTypeBuffers().getBufferSource(), true, 0, 0);
-
-        RenderSystem.popMatrix();
-        RenderSystem.popMatrix();
-
-
-
-//        Vector3d view = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
-//        matrixStackIn.push();
-//        matrixStackIn.translate(-view.x, -view.y, -view.z);
-//        matrixStackIn.translate(100, 100, 100);
-//        matrixStackIn.rotate(Minecraft.getInstance().getRenderManager().getCameraOrientation());
-//        matrixStackIn.scale(-0.5F, -0.5F, -0.5F);
-//        Matrix4f matrix4f = matrixStackIn.getLast().getMatrix();
-//        float f1 = Minecraft.getInstance().gameSettings.getTextBackgroundOpacity(0.25F);
-//        int j = (int)(f1 * 255.0F) << 24;
-//        FontRenderer fontrenderer = Minecraft.getInstance().fontRenderer;
-//        float f2 = (float)(-fontrenderer.getStringPropertyWidth(displayNameIn) / 2);
-//        fontrenderer.func_243247_a(displayNameIn, f2, (float)0, 553648127, false, matrix4f, bufferIn, false, j, packedLightIn);
-//
-////        if (flag) {
-////            fontrenderer.func_243247_a(displayNameIn, f2, (float)i, -1, false, matrix4f, bufferIn, false, 0, packedLightIn);
-////        }
-//
-//        matrixStackIn.pop();
+        matrixStack.pop();
+        buffer.finish();
     }
-
 }

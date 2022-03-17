@@ -8,6 +8,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.common.capability.CurrencyCapability;
+import me.miquiis.onlyblock.common.capability.models.OnlyBlockModel;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -30,6 +31,11 @@ public class OnlyBlockCommand {
                     context.getSource().asPlayer().sendStatusMessage(new StringTextComponent("\u00A7a\u00A7lMultiplier set."), false);
                     return 1;
                 })))
+                .then(Commands.literal("reset").executes(context -> {
+                    OnlyBlockModel.getCapability(context.getSource().asPlayer()).getAmazonIsland().reset();
+                    OnlyBlockModel.getCapability(context.getSource().asPlayer()).sync(context.getSource().asPlayer());
+                    return 1;
+                }))
                 .then(Commands.literal("money").then(Commands.argument("option", StringArgumentType.string()).then(Commands.argument("value", IntegerArgumentType.integer()).executes(context -> {
                     String option = StringArgumentType.getString(context, "option");
                     Integer value = IntegerArgumentType.getInteger(context, "value");

@@ -4,6 +4,7 @@ import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.common.capability.models.Currency;
 import me.miquiis.onlyblock.server.network.messages.BuyItemFromShopPacket;
 import me.miquiis.onlyblock.server.network.messages.CurrencyPacket;
+import me.miquiis.onlyblock.server.network.messages.OnlyBlockPacket;
 import me.miquiis.onlyblock.server.network.messages.OpenShopPacket;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkRegistry;
@@ -22,6 +23,7 @@ public class OnlyBlockNetwork {
         CHANNEL.registerMessage(0, CurrencyPacket.class, CurrencyPacket::encode, CurrencyPacket::decode, CurrencyPacket::handle);
         CHANNEL.registerMessage(1, BuyItemFromShopPacket.class, BuyItemFromShopPacket::encode, BuyItemFromShopPacket::decode, BuyItemFromShopPacket::handle);
         CHANNEL.registerMessage(2, OpenShopPacket.class, OpenShopPacket::encode, OpenShopPacket::decode, OpenShopPacket::handle);
+        CHANNEL.registerMessage(3, OnlyBlockPacket.class, OnlyBlockPacket::encode, OnlyBlockPacket::decode, OnlyBlockPacket::handle);
     }
 
 }

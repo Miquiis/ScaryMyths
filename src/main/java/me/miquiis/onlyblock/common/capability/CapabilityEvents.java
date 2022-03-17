@@ -17,7 +17,10 @@ public class CapabilityEvents {
     public static void attachCapabilitiesEntity(final AttachCapabilitiesEvent<Entity> event)
     {
         if(event.getObject() instanceof PlayerEntity)
+        {
             event.addCapability(new ResourceLocation(OnlyBlock.MOD_ID, "currency"), new CurrencyCapability(event.getObject() instanceof ServerPlayerEntity ? (ServerPlayerEntity)event.getObject() : null));
+            event.addCapability(new ResourceLocation(OnlyBlock.MOD_ID, "onlyblock"), new OnlyBlockCapability(event.getObject() instanceof ServerPlayerEntity ? (ServerPlayerEntity)event.getObject() : null));
+        }
     }
 
 }

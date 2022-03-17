@@ -1,9 +1,14 @@
 package me.miquiis.onlyblock.common.events;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import me.miquiis.custombar.common.BarInfo;
+import me.miquiis.custombar.common.BarManager;
 import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.common.blocks.CustomBlockTags;
 import me.miquiis.onlyblock.common.capability.CurrencyCapability;
 import me.miquiis.onlyblock.common.capability.interfaces.ICurrency;
+import me.miquiis.onlyblock.common.capability.interfaces.IOnlyBlock;
+import me.miquiis.onlyblock.common.capability.models.OnlyBlockModel;
 import me.miquiis.onlyblock.common.containers.MinazonContainer;
 import me.miquiis.onlyblock.common.entities.*;
 import me.miquiis.onlyblock.common.managers.BlockManager;
@@ -37,6 +42,7 @@ import net.minecraft.network.play.server.STitlePacket;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -52,6 +58,7 @@ import net.minecraftforge.common.util.NonNullConsumer;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -67,6 +74,7 @@ import net.minecraftforge.server.command.ConfigCommand;
 import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.UUID;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = OnlyBlock.MOD_ID)
 public class ForgeEvents {
@@ -77,24 +85,6 @@ public class ForgeEvents {
         new OnlyBlockCommand(event.getDispatcher());
 
         ConfigCommand.register(event.getDispatcher());
-    }
-
-    @SubscribeEvent
-    public static void onWorldLastRender(RenderWorldLastEvent event)
-    {
-        Minecraft mc = Minecraft.getInstance();
-        IRenderTypeBuffer.Impl buffer = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
-        int combinedLights = mc.getRenderManager().getPackedLight(mc.player, event.getPartialTicks());
-        Vector3d cam = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
-        event.getMatrixStack().push();
-        //event.getMatrixStack().rotate(mc.getRenderManager().getCameraOrientation());
-        event.getMatrixStack().translate(0, 50, 0);
-        event.getMatrixStack().scale(-2f, -2f, 0.025f);
-        FontRenderer fontRenderer = mc.fontRenderer;
-        fontRenderer.func_243247_a(new StringTextComponent("Test"), 0, 0, Color.RED.getRGB(), false, event.getMatrixStack().getLast().getMatrix(), buffer, true, 0, combinedLights);
-        //fontRenderer.drawText(event.getMatrixStack(), new StringTextComponent("Test"), 0, 0, Color.RED.getRGB());
-        event.getMatrixStack().pop();
-        buffer.finish();
     }
 
     @SubscribeEvent
@@ -115,13 +105,44 @@ public class ForgeEvents {
     }
 
     @SubscribeEvent
+    public static void onPlayerDropItem(ItemTossEvent event)
+    {
+        if (!event.getPlayer().world.isRemote)
+        {
+            IOnlyBlock onlyBlock = OnlyBlockModel.getCapability(event.getPlayer());
+            if (onlyBlock.getAmazonIsland().getCurrentDelivery() != null)
+            {
+                Vector3d delivery = onlyBlock.getAmazonIsland().getCurrentDelivery();
+                if (event.getPlayer().getPositionVec().distanceTo(delivery) <= 5)
+                {
+                    event.getPlayer().world.playSound(null, event.getEntityItem().getPosX(), event.getEntityItem().getPosY(), event.getEntityItem().getPosZ(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.5f, 1f);
+                    event.getPlayer().world.playSound(null, event.getPlayer().getPosX(), event.getPlayer().getPosY(), event.getPlayer().getPosZ(), SoundRegister.KATCHING.get(), SoundCategory.PLAYERS, 0.5f, 1f);
+                    event.getEntityItem().remove();
+                    onlyBlock.getAmazonIsland().deliver();
+                    onlyBlock.sync((ServerPlayerEntity)event.getPlayer());
+                }
+            }
+        }
+    }
+
+    private static final ResourceLocation DELIVER_BAR = new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/deliver_amount_bar.png");
+    @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event)
     {
-        if (!event.player.world.isRemote && event.player.world.getGameTime() % 10 == 0)
+        if (!event.player.world.isRemote)
         {
-//            event.player.getCapability(CurrencyCapability.CURRENCY_CAPABILITY).ifPresent(iCurrency -> {
-//                iCurrency.addOrSubtractAmount(1);
-//            });
+            IOnlyBlock onlyBlock = OnlyBlockModel.getCapability(event.player);
+            BarInfo barInfo = BarManager.getBarInfoByID("deliver");
+            if (onlyBlock.getAmazonIsland().getCurrentDelivery() == null)
+            {
+                if (barInfo != null) BarManager.removeBar(barInfo.getUniqueID());
+            } else
+            {
+                if (barInfo == null) BarManager.addBar(UUID.randomUUID(), "deliver", new StringTextComponent("\u00A7lCollected Amount: $" + onlyBlock.getAmazonIsland().getAmountGathered()), onlyBlock.getAmazonIsland().getPercentage(), (ServerPlayerEntity) event.player, DELIVER_BAR, new int[]{0, 236, 65}, false);
+                else {
+                    BarManager.updateBar(barInfo.getUniqueID(), (ServerPlayerEntity) event.player, onlyBlock.getAmazonIsland().getPercentage(), new StringTextComponent("\u00A7lCollected Amount: $" + onlyBlock.getAmazonIsland().getAmountGathered()), DELIVER_BAR, barInfo.getRawColor());
+                }
+            }
         }
     }
 
@@ -133,14 +154,19 @@ public class ForgeEvents {
                 iCurrency.setAmount(oldCurrency.getAmount(), false);
             });
         });
+        OnlyBlockModel.getCapability(event.getPlayer()).deserializeNBT(OnlyBlockModel.getCapability(event.getOriginal()).serializeNBT());
     }
 
     @SubscribeEvent
     public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event)
     {
-        event.getPlayer().getCapability(CurrencyCapability.CURRENCY_CAPABILITY).ifPresent(iCurrency -> {
-            iCurrency.sync((ServerPlayerEntity) event.getPlayer());
-        });
+        if (!event.getPlayer().world.isRemote)
+        {
+            event.getPlayer().getCapability(CurrencyCapability.CURRENCY_CAPABILITY).ifPresent(iCurrency -> {
+                iCurrency.sync((ServerPlayerEntity) event.getPlayer());
+            });
+            OnlyBlockModel.getCapability(event.getPlayer()).sync((ServerPlayerEntity)event.getPlayer());
+        }
     }
 
     @SubscribeEvent
@@ -151,6 +177,7 @@ public class ForgeEvents {
             event.getPlayer().getCapability(CurrencyCapability.CURRENCY_CAPABILITY).ifPresent(iCurrency -> {
                 iCurrency.sync((ServerPlayerEntity)event.getPlayer());
             });
+            OnlyBlockModel.getCapability(event.getPlayer()).sync((ServerPlayerEntity)event.getPlayer());
         }
     }
 
@@ -161,66 +188,8 @@ public class ForgeEvents {
             event.getPlayer().getCapability(CurrencyCapability.CURRENCY_CAPABILITY).ifPresent(iCurrency -> {
                 iCurrency.sync((ServerPlayerEntity)event.getPlayer());
             });
+            OnlyBlockModel.getCapability(event.getPlayer()).sync((ServerPlayerEntity)event.getPlayer());
         }
-    }
-
-    @SubscribeEvent
-    public static void onEntityJoinWorld(EntityJoinWorldEvent event)
-    {
-//        if (event.getWorld().isRemote) return;
-//        if (!event.getWorld().isAreaLoaded(event.getEntity().getPosition(), 1)) return;
-//        if (event.getEntity() instanceof IXPMob) return;
-//        final ServerWorld serverWorld = (ServerWorld) event.getWorld();
-//
-//        if (event.getEntity() instanceof ZombieEntity)
-//        {
-//            event.setCanceled(true);
-//            XPZombieEntity zombieEntity = new XPZombieEntity(event.getWorld());
-//            zombieEntity.onInitialSpawn(serverWorld, serverWorld.getDifficultyForLocation(event.getEntity().getPosition()), SpawnReason.NATURAL, null, null);
-//            zombieEntity.setPositionAndRotation(event.getEntity().getPosX(), event.getEntity().getPosY(), event.getEntity().getPosZ(), event.getEntity().rotationYaw, event.getEntity().rotationPitch);
-//            event.getWorld().addEntity(zombieEntity);
-//            return;
-//        }
-//
-//        if (event.getEntity() instanceof CreeperEntity)
-//        {
-//            event.setCanceled(true);
-//            XPCreeperEntity customEntity = new XPCreeperEntity(event.getWorld());
-//            customEntity.onInitialSpawn(serverWorld, serverWorld.getDifficultyForLocation(event.getEntity().getPosition()), SpawnReason.NATURAL, null, null);
-//            customEntity.setPositionAndRotation(event.getEntity().getPosX(), event.getEntity().getPosY(), event.getEntity().getPosZ(), event.getEntity().rotationYaw, event.getEntity().rotationPitch);
-//            event.getWorld().addEntity(customEntity);
-//            return;
-//        }
-//
-//        if (event.getEntity() instanceof SkeletonEntity)
-//        {
-//            event.setCanceled(true);
-//            XPSkeletonEntity customEntity = new XPSkeletonEntity(event.getWorld());
-//            customEntity.onInitialSpawn(serverWorld, serverWorld.getDifficultyForLocation(event.getEntity().getPosition()), SpawnReason.NATURAL, null, null);
-//            customEntity.setPositionAndRotation(event.getEntity().getPosX(), event.getEntity().getPosY(), event.getEntity().getPosZ(), event.getEntity().rotationYaw, event.getEntity().rotationPitch);
-//            event.getWorld().addEntity(customEntity);
-//            return;
-//        }
-//
-//        if (event.getEntity() instanceof EndermanEntity)
-//        {
-//            event.setCanceled(true);
-//            XPEndermanEntity customEntity = new XPEndermanEntity(event.getWorld());
-//            customEntity.onInitialSpawn(serverWorld, serverWorld.getDifficultyForLocation(event.getEntity().getPosition()), SpawnReason.NATURAL, null, null);
-//            customEntity.setPositionAndRotation(event.getEntity().getPosX(), event.getEntity().getPosY(), event.getEntity().getPosZ(), event.getEntity().rotationYaw, event.getEntity().rotationPitch);
-//            event.getWorld().addEntity(customEntity);
-//            return;
-//        }
-//
-//        if (event.getEntity() instanceof SpiderEntity)
-//        {
-//            event.setCanceled(true);
-//            XPSpiderEntity customEntity = new XPSpiderEntity(event.getWorld());
-//            customEntity.onInitialSpawn(serverWorld, serverWorld.getDifficultyForLocation(event.getEntity().getPosition()), SpawnReason.NATURAL, null, null);
-//            customEntity.setPositionAndRotation(event.getEntity().getPosX(), event.getEntity().getPosY(), event.getEntity().getPosZ(), event.getEntity().rotationYaw, event.getEntity().rotationPitch);
-//            event.getWorld().addEntity(customEntity);
-//            return;
-//        }
     }
 
     public static void spawnItem(World worldIn, BlockPos pos, ItemStack stack) {
