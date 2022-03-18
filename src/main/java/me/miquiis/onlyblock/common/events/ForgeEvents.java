@@ -88,17 +88,14 @@ public class ForgeEvents {
     }
 
     @SubscribeEvent
-    public static void onPlayerInteract(PlayerInteractEvent.EntityInteract event)
+    public static void onPlayerInteract(PlayerInteractEvent.RightClickBlock event)
     {
-        if (event.getTarget() == null) return;
         if (event.getWorld().isRemote) return;
         if (event.getHand() == Hand.MAIN_HAND)
         {
-            if (event.getEntity() != null)
+            BlockState blockState = event.getWorld().getBlockState(event.getPos());
+            if (blockState.getBlock() == BlockRegister.LAPTOP.get())
             {
-//                StockEntity stockEntity = new StockEntity(event.getWorld());
-//                stockEntity.setPosition(event.getPlayer().getPosX(), event.getPlayer().getPosY(), event.getPlayer().getPosZ());
-//                event.getWorld().addEntity(stockEntity);
                 OnlyBlockNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) event.getPlayer()), new OpenShopPacket());
             }
         }

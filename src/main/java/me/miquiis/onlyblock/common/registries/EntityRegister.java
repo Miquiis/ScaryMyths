@@ -45,6 +45,20 @@ public class EntityRegister {
                     .build(new ResourceLocation(OnlyBlock.MOD_ID, "noob").toString())
     );
 
+    public static final RegistryObject<EntityType<GoodStockEntity>> GOOD_STOCK = ENTITIES.register("good_stock",
+            () -> EntityType.Builder.<GoodStockEntity>create(GoodStockEntity::new, EntityClassification.MISC)
+                    .size(1.0F, 1.0F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "good_stock").toString())
+    );
+
+    public static final RegistryObject<EntityType<BadStockEntity>> BAD_STOCK = ENTITIES.register("bad_stock",
+            () -> EntityType.Builder.<BadStockEntity>create(BadStockEntity::new, EntityClassification.MISC)
+                    .size(1.0F, 1.0F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "bad_stock").toString())
+    );
+
     public static final RegistryObject<EntityType<VanEntity>> VAN = ENTITIES.register("van",
             () -> EntityType.Builder.<VanEntity>create(VanEntity::new, EntityClassification.MISC)
                     .size(4.0F, 2.0F)
@@ -57,6 +71,12 @@ public class EntityRegister {
                     .size(1.0F, 2.0F)
                     .trackingRange(8)
                     .build(new ResourceLocation(OnlyBlock.MOD_ID, "noob_bezos").toString())
+    );
+
+    public static final RegistryObject<EntityType<GoldenProjectileEntity>> GOLDEN_PROJECTILE = ENTITIES.register("golden_projectile",
+            () -> EntityType.Builder.<GoldenProjectileEntity>create(GoldenProjectileEntity::new, EntityClassification.MISC)
+                    .size(1.0f, 0.5f).trackingRange(20)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "golden_projectile").toString())
     );
 
     public static final RegistryObject<EntityType<ElonMusk>> ELON_MUSK = ENTITIES.register("elon_musk",
@@ -79,19 +99,17 @@ public class EntityRegister {
                     .build(new ResourceLocation(OnlyBlock.MOD_ID, "stock_ghast").toString())
     );
 
+    public static final RegistryObject<EntityType<GoldenHelicopterEntity>> GOLDEN_HELI = ENTITIES.register("golden_helicopter",
+            () -> EntityType.Builder.<GoldenHelicopterEntity>create(GoldenHelicopterEntity::new, EntityClassification.MISC)
+                    .size(3f, 3f).trackingRange(10)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "golden_helicopter").toString())
+    );
+
     public static final RegistryObject<EntityType<AmazonTNTEntity>> AMAZON_TNT = ENTITIES.register("amazon_tnt",
             () -> EntityType.Builder.<AmazonTNTEntity>create(AmazonTNTEntity::new, EntityClassification.MISC)
                     .immuneToFire().size(0.98F, 0.98F)
                     .trackingRange(10)
                     .updateInterval(10).build(new ResourceLocation(OnlyBlock.MOD_ID, "amazon_tnt").toString())
-    );
-
-    public static final RegistryObject<EntityType<StockEntity>> STOCK_ENTITY = ENTITIES.register("stock_entity",
-            () -> EntityType.Builder.<StockEntity>create(EntityClassification.MISC)
-                    .size(1.0F, 1.0F)
-                    .trackingRange(4)
-                    .updateInterval(10)
-                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "stock_entity").toString())
     );
 
     public static final RegistryObject<EntityType<XPZombieEntity>> XP_ZOMBIE = ENTITIES.register("xp_zombie",
@@ -176,6 +194,7 @@ public class EntityRegister {
         event.put(BANK_OWNER.get(), BankOwner.registerAttributes().create());
 
         event.put(VAN.get(), VanEntity.func_233666_p_().create());
+        event.put(GOLDEN_HELI.get(), GoldenHelicopterEntity.func_233666_p_().create());
 
         event.put(ONE_MIL.get(), OneMilEntity.registerAttributes().create());
 

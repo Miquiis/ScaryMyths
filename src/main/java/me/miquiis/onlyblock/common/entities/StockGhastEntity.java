@@ -1,5 +1,6 @@
 package me.miquiis.onlyblock.common.entities;
 
+import me.miquiis.onlyblock.common.utils.MathUtils;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ILivingEntityData;
 import net.minecraft.entity.LivingEntity;
@@ -116,14 +117,30 @@ public class StockGhastEntity extends GhastEntity {
                     double d2 = livingentity.getPosX() - (this.parentEntity.getPosX() + vector3d.x * 4.0D);
                     double d3 = livingentity.getPosYHeight(0.5D) - (0.5D + this.parentEntity.getPosYHeight(0.5D));
                     double d4 = livingentity.getPosZ() - (this.parentEntity.getPosZ() + vector3d.z * 4.0D);
+
+                    Vector3d spawnPosition = this.parentEntity.getLookVec().mul(2, 2,2).add(this.parentEntity.getPositionVec());
+                    Vector3d velocity = livingentity.getPositionVec().subtract(parentEntity.getPositionVec()).normalize().mul(2, 2, 2);
+
                     if (!this.parentEntity.isSilent()) {
                         world.playEvent((PlayerEntity)null, 1016, this.parentEntity.getPosition(), 0);
                     }
 
-                    FireballEntity fireballentity = new FireballEntity(world, this.parentEntity, d2, d3, d4);
-                    fireballentity.explosionPower = this.parentEntity.getFireballStrength();
-                    fireballentity.setPosition(this.parentEntity.getPosX() + vector3d.x * 4.0D, this.parentEntity.getPosYHeight(0.5D) + 0.5D, fireballentity.getPosZ() + vector3d.z * 4.0D);
-                    world.addEntity(fireballentity);
+                    if (MathUtils.chance(40))
+                    {
+                        BadStockEntity goodStockEntity = new BadStockEntity(world);
+                        goodStockEntity.setPosition(spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ());
+                        goodStockEntity.setVelocity(velocity.getX(), velocity.getY(), velocity.getZ());
+                        System.out.println(goodStockEntity.getPosition());
+                        world.addEntity(goodStockEntity);
+                    } else
+                    {
+                        GoodStockEntity goodStockEntity = new GoodStockEntity(world);
+                        goodStockEntity.setPosition(spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ());
+                        goodStockEntity.setVelocity(velocity.getX(), velocity.getY(), velocity.getZ());
+                        System.out.println(goodStockEntity.getPosition());
+                        world.addEntity(goodStockEntity);
+                    }
+
                     this.attackTimer = -40;
                 }
             } else if (this.attackTimer > 0) {

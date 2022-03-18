@@ -8,7 +8,9 @@ import me.miquiis.onlyblock.common.capability.interfaces.ICurrency;
 import me.miquiis.onlyblock.common.capability.interfaces.IOnlyBlock;
 import me.miquiis.onlyblock.common.capability.models.OnlyBlockModel;
 import me.miquiis.onlyblock.common.classes.OldEasyGUI;
+import me.miquiis.onlyblock.common.entities.GoldenHelicopterEntity;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -22,6 +24,7 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -74,7 +77,7 @@ public class ClientEvents {
     public static void onLastWorldRender(RenderWorldLastEvent event)
     {
         IOnlyBlock onlyBlockCap = OnlyBlockModel.getCapability(Minecraft.getInstance().player);
-        if (onlyBlockCap.getAmazonIsland().getCurrentDelivery() != null)
+        if (onlyBlockCap.getAmazonIsland() != null && onlyBlockCap.getAmazonIsland().getCurrentDelivery() != null)
         {
             Vector3d currentDelivery = onlyBlockCap.getAmazonIsland().getCurrentDelivery();
             double distance = Minecraft.getInstance().player.getPositionVec().distanceTo(currentDelivery);
@@ -82,6 +85,23 @@ public class ClientEvents {
 
             renderTextInWorld(event.getMatrixStack(), new StringTextComponent(Math.round(distance) + "m"), currentDelivery.getX() + 0.5, currentDelivery.getY(), currentDelivery.getZ() + 0.5, 0, distanceScale, Color.WHITE.getRGB());
             renderTextInWorld(event.getMatrixStack(), new StringTextComponent("Next Delivery"), currentDelivery.getX() + 0.5, currentDelivery.getY(), currentDelivery.getZ() + 0.5, 10.0, distanceScale, new Color(255,153,0).getRGB());
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerTick(TickEvent.PlayerTickEvent event)
+    {
+        if (event.player.world.isRemote && event.phase == TickEvent.Phase.END)
+        {
+            ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity) event.player;
+            if (event.player.getRidingEntity() != null)
+            {
+                if (event.player.getRidingEntity() instanceof GoldenHelicopterEntity)
+                {
+                    GoldenHelicopterEntity goldenHelicopterEntity = (GoldenHelicopterEntity) event.player.getRidingEntity();
+                    //goldenHelicopterEntity.updateInputs(clientPlayerEntity.movementInput.forwardKeyDown, clientPlayerEntity.movementInput.backKeyDown, clientPlayerEntity.movementInput.leftKeyDown, clientPlayerEntity.movementInput.rightKeyDown);
+                }
+            }
         }
     }
 

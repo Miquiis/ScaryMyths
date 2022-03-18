@@ -6,6 +6,7 @@ import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.common.capability.CurrencyCapability;
 import me.miquiis.onlyblock.common.capability.interfaces.ICurrency;
 import me.miquiis.onlyblock.common.classes.JHTML;
+import me.miquiis.onlyblock.common.registries.ItemRegister;
 import me.miquiis.onlyblock.common.utils.MathUtils;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
@@ -209,18 +210,18 @@ public class LaptopScreen extends Screen {
                 JHTML.Box(1070, 30, AMAZON_MID_BAR),
                 JHTML.Box(1070, 30, AMAZON_BOTTOM_BAR),
                 JHTML.Box(1070, 440, false, Color.LIGHT_GRAY.getRGB(),
-                        createSellWindow(new ItemStack(Items.BARRIER), 0),
-                        createSellWindow(new ItemStack(Items.BARRIER), 0),
-                        createSellWindow(new ItemStack(Items.BARRIER), 0)
+                        createSellWindow(new ItemStack(ItemRegister.GOLDEN_BAZOOKA.get()), "Golden Bazooka", 0),
+                        createSellWindow(new ItemStack(ItemRegister.GOLDEN_HELICOPTER.get()), "Golden Helicopter", 0),
+                        createSellWindow(new ItemStack(Items.BARRIER), "*OUT OF ORDER*", 0)
                 )
         ).setAbsolutePosition();
     }
 
-    private JHTML.Canvas createSellWindow(ItemStack itemIcon, int itemPrice)
+    private JHTML.Canvas createSellWindow(ItemStack itemIcon, String name, int itemPrice)
     {
         return JHTML.Box(300, 400, 40, 20, 0, 0, Color.WHITE.getRGB(),
                 JHTML.Item(200, 200, 0, 20, 0,0, itemIcon, 2f).setCenteredHorizontally(),
-                JHTML.Text(0, 0, 20, 0, 0, "\u00A70*OUT OF ORDER*", 3f).setCenteredHorizontally(),
+                JHTML.Text(0, 0, 20, 0, 0, "\u00A70" + name, 3f).setCenteredHorizontally(),
                 JHTML.Text(0, 0, 20, 0, 0, "\u00A72$" + itemPrice, 3f).setCenteredHorizontally(),
                 JHTML.Image(280, 40, 0, 30, 0, 0, false, new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/laptop/buy_button.png"),
                         JHTML.Text(0, 0, 0,0, 0, "Buy", 3f, true, Color.WHITE.getRGB()).setCenteredHorizontally().setCenteredVertically()

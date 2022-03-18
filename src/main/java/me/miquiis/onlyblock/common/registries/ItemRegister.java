@@ -2,6 +2,7 @@ package me.miquiis.onlyblock.common.registries;
 
 import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.common.items.*;
+import me.miquiis.onlyblock.common.items.renderer.GoldenHelicopterItemRenderer;
 import me.miquiis.onlyblock.common.items.renderer.JetpackItemRenderer;
 import me.miquiis.onlyblock.common.items.renderer.MoneyShotgunRenderer;
 import me.miquiis.onlyblock.common.items.renderer.NoobItemRenderer;
@@ -31,6 +32,14 @@ public class ItemRegister {
 
     public static final RegistryObject<Item> CASH = ITEMS.register("cash", () ->
             new Item(new Item.Properties().group(ItemGroup.MISC))
+    );
+
+    public static final RegistryObject<Item> GOLDEN_BAZOOKA = ITEMS.register("golden_bazooka", () ->
+            new GoldenBazooka(new Item.Properties().group(ItemGroup.COMBAT).maxStackSize(1))
+    );
+
+    public static final RegistryObject<Item> GOLDEN_HELICOPTER = ITEMS.register("golden_helicopter", () ->
+            new GoldenHelicopterItem(new Item.Properties().group(ItemGroup.TRANSPORTATION).maxStackSize(1).setISTER(() -> GoldenHelicopterItemRenderer::new))
     );
 
     public static final RegistryObject<Item> DOLLAR_SWORD = ITEMS.register("dollar_sword", () ->

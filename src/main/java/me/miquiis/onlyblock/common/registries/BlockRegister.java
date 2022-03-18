@@ -41,6 +41,10 @@ public class BlockRegister {
             new AmazonTNTBlock(AbstractBlock.Properties.create(Material.TNT).zeroHardnessAndResistance().sound(SoundType.PLANT))
     );
 
+    public static final RegistryObject<Block> LAPTOP = registerBlock("laptop", () ->
+            new BaseHorizontalBlock(AbstractBlock.Properties.create(Material.GLASS).hardnessAndResistance(0.5f).sound(SoundType.GLASS).notSolid().setOpaque(BlockRegister::isntSolid).setSuffocates(BlockRegister::isntSolid).setBlocksVision(BlockRegister::isntSolid))
+    );
+
     public static final RegistryObject<Block> SERVER_BLOCK = registerBlock("server_block", () ->
             new BaseHorizontalBlock(AbstractBlock.Properties.create(Material.GLASS).hardnessAndResistance(0.5f).sound(SoundType.GLASS).notSolid().setOpaque(BlockRegister::isntSolid).setSuffocates(BlockRegister::isntSolid).setBlocksVision(BlockRegister::isntSolid))
     );
@@ -62,6 +66,10 @@ public class BlockRegister {
     );
 
     public static final RegistryObject<Block> SMALL_CASH_PILE = registerBlock("small_cash_pile", () ->
+            new Block(AbstractBlock.Properties.create(Material.CAKE).hardnessAndResistance(0.5f).sound(SoundType.PLANT).notSolid())
+    );
+
+    public static final RegistryObject<Block> CASH_PILE = registerBlock("cash_pile", () ->
             new Block(AbstractBlock.Properties.create(Material.CAKE).hardnessAndResistance(0.5f).sound(SoundType.PLANT).notSolid())
     );
 
