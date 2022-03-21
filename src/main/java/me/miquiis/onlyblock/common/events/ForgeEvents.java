@@ -12,6 +12,7 @@ import me.miquiis.onlyblock.common.capability.models.OnlyBlockModel;
 import me.miquiis.onlyblock.common.containers.MinazonContainer;
 import me.miquiis.onlyblock.common.entities.*;
 import me.miquiis.onlyblock.common.managers.BlockManager;
+import me.miquiis.onlyblock.common.quests.BreakHundredBlocksQuest;
 import me.miquiis.onlyblock.common.registries.*;
 import me.miquiis.onlyblock.common.utils.MathUtils;
 import me.miquiis.onlyblock.server.commands.OnlyBlockCommand;
@@ -102,6 +103,19 @@ public class ForgeEvents {
     }
 
     @SubscribeEvent
+    public static void onBlockBreak(BlockEvent.BreakEvent event)
+    {
+        if (!event.getWorld().isRemote()){
+            IOnlyBlock onlyBlock = OnlyBlockModel.getCapability(event.getPlayer());
+            if (onlyBlock.getCurrentQuest() != null && onlyBlock.getCurrentQuest() instanceof BreakHundredBlocksQuest)
+            {
+                BreakHundredBlocksQuest hundredBlocksQuest = (BreakHundredBlocksQuest) onlyBlock.getCurrentQuest();
+                hundredBlocksQuest.onBlockBreak(event);
+            }
+        }
+    }
+
+    @SubscribeEvent
     public static void onPlayerDropItem(ItemTossEvent event)
     {
         if (!event.getPlayer().world.isRemote)
@@ -123,12 +137,14 @@ public class ForgeEvents {
     }
 
     private static final ResourceLocation DELIVER_BAR = new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/deliver_amount_bar.png");
+    private static final ResourceLocation QUEST_BAR = new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/quest_bar.png");
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event)
     {
         if (!event.player.world.isRemote)
         {
             IOnlyBlock onlyBlock = OnlyBlockModel.getCapability(event.player);
+
             BarInfo barInfo = BarManager.getBarInfoByID("deliver");
             if (onlyBlock.getAmazonIsland().getCurrentDelivery() == null)
             {
@@ -138,6 +154,34 @@ public class ForgeEvents {
                 if (barInfo == null) BarManager.addBar(UUID.randomUUID(), "deliver", new StringTextComponent("\u00A7lCollected Amount: $" + onlyBlock.getAmazonIsland().getAmountGathered()), onlyBlock.getAmazonIsland().getPercentage(), (ServerPlayerEntity) event.player, DELIVER_BAR, new int[]{0, 236, 65}, false);
                 else {
                     BarManager.updateBar(barInfo.getUniqueID(), (ServerPlayerEntity) event.player, onlyBlock.getAmazonIsland().getPercentage(), new StringTextComponent("\u00A7lCollected Amount: $" + onlyBlock.getAmazonIsland().getAmountGathered()), DELIVER_BAR, barInfo.getRawColor());
+                }
+            }
+
+            BarInfo questBarInfo = BarManager.getBarInfoByID("quest");
+            if (onlyBlock.getCurrentQuest() == null)
+            {
+                if (questBarInfo != null) BarManager.removeBar(questBarInfo.getUniqueID());
+            } else
+            {
+                if (questBarInfo == null) BarManager.addBar(UUID.randomUUID(), "quest", new StringTextComponent(onlyBlock.getCurrentQuest().getTitle()), onlyBlock.getCurrentQuest().getProgress(), (ServerPlayerEntity) event.player, QUEST_BAR, new int[]{235, 235, 52}, false);
+                else {
+                    BarManager.updateBar(questBarInfo.getUniqueID(), (ServerPlayerEntity) event.player, onlyBlock.getCurrentQuest().getProgress(), new StringTextComponent(onlyBlock.getCurrentQuest().getTitle()), QUEST_BAR, questBarInfo.getRawColor());
+                }
+            }
+
+            if (onlyBlock.getAmazonIsland() != null)
+            {
+                if (!onlyBlock.getAmazonIsland().isLocked())
+                {
+                    if (event.player.world.getGameTime() % 20 == 0)
+                    {
+                        for (int i = 0; i < 5; i++)
+                        {
+                            Vector3d pos = onlyBlock.getAmazonIsland().getRandomTNTLocation();
+                            AmazonTNTEntity amazonTNTEntity = new AmazonTNTEntity(event.player.world, pos.getX(), pos.getY(), pos.getZ(), null);
+                            event.player.world.addEntity(amazonTNTEntity);
+                        }
+                    }
                 }
             }
         }

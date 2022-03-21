@@ -7,13 +7,8 @@ import me.miquiis.onlyblock.common.entities.renderer.*;
 import me.miquiis.onlyblock.common.items.JetpackArmorItem;
 import me.miquiis.onlyblock.common.items.ModSpawnEgg;
 import me.miquiis.onlyblock.common.items.renderer.JetpackArmorRenderer;
-import me.miquiis.onlyblock.common.registries.BlockRegister;
 import me.miquiis.onlyblock.common.registries.EntityRegister;
-import me.miquiis.onlyblock.common.registries.TileEntityRegister;
-import me.miquiis.onlyblock.common.tileentities.renderer.MoneyPrinterTileRenderer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.entity.*;
 import net.minecraft.entity.EntityType;
 import net.minecraftforge.api.distmarker.Dist;
@@ -21,8 +16,6 @@ import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.client.registry.IRenderFactory;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -35,8 +28,6 @@ public class ModClientEvents {
     public static void doClientStuff(final FMLClientSetupEvent event)
     {
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.CUSTOM_FALLING_BLOCK.get(), CustomFallingBlockRenderer::new);
-
-        ClientRegistry.bindTileEntityRenderer(TileEntityRegister.MONEY_PRINTER_TILE_ENTITY.get(), MoneyPrinterTileRenderer::new);
 
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.XP_ZOMBIE.get(), XPZombieRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.XP_CREEPER.get(), XPCreeperRenderer::new);
@@ -53,10 +44,17 @@ public class ModClientEvents {
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.BANK_OWNER.get(), BankOwnerRenderer::new);
 
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.VAN.get(), VanRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.VAN_TWO.get(), VanTwoRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.SEDAN.get(), SedanRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.SEDAN_TWO.get(), SedanTwoRenderer::new);
+
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.GOLDEN_HELI.get(), GoldenHelicopterRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.GOLDEN_PROJECTILE.get(), GoldenProjectileRenderer::new);
 
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.ONE_MIL.get(), OneMilRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.FIVE_HUNDRED.get(), FiveHundredRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.HUNDRED.get(), HundredRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.QUESTION_MARK.get(), QuestionMarkRenderer::new);
 
         GeoArmorRenderer.registerArmorRenderer(JetpackArmorItem.class, new JetpackArmorRenderer());
 
@@ -68,9 +66,6 @@ public class ModClientEvents {
 
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.STOCK_GHAST.get(), GhastRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.AMAZON_TNT.get(), AmazonTNTRenderer::new);
-
-        RenderTypeLookup.setRenderLayer(BlockRegister.SERVER_BLOCK.get(), RenderType.getCutout());
-        RenderTypeLookup.setRenderLayer(BlockRegister.TERMINAL_PANEL.get(), RenderType.getCutout());
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)

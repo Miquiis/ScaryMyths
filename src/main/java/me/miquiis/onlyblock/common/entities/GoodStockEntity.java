@@ -1,6 +1,7 @@
 package me.miquiis.onlyblock.common.entities;
 
 import me.miquiis.onlyblock.common.registries.EntityRegister;
+import me.miquiis.onlyblock.common.registries.ItemRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.ProjectileItemEntity;
@@ -26,6 +27,21 @@ public class GoodStockEntity extends ProjectileItemEntity {
     @Override
     public boolean canBeCollidedWith() {
         return true;
+    }
+
+    @Override
+    protected void onEntityHit(EntityRayTraceResult result) {
+        super.onEntityHit(result);
+        remove();
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (ticksExisted >= 100)
+        {
+            remove();
+        }
     }
 
     @Override
@@ -58,7 +74,7 @@ public class GoodStockEntity extends ProjectileItemEntity {
 
     @Override
     protected Item getDefaultItem() {
-        return Items.DIAMOND_BLOCK;
+        return ItemRegister.GOOD_STOCK.get();
     }
 
     @Override

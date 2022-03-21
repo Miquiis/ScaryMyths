@@ -2,13 +2,17 @@ package me.miquiis.onlyblock.common.entities;
 
 import me.miquiis.onlyblock.common.blocks.BaseHorizontalBlock;
 import me.miquiis.onlyblock.common.registries.BlockRegister;
+import me.miquiis.onlyblock.common.registries.EntityRegister;
+import me.miquiis.onlyblock.common.utils.MathUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
@@ -23,20 +27,35 @@ import java.util.concurrent.atomic.AtomicReference;
 public class VanEntity extends MobEntity implements IAnimatable {
 
     private AnimationFactory factory = new AnimationFactory(this);
+    private double randomSpeed;
+    private boolean isFirstMove;
 
     public VanEntity(EntityType<? extends MobEntity> type, World worldIn) {
         super(type, worldIn);
+        this.randomSpeed = MathUtils.getRandomMinMax(-0.2, 0.1);
+    }
+
+    public VanEntity(World worldIn) {
+        super(EntityRegister.VAN.get(), worldIn);
+        this.randomSpeed = MathUtils.getRandomMinMax(-0.2, 0.1);
     }
 
     @Override
     public void tick() {
         super.tick();
-        BlockState foundDirection = getNearestDirectionBlock();
+        BlockPos foundDirection = getNearestDirectionBlock();
         if (foundDirection == null) return;
-        Direction direction = foundDirection.get(BaseHorizontalBlock.HORIZONTAL_FACING);
-        moveController.setMoveTo(getPosX() + direction.getXOffset(), getPosY() + direction.getYOffset(), getPosZ() + direction.getZOffset(), 0.5);
+        BlockState foundBlockState = world.getBlockState(foundDirection);
+        if (foundBlockState.getBlock() != BlockRegister.ROAD_DIRECTION.get()) return;
+        Direction direction = foundBlockState.get(BaseHorizontalBlock.HORIZONTAL_FACING);
+        if (isFirstMove)
+        {
+            setPosition(foundDirection.getX() + 0.5, getPosY(), foundDirection.getZ() + 0.5);
+            isFirstMove = false;
+            return;
+        }
+        moveController.setMoveTo(getPosX() + direction.getXOffset(), getPosY() + direction.getYOffset(), getPosZ() + direction.getZOffset(), 1.0 + randomSpeed);
     }
-
 
     @Override
     protected void collideWithEntity(Entity entityIn) {
@@ -48,6 +67,11 @@ public class VanEntity extends MobEntity implements IAnimatable {
 
     @Override
     public void onCollideWithPlayer(PlayerEntity entityIn) {
+        if (entityIn.world.isRemote)
+        {
+            Vector3d direction = entityIn.getLookVec().mul(-1, -1, -1).mul(0.5, 0.5, 0.5);
+            entityIn.addVelocity(direction.getX(), 0.3, direction.getZ());
+        }
         super.onCollideWithPlayer(entityIn);
     }
 
@@ -66,15 +90,19 @@ public class VanEntity extends MobEntity implements IAnimatable {
         return factory;
     }
 
-    private BlockState getNearestDirectionBlock()
+    private BlockPos getNearestDirectionBlock()
     {
-        AtomicReference<BlockState> blockPosAtomicReference = new AtomicReference<>();
-        BlockPos.getAllInBox(getBoundingBox().grow(-3, 2, -3)).forEach(blockPos -> {
+        final AxisAlignedBB box = getBoundingBox().grow(-3, 2, -3);
+        Iterable<BlockPos> blocksAround = BlockPos.getAllInBoxMutable((int)box.minX, (int)box.minY, (int)box.minZ, (int)box.maxX, (int)box.maxY, (int)box.maxZ);
+
+        for (BlockPos blockPos : blocksAround)
+        {
             if (world.getBlockState(blockPos).getBlock() == BlockRegister.ROAD_DIRECTION.get())
             {
-                blockPosAtomicReference.set(world.getBlockState(blockPos));
+                return blockPos;
             }
-        });
-        return blockPosAtomicReference.get();
+        }
+
+        return null;
     }
 }

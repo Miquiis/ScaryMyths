@@ -17,7 +17,7 @@ public class OneMilRenderer extends GeoEntityRenderer<OneMilEntity> {
 
     @Override
     protected void applyRotations(OneMilEntity entityLiving, MatrixStack matrixStackIn, float ageInTicks, float rotationYaw, float partialTicks) {
-        matrixStackIn.scale(10, 10, 10);
+        matrixStackIn.scale(3, 3, 3);
         super.applyRotations(entityLiving, matrixStackIn, ageInTicks, rotationYaw, partialTicks);
     }
 

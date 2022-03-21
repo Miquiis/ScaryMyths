@@ -1,4 +1,40 @@
 package me.miquiis.onlyblock.common.classes;
 
-public class BillionaireIsland {
+import net.minecraft.nbt.CompoundNBT;
+
+public class BillionaireIsland implements IUnlockable {
+
+    private boolean isLocked;
+
+    public void deserializeNBT(CompoundNBT compoundNBT)
+    {
+        if (compoundNBT.contains("IsLocked"))
+        {
+            isLocked = compoundNBT.getBoolean("IsLocked");
+        }
+    }
+
+    public CompoundNBT serializeNBT()
+    {
+        CompoundNBT compoundNBT = new CompoundNBT();
+        compoundNBT.putBoolean("IsLocked", isLocked);
+        return compoundNBT;
+    }
+
+
+    @Override
+    public boolean isLocked() {
+        return isLocked;
+    }
+
+    @Override
+    public void unlock() {
+        isLocked = false;
+    }
+
+    @Override
+    public void lock() {
+        isLocked = true;
+    }
+
 }

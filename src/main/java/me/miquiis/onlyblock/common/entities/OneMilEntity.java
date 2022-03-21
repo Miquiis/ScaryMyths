@@ -19,6 +19,7 @@ public class OneMilEntity extends MobEntity implements IAnimatable {
 
     public OneMilEntity(EntityType<? extends MobEntity> type, World worldIn) {
         super(type, worldIn);
+        this.ignoreFrustumCheck = true;
     }
 
     public static AttributeModifierMap.MutableAttribute registerAttributes() {
@@ -26,7 +27,7 @@ public class OneMilEntity extends MobEntity implements IAnimatable {
     }
 
     private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
-        event.getController().setAnimation(new AnimationBuilder().addAnimation("float",true));
+        event.getController().setAnimation(new AnimationBuilder().addAnimation("spin",true));
         return PlayState.CONTINUE;
     }
 

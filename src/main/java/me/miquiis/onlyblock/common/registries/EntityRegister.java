@@ -38,6 +38,27 @@ public class EntityRegister {
                     .build(new ResourceLocation(OnlyBlock.MOD_ID, "one_mil").toString())
     );
 
+    public static final RegistryObject<EntityType<FiveHundredEntity>> FIVE_HUNDRED = ENTITIES.register("five_hundred",
+            () -> EntityType.Builder.<FiveHundredEntity>create(FiveHundredEntity::new, EntityClassification.MISC)
+                    .size(2.0F, 2.0F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "five_hundred").toString())
+    );
+
+    public static final RegistryObject<EntityType<HundredEntity>> HUNDRED = ENTITIES.register("hundred",
+            () -> EntityType.Builder.<HundredEntity>create(HundredEntity::new, EntityClassification.MISC)
+                    .size(2.0F, 2.0F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "hundred").toString())
+    );
+
+    public static final RegistryObject<EntityType<QuestionMarkEntity>> QUESTION_MARK = ENTITIES.register("question_mark",
+            () -> EntityType.Builder.<QuestionMarkEntity>create(QuestionMarkEntity::new, EntityClassification.MISC)
+                    .size(2.0F, 2.0F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "question_mark").toString())
+    );
+
     public static final RegistryObject<EntityType<Noob1234>> NOOB = ENTITIES.register("noob",
             () -> EntityType.Builder.<Noob1234>create(Noob1234::new, EntityClassification.MISC)
                     .size(1.0F, 2.0F)
@@ -61,9 +82,30 @@ public class EntityRegister {
 
     public static final RegistryObject<EntityType<VanEntity>> VAN = ENTITIES.register("van",
             () -> EntityType.Builder.<VanEntity>create(VanEntity::new, EntityClassification.MISC)
-                    .size(4.0F, 2.0F)
+                    .size(2.0F, 2.0F)
                     .trackingRange(8)
                     .build(new ResourceLocation(OnlyBlock.MOD_ID, "van").toString())
+    );
+
+    public static final RegistryObject<EntityType<VanTwoEntity>> VAN_TWO = ENTITIES.register("van_two",
+            () -> EntityType.Builder.<VanTwoEntity>create(VanTwoEntity::new, EntityClassification.MISC)
+                    .size(2.0F, 2.0F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "van_two").toString())
+    );
+
+    public static final RegistryObject<EntityType<SedanEntity>> SEDAN = ENTITIES.register("sedan",
+            () -> EntityType.Builder.<SedanEntity>create(SedanEntity::new, EntityClassification.MISC)
+                    .size(2.0F, 2.0F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "sedan").toString())
+    );
+
+    public static final RegistryObject<EntityType<SedanTwoEntity>> SEDAN_TWO = ENTITIES.register("sedan_two",
+            () -> EntityType.Builder.<SedanTwoEntity>create(SedanTwoEntity::new, EntityClassification.MISC)
+                    .size(2.0F, 2.0F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "sedan_two").toString())
     );
 
     public static final RegistryObject<EntityType<NoobBezos>> NOOB_BEZOS = ENTITIES.register("noob_bezos",
@@ -194,9 +236,16 @@ public class EntityRegister {
         event.put(BANK_OWNER.get(), BankOwner.registerAttributes().create());
 
         event.put(VAN.get(), VanEntity.func_233666_p_().create());
+        event.put(VAN_TWO.get(), VanTwoEntity.func_233666_p_().create());
+        event.put(SEDAN.get(), SedanEntity.func_233666_p_().create());
+        event.put(SEDAN_TWO.get(), SedanTwoEntity.func_233666_p_().create());
+
         event.put(GOLDEN_HELI.get(), GoldenHelicopterEntity.func_233666_p_().create());
 
         event.put(ONE_MIL.get(), OneMilEntity.registerAttributes().create());
+        event.put(FIVE_HUNDRED.get(), FiveHundredEntity.registerAttributes().create());
+        event.put(HUNDRED.get(), HundredEntity.registerAttributes().create());
+        event.put(QUESTION_MARK.get(), QuestionMarkEntity.registerAttributes().create());
 
         event.put(AIRDROP.get(), AirdropEntity.registerAttributes().create());
     }

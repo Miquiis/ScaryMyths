@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "onlyblock:block/stock_ore"
+    }
+  }
+}
