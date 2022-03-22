@@ -10,23 +10,17 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.common.capability.CurrencyCapability;
+import me.miquiis.onlyblock.common.capability.interfaces.IOnlyBlock;
 import me.miquiis.onlyblock.common.capability.models.OnlyBlockModel;
-import me.miquiis.onlyblock.common.quests.BreakHundredBlocksQuest;
-import me.miquiis.onlyblock.common.utils.WorldEditUtils;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.test.TestFunctionInfo;
-import net.minecraft.test.TestRegistry;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Currency;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
@@ -46,23 +40,24 @@ public class OnlyBlockCommand {
                 .then(Commands.literal("islands").then(Commands.argument("option", StringArgumentType.string()).suggests(this::listIslandOptions).then(Commands.argument("island", StringArgumentType.string()).suggests(this::listIslands).executes(context -> {
                     String option = StringArgumentType.getString(context, "option");
                     String island = StringArgumentType.getString(context, "island");
-
+                    IOnlyBlock onlyBlock = OnlyBlockModel.getCapability(context.getSource().asPlayer());
                     if (option.equals("lock"))
                     {
                         switch (island)
                         {
                             case "stocks":
                             {
-                                WorldEditUtils.pasteSchematic("b_stock_no_entity", context.getSource().getWorld(), -7.51, 66, -122.44);
+                                onlyBlock.getStockIsland().lock(context.getSource().getWorld());
                                 break;
                             }
                             case "amazon":
                             {
+                                onlyBlock.getAmazonIsland().lock(context.getSource().getWorld());
                                 break;
                             }
                             case "rocket":
                             {
-                                WorldEditUtils.pasteSchematic("b_rocket_no_entity", context.getSource().getWorld(), 1.51, 65.00, 130.47);
+                                onlyBlock.getBillionaireIsland().lock(context.getSource().getWorld());
                                 break;
                             }
                         }
@@ -72,16 +67,17 @@ public class OnlyBlockCommand {
                         {
                             case "stocks":
                             {
-                                WorldEditUtils.pasteSchematic("stock_no_entity", context.getSource().getWorld(), -7.51, 66, -122.44);
+                                onlyBlock.getStockIsland().unlock(context.getSource().getWorld());
                                 break;
                             }
                             case "amazon":
                             {
+                                onlyBlock.getAmazonIsland().unlock(context.getSource().getWorld());
                                 break;
                             }
                             case "rocket":
                             {
-                                WorldEditUtils.pasteSchematic("rocket_no_entity", context.getSource().getWorld(), 1.51, 65.00, 130.47);
+                                onlyBlock.getBillionaireIsland().unlock(context.getSource().getWorld());
                                 break;
                             }
                         }
@@ -90,13 +86,12 @@ public class OnlyBlockCommand {
                     return 1;
                 }))))
                 .then(Commands.literal("debug").executes(context -> {
-                    OnlyBlockModel.getCapability(context.getSource().asPlayer()).getAmazonIsland().startMinigame(context.getSource().getWorld());
+                    OnlyBlockModel.getCapability(context.getSource().asPlayer()).getAmazonIsland().startMinigame(context.getSource().asPlayer(), context.getSource().getWorld());
                     OnlyBlockModel.getCapability(context.getSource().asPlayer()).sync(context.getSource().asPlayer());
                     return 1;
                 }))
                 .then(Commands.literal("reset").executes(context -> {
                     OnlyBlockModel.getCapability(context.getSource().asPlayer()).getAmazonIsland().reset();
-                    OnlyBlockModel.getCapability(context.getSource().asPlayer()).setCurrentQuest(new BreakHundredBlocksQuest());
                     OnlyBlockModel.getCapability(context.getSource().asPlayer()).sync(context.getSource().asPlayer());
                     return 1;
                 }))

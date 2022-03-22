@@ -1,24 +1,36 @@
 package me.miquiis.onlyblock.common.quests;
 
+import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.common.capability.interfaces.IOnlyBlock;
 import me.miquiis.onlyblock.common.capability.models.OnlyBlockModel;
 import me.miquiis.onlyblock.common.managers.QuestManager;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class Quest implements QuestManager.IQuest {
 
+    private PlayerEntity player;
     private String id, title;
     private float progress;
+    private boolean isOver;
 
-    public Quest(String id, String title, float progress)
+    public Quest(PlayerEntity player, String id, String title, float progress)
     {
         this.id = id;
         this.title = title;
         this.progress = progress;
+        this.isOver = false;
+        this.player = player;
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Override
@@ -34,6 +46,10 @@ public class Quest implements QuestManager.IQuest {
     @Override
     public float getProgress() {
         return progress;
+    }
+
+    public PlayerEntity getPlayer() {
+        return player;
     }
 
     @Override
@@ -58,6 +74,8 @@ public class Quest implements QuestManager.IQuest {
     public void onQuestEnd(ServerPlayerEntity player) {
         IOnlyBlock onlyBlock = OnlyBlockModel.getCapability(player);
         onlyBlock.setCurrentQuest(null);
+        MinecraftForge.EVENT_BUS.unregister(this);
+        this.isOver = true;
     }
 
     public void updateProgress(ServerPlayerEntity player)
@@ -69,7 +87,7 @@ public class Quest implements QuestManager.IQuest {
 
     public void checkEnd(ServerPlayerEntity player)
     {
-        if (this.progress > 1f)
+        if (this.progress >= 1f)
         {
             onQuestEnd(player);
         }
@@ -89,10 +107,10 @@ public class Quest implements QuestManager.IQuest {
 
     }
 
-    public static Quest questFromNBT(CompoundNBT compoundNBT)
+    public static Quest questFromNBT(PlayerEntity player, CompoundNBT compoundNBT)
     {
         String questId = compoundNBT.getString("QuestID");
-        Quest quest = QuestManager.createQuestFromId(questId);
+        Quest quest = QuestManager.createQuestFromId(player, questId);
         if (quest == null) return null;
         quest.setProgress(compoundNBT.getFloat("QuestProgress"));
         quest.readAdditional(compoundNBT);

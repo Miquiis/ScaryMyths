@@ -1,6 +1,7 @@
 package me.miquiis.onlyblock.common.models;
 
 import me.miquiis.onlyblock.OnlyBlock;
+import me.miquiis.onlyblock.common.entities.BuffetEntity;
 import me.miquiis.onlyblock.common.entities.ElonMuskEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.ResourceLocation;
@@ -11,24 +12,24 @@ import software.bernie.geckolib3.model.provider.data.EntityModelData;
 
 import javax.annotation.Nullable;
 
-public class ElonMuskModel extends AnimatedGeoModel<ElonMuskEntity> {
+public class BuffettModel extends AnimatedGeoModel<BuffetEntity> {
     @Override
-    public ResourceLocation getModelLocation(ElonMuskEntity object) {
+    public ResourceLocation getModelLocation(BuffetEntity object) {
         return new ResourceLocation(OnlyBlock.MOD_ID, "geo/player.geo.json");
     }
 
     @Override
-    public ResourceLocation getTextureLocation(ElonMuskEntity object) {
-        return new ResourceLocation(OnlyBlock.MOD_ID, "textures/entity/elon_musk.png");
+    public ResourceLocation getTextureLocation(BuffetEntity object) {
+        return new ResourceLocation(OnlyBlock.MOD_ID, "textures/entity/buffett.png");
     }
 
     @Override
-    public ResourceLocation getAnimationFileLocation(ElonMuskEntity animatable) {
+    public ResourceLocation getAnimationFileLocation(BuffetEntity animatable) {
         return new ResourceLocation(OnlyBlock.MOD_ID, "animations/player.animation.json");
     }
 
     @Override
-    public void setLivingAnimations(ElonMuskEntity entity, Integer uniqueID, @Nullable AnimationEvent customPredicate) {
+    public void setLivingAnimations(BuffetEntity entity, Integer uniqueID, @Nullable AnimationEvent customPredicate) {
         super.setLivingAnimations(entity, uniqueID, customPredicate);
         IBone head = this.getAnimationProcessor().getBone("Head");
 

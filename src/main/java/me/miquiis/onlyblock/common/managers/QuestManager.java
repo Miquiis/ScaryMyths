@@ -2,8 +2,8 @@ package me.miquiis.onlyblock.common.managers;
 
 import me.miquiis.onlyblock.common.capability.interfaces.IOnlyBlock;
 import me.miquiis.onlyblock.common.capability.models.OnlyBlockModel;
-import me.miquiis.onlyblock.common.quests.BreakHundredBlocksQuest;
-import me.miquiis.onlyblock.common.quests.Quest;
+import me.miquiis.onlyblock.common.quests.*;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 
 public class QuestManager {
@@ -37,13 +37,25 @@ public class QuestManager {
         return onlyBlock.getCurrentQuest();
     }
 
-    public static Quest createQuestFromId(String id)
+    public static Quest createQuestFromId(PlayerEntity player, String id)
     {
         switch (id)
         {
-            case "hundredblocks":
+            case "stock_quest_one":
             {
-                return new BreakHundredBlocksQuest();
+                return new StockQuestOne(player);
+            }
+            case "stock_quest_two":
+            {
+                return new StockQuestTwo(player);
+            }
+            case "stock_quest_three":
+            {
+                return new StockQuestThree(player);
+            }
+            case "stock_quest_four":
+            {
+                return new StockQuestFour(player);
             }
         }
         return null;

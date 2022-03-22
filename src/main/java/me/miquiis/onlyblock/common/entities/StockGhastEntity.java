@@ -1,10 +1,12 @@
 package me.miquiis.onlyblock.common.entities;
 
+import me.miquiis.onlyblock.common.capability.interfaces.IOnlyBlock;
+import me.miquiis.onlyblock.common.capability.models.OnlyBlockModel;
+import me.miquiis.onlyblock.common.registries.EntityRegister;
 import me.miquiis.onlyblock.common.utils.MathUtils;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ILivingEntityData;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.*;
+import net.minecraft.entity.ai.attributes.AttributeModifierMap;
+import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.controller.MovementController;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
@@ -31,6 +33,10 @@ public class StockGhastEntity extends GhastEntity {
         super(type, worldIn);
     }
 
+    public StockGhastEntity(World worldIn) {
+        super(EntityRegister.STOCK_GHAST.get(), worldIn);
+    }
+
     @Nullable
     @Override
     public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
@@ -42,9 +48,7 @@ public class StockGhastEntity extends GhastEntity {
         this.goalSelector.addGoal(5, new RandomFlyGoal(this));
         this.goalSelector.addGoal(7, new LookAroundGoal(this));
         this.goalSelector.addGoal(7, new FireballAttackGoal(this));
-        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, 10, true, false, (p_213812_1_) -> {
-            return Math.abs(p_213812_1_.getPosY() - this.getPosY()) <= 4.0D;
-        }));
+        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, 10, true, false, livingEntity -> true));
     }
 
     public Vector3d getStartPosition() {
@@ -125,20 +129,33 @@ public class StockGhastEntity extends GhastEntity {
                         world.playEvent((PlayerEntity)null, 1016, this.parentEntity.getPosition(), 0);
                     }
 
-                    if (MathUtils.chance(40))
+                    if (livingentity instanceof PlayerEntity)
                     {
-                        BadStockEntity goodStockEntity = new BadStockEntity(world);
-                        goodStockEntity.setPosition(spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ());
-                        goodStockEntity.setVelocity(velocity.getX(), velocity.getY(), velocity.getZ());
-                        System.out.println(goodStockEntity.getPosition());
-                        world.addEntity(goodStockEntity);
-                    } else
-                    {
-                        GoodStockEntity goodStockEntity = new GoodStockEntity(world);
-                        goodStockEntity.setPosition(spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ());
-                        goodStockEntity.setVelocity(velocity.getX(), velocity.getY(), velocity.getZ());
-                        System.out.println(goodStockEntity.getPosition());
-                        world.addEntity(goodStockEntity);
+                        IOnlyBlock onlyBlock = OnlyBlockModel.getCapability((PlayerEntity)livingentity);
+                        if(onlyBlock.getStockIsland().isPacificToggle())
+                        {
+                            GoodStockEntity goodStockEntity = new GoodStockEntity(world);
+                            goodStockEntity.setPosition(spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ());
+                            goodStockEntity.setVelocity(velocity.getX(), velocity.getY(), velocity.getZ());
+                            world.addEntity(goodStockEntity);
+                            this.attackTimer = 0;
+                            return;
+                        } else
+                        {
+                            if (MathUtils.chance(40))
+                            {
+                                BadStockEntity goodStockEntity = new BadStockEntity(world);
+                                goodStockEntity.setPosition(spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ());
+                                goodStockEntity.setVelocity(velocity.getX(), velocity.getY(), velocity.getZ());
+                                world.addEntity(goodStockEntity);
+                            } else
+                            {
+                                GoodStockEntity goodStockEntity = new GoodStockEntity(world);
+                                goodStockEntity.setPosition(spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ());
+                                goodStockEntity.setVelocity(velocity.getX(), velocity.getY(), velocity.getZ());
+                                world.addEntity(goodStockEntity);
+                            }
+                        }
                     }
 
                     this.attackTimer = -40;

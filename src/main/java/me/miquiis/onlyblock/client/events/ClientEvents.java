@@ -77,7 +77,7 @@ public class ClientEvents {
     public static void onLastWorldRender(RenderWorldLastEvent event)
     {
         IOnlyBlock onlyBlockCap = OnlyBlockModel.getCapability(Minecraft.getInstance().player);
-        if (onlyBlockCap.getAmazonIsland() != null && onlyBlockCap.getAmazonIsland().getCurrentDelivery() != null)
+        if (onlyBlockCap != null && onlyBlockCap.getAmazonIsland() != null && onlyBlockCap.getAmazonIsland().getCurrentDelivery() != null)
         {
             Vector3d currentDelivery = onlyBlockCap.getAmazonIsland().getCurrentDelivery();
             double distance = Minecraft.getInstance().player.getPositionVec().distanceTo(currentDelivery);

@@ -47,7 +47,7 @@ public class BlockRegister {
     );
 
     public static final RegistryObject<Block> CASH_PILE = registerBlock("cash_pile", () ->
-            new Block(AbstractBlock.Properties.create(Material.CAKE).hardnessAndResistance(0.5f).sound(SoundType.PLANT).notSolid())
+            new Block(AbstractBlock.Properties.create(Material.ROCK).hardnessAndResistance(0.5f, 0.5f).sound(SoundType.PLANT).notSolid())
     );
 
     private static boolean needsPostProcessing(BlockState state, IBlockReader reader, BlockPos pos) {

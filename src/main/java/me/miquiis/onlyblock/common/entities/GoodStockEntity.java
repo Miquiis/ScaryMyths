@@ -1,14 +1,23 @@
 package me.miquiis.onlyblock.common.entities;
 
+import me.miquiis.onlyblock.common.capability.CurrencyCapability;
+import me.miquiis.onlyblock.common.capability.interfaces.ICurrency;
+import me.miquiis.onlyblock.common.capability.interfaces.IOnlyBlock;
+import me.miquiis.onlyblock.common.capability.models.OnlyBlockModel;
+import me.miquiis.onlyblock.common.quests.StockQuestOne;
 import me.miquiis.onlyblock.common.registries.EntityRegister;
 import me.miquiis.onlyblock.common.registries.ItemRegister;
+import me.miquiis.onlyblock.common.registries.SoundRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.ProjectileItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.network.IPacket;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
@@ -32,6 +41,22 @@ public class GoodStockEntity extends ProjectileItemEntity {
     @Override
     protected void onEntityHit(EntityRayTraceResult result) {
         super.onEntityHit(result);
+        if (!world.isRemote && result.getEntity() instanceof PlayerEntity)
+        {
+            ServerPlayerEntity player = (ServerPlayerEntity) result.getEntity();
+            IOnlyBlock onlyBlock = OnlyBlockModel.getCapability(player);
+            if (!onlyBlock.getStockIsland().isFirstHit()) {
+                if (player.inventory.count(ItemRegister.STOCK_SWORD.get()) > 0)
+                {
+                    ICurrency currency = player.getCapability(CurrencyCapability.CURRENCY_CAPABILITY).orElse(null);
+                    currency.addOrSubtractAmount(1000);
+                    player.world.playSound(null, player.getPosX(), player.getPosY(), player.getPosZ(), SoundRegister.KATCHING.get(), SoundCategory.PLAYERS, 0.5f, 1f);
+                }
+                return;
+            }
+            onlyBlock.setCurrentQuest(new StockQuestOne(player));
+            onlyBlock.getStockIsland().hit();
+        }
         remove();
     }
 

@@ -6,6 +6,8 @@ import me.miquiis.onlyblock.common.managers.BlockManager;
 import me.miquiis.onlyblock.common.managers.FileManager;
 import me.miquiis.onlyblock.common.registries.*;
 import me.miquiis.onlyblock.server.network.OnlyBlockNetwork;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.settings.PointOfView;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -70,7 +72,7 @@ public class OnlyBlock
     @SubscribeEvent
     public void onServerStarting(FMLServerStartingEvent event)
     {
-        this.onlyBlockFolder = new FileManager("onlyblock", event.getServer().getDataDirectory(), "2.0");
+        this.onlyBlockFolder = new FileManager("onlyblock", event.getServer().getDataDirectory(), "1.1");
         this.blockManager = new BlockManager(this);
     }
 

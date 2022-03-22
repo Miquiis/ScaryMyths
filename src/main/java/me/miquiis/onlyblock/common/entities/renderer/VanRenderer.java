@@ -1,9 +1,7 @@
 package me.miquiis.onlyblock.common.entities.renderer;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import me.miquiis.onlyblock.common.entities.Noob1234;
 import me.miquiis.onlyblock.common.entities.VanEntity;
-import me.miquiis.onlyblock.common.models.NoobModel;
 import me.miquiis.onlyblock.common.models.VanModel;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.util.ResourceLocation;

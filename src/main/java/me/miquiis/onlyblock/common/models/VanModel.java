@@ -1,7 +1,6 @@
 package me.miquiis.onlyblock.common.models;
 
 import me.miquiis.onlyblock.OnlyBlock;
-import me.miquiis.onlyblock.common.entities.Noob1234;
 import me.miquiis.onlyblock.common.entities.VanEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.ResourceLocation;

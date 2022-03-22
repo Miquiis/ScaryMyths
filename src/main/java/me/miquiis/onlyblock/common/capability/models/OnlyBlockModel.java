@@ -75,12 +75,13 @@ public class OnlyBlockModel implements IOnlyBlock {
         if (data.contains("BillionaireIsland"))
         billionaireIsland.deserializeNBT(data.getCompound("BillionaireIsland"));
         if (data.contains("CurrentQuest"))
-        currentQuest = Quest.questFromNBT(data.getCompound("CurrentQuest"));
+        currentQuest = Quest.questFromNBT(player, data.getCompound("CurrentQuest"));
     }
 
     @Override
     public void setCurrentQuest(Quest quest) {
         this.currentQuest = quest;
+        sync(player);
     }
 
     @Override

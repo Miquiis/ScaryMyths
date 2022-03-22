@@ -1,13 +1,26 @@
 package me.miquiis.onlyblock.common.classes;
 
+import me.miquiis.onlyblock.common.capability.CurrencyCapability;
+import me.miquiis.onlyblock.common.capability.interfaces.ICurrency;
 import me.miquiis.onlyblock.common.entities.SedanEntity;
 import me.miquiis.onlyblock.common.entities.SedanTwoEntity;
 import me.miquiis.onlyblock.common.entities.VanEntity;
 import me.miquiis.onlyblock.common.entities.VanTwoEntity;
+import me.miquiis.onlyblock.common.registries.BlockRegister;
+import me.miquiis.onlyblock.common.registries.ItemRegister;
+import me.miquiis.onlyblock.common.registries.SoundRegister;
 import me.miquiis.onlyblock.common.utils.MathUtils;
+import me.miquiis.onlyblock.common.utils.WorldEditUtils;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import org.lwjgl.system.CallbackI;
 
@@ -60,43 +73,57 @@ public class AmazonIsland implements IUnlockable {
             new Vector3d(1037, 66, 955)
     ));
 
+    private static final List<Integer> PROGRESSIVE_PRICE = new ArrayList<>(Arrays.asList(
+            5000,
+            15000,
+            30000,
+            50000,
+            100000,
+            250000,
+            350000,
+            500000,
+            1000000,
+            1000000000
+    ));
+
     private final Vector3d CENTER_ISLAND = new Vector3d(176, 100, 0);
 
-    private final int TARGET_AMOUNT = 1000000;
-    private final int PACKAGE_AMOUNT = 100000;
+    private final long TIME_MAX = 60 * 20 * 3;
 
     private Vector3d currentDelivery;
-    private int amountGathered;
     private boolean isLocked;
+    private int currentPackage;
+    private long currentTime;
 
     private List<Entity> spawnedCars;
 
     public AmazonIsland()
     {
+        currentPackage = 0;
+        currentTime = 0;
         currentDelivery = null;
-        amountGathered = 0;
+        spawnedCars = new ArrayList<>();
     }
 
-    public void startMinigame(World world)
+    public void startMinigame(PlayerEntity player, World world)
     {
-        System.out.println("Here");
-        amountGathered = 0;
+        currentPackage = 0;
+        currentTime = 0;
         currentDelivery = POSSIBLE_DELIVERIES.get(0);
+        player.inventory.addItemStackToInventory(createNextPackage());
+        player.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.1f);
         spawnCars(world);
     }
 
     private void spawnCars(World world)
     {
-        System.out.println("Here 2");
         if (spawnedCars != null) spawnedCars.forEach(Entity::remove);
-        System.out.println("Here 3");
         spawnedCars = new ArrayList<>();
         CAR_SPAWNS.forEach(vector3d -> {
             if (MathUtils.chance(30))
             {
                 if (MathUtils.chance(50))
                 {
-                    System.out.println("Here 4");
                     SedanEntity sedanEntity = new SedanEntity(world);
                     sedanEntity.setPosition(vector3d.getX() + 0.5, vector3d.getY() + 0.5, vector3d.getZ() + 0.5);
                     sedanEntity.enablePersistence();
@@ -134,26 +161,45 @@ public class AmazonIsland implements IUnlockable {
     public void reset()
     {
         currentDelivery = POSSIBLE_DELIVERIES.get(0);
-        amountGathered = 0;
+        currentPackage = 0;
+        currentTime = 0;
+        spawnedCars = new ArrayList<>();
     }
 
-    public void deliver()
+    public void deliver(ServerPlayerEntity player)
     {
-        if (amountGathered + PACKAGE_AMOUNT >= TARGET_AMOUNT)
+        if (currentPackage != 9)
         {
-            amountGathered = TARGET_AMOUNT;
-            currentDelivery = null;
+            ICurrency currency = player.getCapability(CurrencyCapability.CURRENCY_CAPABILITY).orElse(null);
+            currency.addOrSubtractAmount(PROGRESSIVE_PRICE.get(currentPackage));
+            player.world.playSound(null, player.getPosX(), player.getPosY(), player.getPosZ(), SoundRegister.KATCHING.get(), SoundCategory.PLAYERS, 0.5f, 1f);
+
+            currentDelivery = POSSIBLE_DELIVERIES.get(MathUtils.getRandomMax(POSSIBLE_DELIVERIES.size()));
+            currentPackage++;
+            player.inventory.addItemStackToInventory(createNextPackage());
+            player.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(player.getAttributeValue(Attributes.MOVEMENT_SPEED) + 0.001);
         } else
         {
-            amountGathered += PACKAGE_AMOUNT;
-            currentDelivery = POSSIBLE_DELIVERIES.get(MathUtils.getRandomMax(POSSIBLE_DELIVERIES.size()));
+            endMinigame(player);
         }
+    }
+
+    private void endMinigame(PlayerEntity player)
+    {
+        player.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.1f);
+        currentDelivery = null;
+        currentPackage = 0;
+        currentTime = 0;
+        spawnedCars.forEach(entity -> {
+            if (entity == null) return;
+            entity.remove();
+        });
     }
 
     public Vector3d getRandomTNTLocation()
     {
         double randomX = MathUtils.getRandomMinMax(-30d, 30d);
-        double randomZ = MathUtils.getRandomMinMax(-30d, 30d);
+        double randomZ = MathUtils.getRandomMinMax(-80d, 80d);
 
         if (randomX < 0) randomX-= 10;
         if (randomX > 0) randomX+= 10;
@@ -163,27 +209,8 @@ public class AmazonIsland implements IUnlockable {
         return CENTER_ISLAND.add(randomX, MathUtils.getRandomMinMax(0, 30), randomZ);
     }
 
-    public void addAmountGathered(int amountGathered)
-    {
-        this.amountGathered += amountGathered;
-    }
-
-    public void takeAmountGathered(int amountGathered)
-    {
-        this.amountGathered -= amountGathered;
-    }
-
-    public void setAmountGathered(int amountGathered)
-    {
-        this.amountGathered = amountGathered;
-    }
-
     public Vector3d getCurrentDelivery() {
         return currentDelivery;
-    }
-
-    public int getAmountGathered() {
-        return amountGathered;
     }
 
     public void deserializeNBT(CompoundNBT compoundNBT)
@@ -195,14 +222,41 @@ public class AmazonIsland implements IUnlockable {
         {
             currentDelivery = null;
         }
-        if (compoundNBT.contains("GatheredAmount"))
-        {
-            amountGathered = compoundNBT.getInt("GatheredAmount");
-        }
         if (compoundNBT.contains("IsLocked"))
         {
             isLocked = compoundNBT.getBoolean("IsLocked");
         }
+        if (compoundNBT.contains("CurrentPackage"))
+        {
+            currentPackage = compoundNBT.getInt("CurrentPackage");
+        } else currentPackage = 0;
+        if (compoundNBT.contains("CurrentTime"))
+        {
+            currentTime = compoundNBT.getLong("CurrentTime");
+        } else currentTime = 0;
+    }
+
+    private ItemStack createNextPackage()
+    {
+        ItemStack packageItem = new ItemStack(BlockRegister.AMAZON_PACKAGE.get().asItem(), 1);
+        packageItem.setDisplayName(new StringTextComponent("\u00A76\u00A7lPackage: \u00A7a\u00A7l$" + PROGRESSIVE_PRICE.get(currentPackage)));
+        return packageItem;
+    }
+
+    public void tickTime(PlayerEntity player)
+    {
+        if (currentTime < TIME_MAX)
+        {
+            currentTime++;
+        } else
+        {
+            endMinigame(player);
+        }
+    }
+
+    public float getPercentage()
+    {
+        return 1.0f - (currentTime / (float)TIME_MAX);
     }
 
     public CompoundNBT serializeNBT()
@@ -213,14 +267,10 @@ public class AmazonIsland implements IUnlockable {
             compoundNBT.putDouble("DeliverY", getCurrentDelivery().getY());
             compoundNBT.putDouble("DeliverZ", getCurrentDelivery().getZ());
         }
-        compoundNBT.putInt("GatheredAmount", amountGathered);
+        compoundNBT.putInt("CurrentPackage", currentPackage);
         compoundNBT.putBoolean("IsLocked", isLocked);
+        compoundNBT.putLong("CurrentTime", currentTime);
         return compoundNBT;
-    }
-
-    public float getPercentage()
-    {
-        return amountGathered / (float)TARGET_AMOUNT;
     }
 
     @Override
@@ -229,12 +279,14 @@ public class AmazonIsland implements IUnlockable {
     }
 
     @Override
-    public void unlock() {
+    public void unlock(World world) {
         isLocked = false;
+        WorldEditUtils.pasteSchematic("amazon_no_entity", world, 185.48, 68.00, -0.53);
     }
 
     @Override
-    public void lock() {
+    public void lock(World world) {
         isLocked = true;
+        WorldEditUtils.pasteSchematic("b_amazon_no_entity", world, 185.48, 68.00, -0.53);
     }
 }

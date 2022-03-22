@@ -3,20 +3,11 @@ package me.miquiis.onlyblock.common.registries;
 import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.common.items.*;
 import me.miquiis.onlyblock.common.items.renderer.GoldenHelicopterItemRenderer;
-import me.miquiis.onlyblock.common.items.renderer.JetpackItemRenderer;
-import me.miquiis.onlyblock.common.items.renderer.MoneyShotgunRenderer;
-import me.miquiis.onlyblock.common.items.renderer.NoobItemRenderer;
-import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.*;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
-import software.bernie.example.item.PotatoArmorItem;
-
-import java.util.HashSet;
 
 public class ItemRegister {
 
@@ -35,7 +26,7 @@ public class ItemRegister {
     );
 
     public static final RegistryObject<Item> GHAST_WHISTLE = ITEMS.register("whistle", () ->
-            new Item(new Item.Properties().group(ItemGroup.MISC))
+            new WhistleItem(new Item.Properties().group(ItemGroup.MISC))
     );
 
     public static final RegistryObject<Item> GOLDEN_BAZOOKA = ITEMS.register("golden_bazooka", () ->
@@ -51,7 +42,7 @@ public class ItemRegister {
     );
 
     public static final RegistryObject<Item> CASH_PICKAXE = ITEMS.register("cash_pickaxe", () ->
-            new PickaxeItem(ItemTier.IRON, 3, -2.0F, (new Item.Properties()).group(ItemGroup.TOOLS))
+            new CashPickaxe(ItemTier.IRON, 3, -2.0F, (new Item.Properties()).group(ItemGroup.TOOLS))
     );
 
     public static final RegistryObject<Item> CASH_AXE = ITEMS.register("cash_axe", () ->
