@@ -85,6 +85,14 @@ public class OnlyBlockModel implements IOnlyBlock {
     }
 
     @Override
+    public void reset() {
+        stockIsland = new StockIsland();
+        amazonIsland = new AmazonIsland();
+        billionaireIsland = new BillionaireIsland();
+        currentQuest = null;
+    }
+
+    @Override
     public void setPlayer(ServerPlayerEntity player) {
         this.player = player;
     }

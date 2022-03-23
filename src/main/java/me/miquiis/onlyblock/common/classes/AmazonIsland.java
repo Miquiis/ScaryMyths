@@ -1,11 +1,14 @@
 package me.miquiis.onlyblock.common.classes;
 
+import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.common.capability.CurrencyCapability;
 import me.miquiis.onlyblock.common.capability.interfaces.ICurrency;
-import me.miquiis.onlyblock.common.entities.SedanEntity;
-import me.miquiis.onlyblock.common.entities.SedanTwoEntity;
-import me.miquiis.onlyblock.common.entities.VanEntity;
-import me.miquiis.onlyblock.common.entities.VanTwoEntity;
+import me.miquiis.onlyblock.common.capability.interfaces.IOnlyBlock;
+import me.miquiis.onlyblock.common.capability.models.OnlyBlockModel;
+import me.miquiis.onlyblock.common.entities.*;
+import me.miquiis.onlyblock.common.quests.AmazonQuestOne;
+import me.miquiis.onlyblock.common.quests.AmazonQuestTwo;
+import me.miquiis.onlyblock.common.quests.StockQuestOne;
 import me.miquiis.onlyblock.common.registries.BlockRegister;
 import me.miquiis.onlyblock.common.registries.ItemRegister;
 import me.miquiis.onlyblock.common.registries.SoundRegister;
@@ -103,6 +106,7 @@ public class AmazonIsland implements IUnlockable {
         currentTime = 0;
         currentDelivery = null;
         spawnedCars = new ArrayList<>();
+        isLocked = true;
     }
 
     public void startMinigame(PlayerEntity player, World world)
@@ -170,6 +174,11 @@ public class AmazonIsland implements IUnlockable {
     {
         if (currentPackage != 9)
         {
+            if (currentPackage == 8)
+            {
+                currentTime = TIME_MAX - 20 * 5;
+            }
+
             ICurrency currency = player.getCapability(CurrencyCapability.CURRENCY_CAPABILITY).orElse(null);
             currency.addOrSubtractAmount(PROGRESSIVE_PRICE.get(currentPackage));
             player.world.playSound(null, player.getPosX(), player.getPosY(), player.getPosZ(), SoundRegister.KATCHING.get(), SoundCategory.PLAYERS, 0.5f, 1f);
@@ -187,6 +196,7 @@ public class AmazonIsland implements IUnlockable {
     private void endMinigame(PlayerEntity player)
     {
         player.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.1f);
+        player.setPositionAndUpdate(181.61, 68.00, -2.79);
         currentDelivery = null;
         currentPackage = 0;
         currentTime = 0;
@@ -243,14 +253,16 @@ public class AmazonIsland implements IUnlockable {
         return packageItem;
     }
 
-    public void tickTime(PlayerEntity player)
+    public void tickTime(ServerPlayerEntity player)
     {
         if (currentTime < TIME_MAX)
         {
             currentTime++;
         } else
         {
+            System.out.println("Tick end");
             endMinigame(player);
+            OnlyBlockModel.getCapability(player).sync(player);
         }
     }
 
@@ -279,14 +291,25 @@ public class AmazonIsland implements IUnlockable {
     }
 
     @Override
-    public void unlock(World world) {
+    public void unlock(PlayerEntity player) {
         isLocked = false;
-        WorldEditUtils.pasteSchematic("amazon_no_entity", world, 185.48, 68.00, -0.53);
+        WorldEditUtils.pasteSchematic("amazon_no_entity", player.world, 185.48, 68.00, -0.53);
+        spawnJeff(player.world);
+
+        IOnlyBlock onlyBlock = OnlyBlockModel.getCapability(player);
+        onlyBlock.setCurrentQuest(new AmazonQuestOne(player));
+    }
+
+    private void spawnJeff(World world) {
+        JeffBezosEntity entity = new JeffBezosEntity(world);
+        entity.setPositionAndRotation(186.02, 68.00, -1.65, 110f, 1.65f);
+        entity.enablePersistence();
+        world.addEntity(entity);
     }
 
     @Override
-    public void lock(World world) {
+    public void lock(PlayerEntity player) {
         isLocked = true;
-        WorldEditUtils.pasteSchematic("b_amazon_no_entity", world, 185.48, 68.00, -0.53);
+        WorldEditUtils.pasteSchematic("b_amazon_no_entity", player.world, 185.48, 68.00, -0.53);
     }
 }

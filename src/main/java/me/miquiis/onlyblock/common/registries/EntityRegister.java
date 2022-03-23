@@ -12,6 +12,7 @@ import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import software.bernie.shadowed.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, modid = OnlyBlock.MOD_ID)
 public class EntityRegister {
@@ -45,6 +46,12 @@ public class EntityRegister {
                     .build(new ResourceLocation(OnlyBlock.MOD_ID, "hundred").toString())
     );
 
+    public static final RegistryObject<EntityType<AsteroidEntity>> ASTEROID = ENTITIES.register("asteroid",
+            () -> EntityType.Builder.<AsteroidEntity>create(AsteroidEntity::new, EntityClassification.MISC)
+                    .size(5.0f, 5.0f).trackingRange(20)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "asteroid").toString())
+    );
+
     public static final RegistryObject<EntityType<QuestionMarkEntity>> QUESTION_MARK = ENTITIES.register("question_mark",
             () -> EntityType.Builder.<QuestionMarkEntity>create(QuestionMarkEntity::new, EntityClassification.MISC)
                     .size(2.0F, 2.0F)
@@ -57,6 +64,13 @@ public class EntityRegister {
                     .size(0.6F, 1.95F)
                     .trackingRange(8)
                     .build(new ResourceLocation(OnlyBlock.MOD_ID, "buffett").toString())
+    );
+
+    public static final RegistryObject<EntityType<GiantEarthEntity>> GIANT_EARTH = ENTITIES.register("giant_earth",
+            () -> EntityType.Builder.<GiantEarthEntity>create(GiantEarthEntity::new, EntityClassification.MISC)
+                    .size(20F, 20F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "giant_earth").toString())
     );
 
     public static final RegistryObject<EntityType<JeffBezosEntity>> JEFF_BEZOS = ENTITIES.register("jeff_bezos",
@@ -133,6 +147,12 @@ public class EntityRegister {
                     .build(new ResourceLocation(OnlyBlock.MOD_ID, "golden_helicopter").toString())
     );
 
+    public static final RegistryObject<EntityType<SpaceshipEntity>> SPACESHIP = ENTITIES.register("spaceship",
+            () -> EntityType.Builder.<SpaceshipEntity>create(SpaceshipEntity::new, EntityClassification.MISC)
+                    .size(3f, 3f).trackingRange(10)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "spaceship").toString())
+    );
+
     public static final RegistryObject<EntityType<AmazonTNTEntity>> AMAZON_TNT = ENTITIES.register("amazon_tnt",
             () -> EntityType.Builder.<AmazonTNTEntity>create(AmazonTNTEntity::new, EntityClassification.MISC)
                     .immuneToFire().size(0.98F, 0.98F)
@@ -154,12 +174,16 @@ public class EntityRegister {
         event.put(JEFF_BEZOS.get(), JeffBezosEntity.registerAttributes().create());
         event.put(ELON_MUSK.get(), ElonMuskEntity.registerAttributes().create());
 
+        event.put(ASTEROID.get(), AsteroidEntity.registerAttributes().create());
+
         event.put(VAN.get(), VanEntity.func_233666_p_().create());
         event.put(VAN_TWO.get(), VanTwoEntity.func_233666_p_().create());
         event.put(SEDAN.get(), SedanEntity.func_233666_p_().create());
         event.put(SEDAN_TWO.get(), SedanTwoEntity.func_233666_p_().create());
 
         event.put(GOLDEN_HELI.get(), GoldenHelicopterEntity.func_233666_p_().create());
+        event.put(SPACESHIP.get(), SpaceshipEntity.func_233666_p_().create());
+        event.put(GIANT_EARTH.get(), GiantEarthEntity.registerAttributes().create());
 
         event.put(ONE_MIL.get(), OneMilEntity.registerAttributes().create());
         event.put(FIVE_HUNDRED.get(), FiveHundredEntity.registerAttributes().create());

@@ -2,6 +2,7 @@ package me.miquiis.onlyblock.client.events;
 
 import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.common.entities.BadStockEntity;
+import me.miquiis.onlyblock.common.entities.GiantEarthEntity;
 import me.miquiis.onlyblock.common.entities.GoodStockEntity;
 import me.miquiis.onlyblock.common.entities.renderer.*;
 import me.miquiis.onlyblock.common.items.ModSpawnEgg;
@@ -33,12 +34,17 @@ public class ModClientEvents {
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.JEFF_BEZOS.get(), JeffBezosRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.ELON_MUSK.get(), ElonMuskRenderer::new);
 
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.ASTEROID.get(), AsteroidRenderer::new);
+
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.VAN.get(), VanRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.VAN_TWO.get(), VanTwoRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.SEDAN.get(), SedanRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.SEDAN_TWO.get(), SedanTwoRenderer::new);
 
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.GIANT_EARTH.get(), GiantEarthRenderer::new);
+
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.GOLDEN_HELI.get(), GoldenHelicopterRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.SPACESHIP.get(), SpaceshipRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.GOLDEN_PROJECTILE.get(), GoldenProjectileRenderer::new);
 
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.ONE_MIL.get(), OneMilRenderer::new);

@@ -1,23 +1,15 @@
 package me.miquiis.onlyblock.common.entities;
 
 import me.miquiis.onlyblock.common.registries.EntityRegister;
-import me.miquiis.onlyblock.common.registries.ItemRegister;
-import me.miquiis.onlyblock.common.utils.MathUtils;
 import net.minecraft.entity.*;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
-import net.minecraft.util.*;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.fml.network.NetworkHooks;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
@@ -28,23 +20,21 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
 
-public class GoldenHelicopterEntity extends AnimalEntity implements IAnimatable {
+public class SpaceshipEntity extends AnimalEntity implements IAnimatable {
 
     final AnimationFactory factory = new AnimationFactory(this);
 
     private boolean leftInputDown, rightInputDown, forwardInputDown, backInputDown;
 
-    public GoldenHelicopterEntity(EntityType<? extends AnimalEntity> entityTypeIn, World worldIn) {
+    public SpaceshipEntity(EntityType<? extends AnimalEntity> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
         this.preventEntitySpawning = true;
         this.ignoreFrustumCheck = true;
         setInvulnerable(true);
     }
 
-    public GoldenHelicopterEntity(World worldIn) {
+    public SpaceshipEntity(World worldIn) {
         super(EntityRegister.GOLDEN_HELI.get(), worldIn);
         this.preventEntitySpawning = true;
         this.ignoreFrustumCheck = true;
@@ -53,8 +43,8 @@ public class GoldenHelicopterEntity extends AnimalEntity implements IAnimatable 
 
     @Override
     public void updatePassenger(Entity passenger) {
-        Vector3d vector3d = (new Vector3d((double)1.5, 0.0D, -0.45D)).rotateYaw(-this.rotationYaw * ((float)Math.PI / 180F) - ((float)Math.PI / 2F));
-        passenger.setPosition(this.getPosX() + vector3d.x, this.getPosY() + 1.25f, this.getPosZ() + vector3d.z);
+        Vector3d vector3d = (new Vector3d((double)5.5, -1.0D, 0D)).rotateYaw(-this.rotationYaw * ((float)Math.PI / 180F) - ((float)Math.PI / 2F));
+        passenger.setPosition(this.getPosX() + vector3d.x, this.getPosY() + 0.80f, this.getPosZ() + vector3d.z);
     }
 
     @Override
@@ -103,7 +93,7 @@ public class GoldenHelicopterEntity extends AnimalEntity implements IAnimatable 
                 Vector3d velocity = new Vector3d(0, 0, 0);
 
                 if (forwardInputDown) {
-                    velocity = new Vector3d(lookVec.getX(), (lookVec.getY() * 0.2) + 0.01, lookVec.getZ());
+                    velocity = new Vector3d(lookVec.getX(), lookVec.getY(), lookVec.getZ());
                 } else if (backInputDown) {
                     velocity = new Vector3d( (0 - this.getMotion().getX()) * 0.05, (lookVec.getY() * 0.2) - 0.0125, (0 - this.getMotion().getZ()) * 0.05);
                 }

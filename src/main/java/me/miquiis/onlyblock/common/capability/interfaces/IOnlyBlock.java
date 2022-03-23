@@ -15,6 +15,7 @@ public interface IOnlyBlock {
     void deserializeNBT(CompoundNBT data);
 
     void setCurrentQuest(Quest quest);
+    void reset();
 
     CompoundNBT serializeNBT();
     AmazonIsland getAmazonIsland();

@@ -1,6 +1,7 @@
 package me.miquiis.onlyblock.server.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -12,11 +13,18 @@ import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.common.capability.CurrencyCapability;
 import me.miquiis.onlyblock.common.capability.interfaces.IOnlyBlock;
 import me.miquiis.onlyblock.common.capability.models.OnlyBlockModel;
+import me.miquiis.onlyblock.common.entities.AsteroidEntity;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.command.ISuggestionProvider;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.particles.ParticleTypes;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.StringTextComponent;
 
 import java.util.ArrayList;
@@ -47,17 +55,17 @@ public class OnlyBlockCommand {
                         {
                             case "stocks":
                             {
-                                onlyBlock.getStockIsland().lock(context.getSource().getWorld());
+                                onlyBlock.getStockIsland().lock(context.getSource().asPlayer());
                                 break;
                             }
                             case "amazon":
                             {
-                                onlyBlock.getAmazonIsland().lock(context.getSource().getWorld());
+                                onlyBlock.getAmazonIsland().lock(context.getSource().asPlayer());
                                 break;
                             }
                             case "rocket":
                             {
-                                onlyBlock.getBillionaireIsland().lock(context.getSource().getWorld());
+                                onlyBlock.getBillionaireIsland().lock(context.getSource().asPlayer());
                                 break;
                             }
                         }
@@ -67,17 +75,17 @@ public class OnlyBlockCommand {
                         {
                             case "stocks":
                             {
-                                onlyBlock.getStockIsland().unlock(context.getSource().getWorld());
+                                onlyBlock.getStockIsland().unlock(context.getSource().asPlayer());
                                 break;
                             }
                             case "amazon":
                             {
-                                onlyBlock.getAmazonIsland().unlock(context.getSource().getWorld());
+                                onlyBlock.getAmazonIsland().unlock(context.getSource().asPlayer());
                                 break;
                             }
                             case "rocket":
                             {
-                                onlyBlock.getBillionaireIsland().unlock(context.getSource().getWorld());
+                                onlyBlock.getBillionaireIsland().unlock(context.getSource().asPlayer());
                                 break;
                             }
                         }
@@ -85,13 +93,45 @@ public class OnlyBlockCommand {
 
                     return 1;
                 }))))
-                .then(Commands.literal("debug").executes(context -> {
-                    OnlyBlockModel.getCapability(context.getSource().asPlayer()).getAmazonIsland().startMinigame(context.getSource().asPlayer(), context.getSource().getWorld());
-                    OnlyBlockModel.getCapability(context.getSource().asPlayer()).sync(context.getSource().asPlayer());
-                    return 1;
-                }))
+                .then(Commands.literal("debug")
+                        .then(Commands.literal("createAsteroids").then(Commands.argument("gap", DoubleArgumentType.doubleArg()).then(Commands.argument("radius", DoubleArgumentType.doubleArg()).executes(context -> {
+
+                            final ServerPlayerEntity player = context.getSource().asPlayer();
+                            final double wideAngle = 360;
+                            final double gap = DoubleArgumentType.getDouble(context, "gap");
+                            final double radius = DoubleArgumentType.getDouble(context, "radius");
+
+                            for (int pitch = -90; pitch < 90; pitch+= gap)
+                            {
+                                for (double i = -wideAngle/2; i <= wideAngle/2; i+= gap)
+                                {
+                                    final double angle = i;
+                                    Vector3d lookVec = getVectorForRotation(pitch, 0, (float)angle);
+                                    double x = radius * lookVec.getX();
+                                    double z = radius * lookVec.getZ();
+                                    double y = radius * lookVec.getY();
+
+                                    Vector3d vec = new Vector3d(player.getPosX() + x, (player.getPosY() + 2f) + y, player.getPosZ() + z);
+                                    AsteroidEntity asteroidEntity = new AsteroidEntity(player.world, angle, pitch, radius, player.getPositionVec());
+                                    asteroidEntity.setPosition(vec.getX(), vec.getY(), vec.getZ());
+                                    player.world.addEntity(asteroidEntity);
+                                }
+                            }
+
+                            return 1;
+                        }))))
+                        .then(Commands.literal("startMinigame").executes(context -> {
+                            final ServerPlayerEntity player = context.getSource().asPlayer();
+                            IOnlyBlock onlyBlock = OnlyBlockModel.getCapability(player);
+                            onlyBlock.getBillionaireIsland().startMinigame(player);
+                            return 1;
+                        }))
+                )
                 .then(Commands.literal("reset").executes(context -> {
-                    OnlyBlockModel.getCapability(context.getSource().asPlayer()).getAmazonIsland().reset();
+                    OnlyBlockModel.getCapability(context.getSource().asPlayer()).reset();
+                    OnlyBlockModel.getCapability(context.getSource().asPlayer()).getStockIsland().lock(context.getSource().asPlayer());
+                    OnlyBlockModel.getCapability(context.getSource().asPlayer()).getAmazonIsland().lock(context.getSource().asPlayer());
+                    OnlyBlockModel.getCapability(context.getSource().asPlayer()).getBillionaireIsland().lock(context.getSource().asPlayer());
                     OnlyBlockModel.getCapability(context.getSource().asPlayer()).sync(context.getSource().asPlayer());
                     return 1;
                 }))
@@ -147,6 +187,16 @@ public class OnlyBlockCommand {
         });
         player.getRecipeBook().add(onlyBlockRecipes, player);
         return 1;
+    }
+
+    private final Vector3d getVectorForRotation(float pitch, float yaw, float angle) {
+        float f = (pitch) * ((float)Math.PI / 180F);
+        float f1 = (-yaw + angle) * ((float)Math.PI / 180F);
+        float f2 = MathHelper.cos(f1);
+        float f3 = MathHelper.sin(f1);
+        float f4 = MathHelper.cos(f);
+        float f5 = MathHelper.sin(f);
+        return new Vector3d((double)(f3 * f4), (double)(-f5), (double)(f2 * f4));
     }
 
 }

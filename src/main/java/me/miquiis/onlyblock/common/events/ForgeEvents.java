@@ -12,8 +12,11 @@ import me.miquiis.onlyblock.common.registries.*;
 import me.miquiis.onlyblock.common.utils.TitleUtils;
 import me.miquiis.onlyblock.server.commands.OnlyBlockCommand;
 import me.miquiis.onlyblock.server.network.OnlyBlockNetwork;
+import me.miquiis.onlyblock.server.network.messages.CloseScreenPacket;
 import me.miquiis.onlyblock.server.network.messages.OpenShopPacket;
+import me.miquiis.onlyblock.server.network.messages.ShootFromSpaceshipPacket;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -77,6 +80,13 @@ public class ForgeEvents {
     }
 
     @SubscribeEvent
+    public static void onPlayerRightClick(PlayerInteractEvent.RightClickEmpty event)
+    {
+        if (event.getHand() != Hand.MAIN_HAND) return;
+        OnlyBlockNetwork.CHANNEL.sendToServer(new ShootFromSpaceshipPacket());
+    }
+
+    @SubscribeEvent
     public static void onPlayerDropItem(ItemTossEvent event)
     {
         if (!event.getPlayer().world.isRemote)
@@ -105,6 +115,7 @@ public class ForgeEvents {
         if (event.phase != TickEvent.Phase.START) return;
         if (!event.player.world.isRemote)
         {
+
             IOnlyBlock onlyBlock = OnlyBlockModel.getCapability(event.player);
 
             BarInfo barInfo = BarManager.getBarInfoByID("deliver");
@@ -113,10 +124,23 @@ public class ForgeEvents {
                 if (barInfo != null) BarManager.removeBar(barInfo.getUniqueID());
             } else
             {
-                onlyBlock.getAmazonIsland().tickTime(event.player);
+                onlyBlock.getAmazonIsland().tickTime((ServerPlayerEntity)event.player);
                 if (barInfo == null) BarManager.addBar(UUID.randomUUID(), "deliver", new StringTextComponent("\u00A7lTime Remaining"), onlyBlock.getAmazonIsland().getPercentage(), (ServerPlayerEntity) event.player, DELIVER_BAR, new int[]{0, 236, 65}, false);
                 else {
                     BarManager.updateBar(barInfo.getUniqueID(), (ServerPlayerEntity) event.player, onlyBlock.getAmazonIsland().getPercentage(), new StringTextComponent("\u00A7lTime Remaining"), DELIVER_BAR, barInfo.getRawColor());
+                }
+            }
+
+            BarInfo earthHealth = BarManager.getBarInfoByID("earth_health");
+            if (!onlyBlock.getBillionaireIsland().hasMinigameStarted())
+            {
+                if (earthHealth != null) BarManager.removeBar(earthHealth.getUniqueID());
+            } else
+            {
+                onlyBlock.getBillionaireIsland().tickTime((ServerPlayerEntity)event.player);
+                if (earthHealth == null) BarManager.addBar(UUID.randomUUID(), "earth_health", new StringTextComponent("\u00A72\u00A7lEarth Health"), onlyBlock.getBillionaireIsland().getEarthPercentage(), (ServerPlayerEntity) event.player, DELIVER_BAR, new int[]{0, 170, 0}, false);
+                else {
+                    BarManager.updateBar(earthHealth.getUniqueID(), (ServerPlayerEntity) event.player, onlyBlock.getBillionaireIsland().getEarthPercentage(), new StringTextComponent("\u00A72\u00A7lEarth Health"), DELIVER_BAR, earthHealth.getRawColor());
                 }
             }
 
@@ -153,16 +177,23 @@ public class ForgeEvents {
             if (currency.getAmount() >= 500 && onlyBlock.getStockIsland().isLocked())
             {
                 TitleUtils.sendTitleToPlayer((ServerPlayerEntity)event.player, "\u00A7a\u00A7lIsland Unlocked", "\u00A7eStock Island is Unlocked!", 20, 100, 20);
-                onlyBlock.getStockIsland().unlock(event.player.world);
+                onlyBlock.getStockIsland().unlock(event.player);
             } else if (currency.getAmount() >= 100000 && onlyBlock.getAmazonIsland().isLocked())
             {
                 TitleUtils.sendTitleToPlayer((ServerPlayerEntity)event.player, "\u00A7a\u00A7lIsland Unlocked", "\u00A7eAmazon Island is Unlocked!", 20, 100, 20);
-                onlyBlock.getAmazonIsland().unlock(event.player.world);
+                onlyBlock.getAmazonIsland().unlock(event.player);
                 //onlyBlock.getAmazonIsland().startMinigame(event.player.world);
             } else if (currency.getAmount() >= 1000000 && onlyBlock.getBillionaireIsland().isLocked())
             {
                 TitleUtils.sendTitleToPlayer((ServerPlayerEntity)event.player, "\u00A7a\u00A7lIsland Unlocked", "\u00A7eMillionaire Island is Unlocked!", 20, 100, 20);
-                onlyBlock.getBillionaireIsland().unlock(event.player.world);
+                onlyBlock.getBillionaireIsland().unlock(event.player);
+            }
+
+            if (currency.getAmount() < 1000000 && !onlyBlock.getBillionaireIsland().isLocked())
+            {
+                TitleUtils.sendTitleToPlayer((ServerPlayerEntity)event.player, "\u00A7c\u00A7lIsland Locked", "\u00A7eMillionaire Island is Locked!", 20, 100, 20);
+                onlyBlock.getBillionaireIsland().lock(event.player);
+                OnlyBlockNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)event.player), new CloseScreenPacket());
             }
         }
     }

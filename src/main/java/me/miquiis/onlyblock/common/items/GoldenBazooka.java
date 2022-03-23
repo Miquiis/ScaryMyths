@@ -28,12 +28,13 @@ public class GoldenBazooka extends Item {
             GoldenProjectileEntity laserProjectileEntity = new GoldenProjectileEntity(worldIn);
             laserProjectileEntity.setPosition(lookVec.getX(), lookVec.getY() + playerIn.getEyeHeight(), lookVec.getZ());
             laserProjectileEntity.setVelocity(velocity.getX(), velocity.getY(), velocity.getZ());
+            laserProjectileEntity.setShooter(playerIn);
 //            laserProjectileEntity.setHeadRotation(100, 100);
 //            laserProjectileEntity.rotateTowards(100, 100);
 //            laserProjectileEntity.rotationYaw = 100;
 //            laserProjectileEntity.prevRotationYaw = 100;
             worldIn.addEntity(laserProjectileEntity);
-            playerIn.getCooldownTracker().setCooldown(this, 20*3);
+            playerIn.getCooldownTracker().setCooldown(this, 1);
 //            worldIn.playSound(null, playerIn.getPosX(), playerIn.getPosY(), playerIn.getPosZ(), SoundRegister.ROCK_THROW.get(), SoundCategory.PLAYERS, 0.5f, (float) MathUtils.getRandomMinMax(0.8f, 1.2f));
         }
         return super.onItemRightClick(worldIn, playerIn, handIn);

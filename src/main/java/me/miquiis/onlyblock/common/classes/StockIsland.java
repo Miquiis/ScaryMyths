@@ -5,6 +5,7 @@ import me.miquiis.onlyblock.common.utils.MathUtils;
 import me.miquiis.onlyblock.common.utils.WorldEditUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
@@ -35,11 +36,26 @@ public class StockIsland implements IUnlockable {
     private boolean pacificToggle;
     private List<Entity> spawnedGhasts;
 
+    public StockIsland()
+    {
+        this.isLocked = true;
+        this.firstHit = true;
+        pacificToggle = false;
+    }
+
     public void startMinigame(World world)
     {
         spawnGhasts(world);
+        spawnBuffett(world);
         firstHit = true;
         pacificToggle = false;
+    }
+
+    private void spawnBuffett(World world) {
+        BuffetEntity buffetEntity = new BuffetEntity(world);
+        buffetEntity.setPositionAndRotation(60, 184, -169, 90, 0);
+        buffetEntity.enablePersistence();
+        world.addEntity(buffetEntity);
     }
 
     private void spawnGhasts(World world)
@@ -111,16 +127,16 @@ public class StockIsland implements IUnlockable {
     }
 
     @Override
-    public void unlock(World world) {
+    public void unlock(PlayerEntity player) {
         isLocked = false;
-        WorldEditUtils.pasteSchematic("stock_no_entity", world, -7.51, 66, -122.44);
-        startMinigame(world);
+        WorldEditUtils.pasteSchematic("stock_no_entity", player.world, -7.51, 66, -122.44);
+        startMinigame(player.world);
     }
 
     @Override
-    public void lock(World world) {
+    public void lock(PlayerEntity player) {
         isLocked = true;
-        WorldEditUtils.pasteSchematic("b_stock_no_entity", world, -7.51, 66, -122.44);
+        WorldEditUtils.pasteSchematic("b_stock_no_entity", player.world, -7.51, 66, -122.44);
     }
 
 }

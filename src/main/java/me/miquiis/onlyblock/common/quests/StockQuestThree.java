@@ -4,6 +4,7 @@ import me.miquiis.onlyblock.common.capability.CurrencyCapability;
 import me.miquiis.onlyblock.common.capability.models.OnlyBlockModel;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -20,12 +21,15 @@ public class StockQuestThree extends Quest {
     @SubscribeEvent
     public void onPlayerTickEvent(TickEvent.PlayerTickEvent event)
     {
-        if (!event.player.world.isRemote && event.phase == TickEvent.Phase.END)
+        if (!event.player.world.isRemote && event.phase == TickEvent.Phase.START)
         {
             prevAmount = currentAmount;
             currentAmount = event.player.getCapability(CurrencyCapability.CURRENCY_CAPABILITY).orElse(null).getAmount();
             if (prevAmount != currentAmount)
             {
+                System.out.println(prevAmount);
+                System.out.println(currentAmount);
+                System.out.println("Sending update");
                 this.updateProgress((ServerPlayerEntity)event.player);
             }
         }
@@ -41,5 +45,25 @@ public class StockQuestThree extends Quest {
     public void onQuestEnd(ServerPlayerEntity player) {
         super.onQuestEnd(player);
         OnlyBlockModel.getCapability(player).setCurrentQuest(new StockQuestFour(player));
+    }
+
+    @Override
+    public void writeAdditional(CompoundNBT compoundNBT) {
+        super.writeAdditional(compoundNBT);
+        compoundNBT.putInt("CurrentAmount", currentAmount);
+        compoundNBT.putInt("PrevAmount", prevAmount);
+    }
+
+    @Override
+    public void readAdditional(CompoundNBT compoundNBT) {
+        super.readAdditional(compoundNBT);
+        if (compoundNBT.contains("CurrentAmount"))
+        {
+            this.currentAmount = compoundNBT.getInt("CurrentAmount");
+        }
+        if (compoundNBT.contains("PrevAmount"))
+        {
+            this.prevAmount = compoundNBT.getInt("PrevAmount");
+        }
     }
 }

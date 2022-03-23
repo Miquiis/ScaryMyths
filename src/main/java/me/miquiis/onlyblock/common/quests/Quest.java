@@ -72,9 +72,9 @@ public class Quest implements QuestManager.IQuest {
 
     @Override
     public void onQuestEnd(ServerPlayerEntity player) {
+        MinecraftForge.EVENT_BUS.unregister(this);
         IOnlyBlock onlyBlock = OnlyBlockModel.getCapability(player);
         onlyBlock.setCurrentQuest(null);
-        MinecraftForge.EVENT_BUS.unregister(this);
         this.isOver = true;
     }
 

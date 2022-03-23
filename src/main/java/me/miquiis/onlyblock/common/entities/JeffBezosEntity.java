@@ -2,6 +2,8 @@ package me.miquiis.onlyblock.common.entities;
 
 import me.miquiis.onlyblock.common.capability.interfaces.IOnlyBlock;
 import me.miquiis.onlyblock.common.capability.models.OnlyBlockModel;
+import me.miquiis.onlyblock.common.quests.AmazonQuestTwo;
+import me.miquiis.onlyblock.common.registries.EntityRegister;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
@@ -31,18 +33,32 @@ public class JeffBezosEntity extends MonsterEntity implements IAnimatable {
 
     private static final List<String> DIALOGUE = new ArrayList<>(Arrays.asList(
             "&6<Jeff Bezos> &eHey, you there! The company needs your help.",
-            "&6<Jeff Bezos> &eI need you to deliver &l15&e packages under &l5 minutes&e.",
+            "&6<Jeff Bezos> &eI need you to deliver &l10&e packages under &l3 minutes&e.",
             "&6<Jeff Bezos> &eYou are in or out?"
     ));
 
+    private static final List<String> DIALOGUE_FINAL = new ArrayList<>(Arrays.asList(
+            "&6<Jeff Bezos> &eThank you for helping out!.",
+            "&6<Jeff Bezos> &eI don't have anything to give you, just thank you."
+    ));
+
     private int currentDialogue;
+    private boolean hasPlayedMinigame;
 
     private AnimationFactory factory = new AnimationFactory(this);
 
     public JeffBezosEntity(EntityType<? extends MonsterEntity> type, World worldIn) {
         super(type, worldIn);
-        this.setHealth(50);
+        this.setHealth(1);
         this.currentDialogue = 0;
+        this.hasPlayedMinigame = false;
+    }
+
+    public JeffBezosEntity(World worldIn) {
+        super(EntityRegister.JEFF_BEZOS.get(), worldIn);
+        this.setHealth(1);
+        this.currentDialogue = 0;
+        this.hasPlayedMinigame = false;
     }
 
     public static AttributeModifierMap.MutableAttribute registerAttributes() {
@@ -53,15 +69,24 @@ public class JeffBezosEntity extends MonsterEntity implements IAnimatable {
     public ActionResultType getEntityInteractionResult(PlayerEntity playerIn, Hand hand) {
         if (!playerIn.world.isRemote && hand == Hand.MAIN_HAND)
         {
-            if (this.hasNextDialogue()) {
+            if (this.hasNextDialogue() && !hasPlayedMinigame) {
                 playerIn.sendStatusMessage(new StringTextComponent(DIALOGUE.get(currentDialogue++).replace("&", "\u00A7")), false);
                 return super.getEntityInteractionResult(playerIn, hand);
-            } else
+            } else if (this.hasNextFinalDialogue() && hasPlayedMinigame) {
+                playerIn.sendStatusMessage(new StringTextComponent(DIALOGUE_FINAL.get(currentDialogue++).replace("&", "\u00A7")), false);
+                return super.getEntityInteractionResult(playerIn, hand);
+            } else if (!hasPlayedMinigame)
             {
-                playerIn.setPositionAndRotation(974, 66, 1029, 0, 0);
+                hasPlayedMinigame = true;
+                currentDialogue = 0;
+                playerIn.setPositionAndUpdate(974, 66, 1029);
                 IOnlyBlock onlyBlock = OnlyBlockModel.getCapability(playerIn);
                 onlyBlock.getAmazonIsland().startMinigame(playerIn, playerIn.world);
                 onlyBlock.sync((ServerPlayerEntity)playerIn);
+                playerIn.setPositionAndUpdate(974, 66, 1029);
+            } else {
+                IOnlyBlock onlyBlock = OnlyBlockModel.getCapability(playerIn);
+                onlyBlock.setCurrentQuest(new AmazonQuestTwo(playerIn));
             }
         }
         return super.getEntityInteractionResult(playerIn, hand);
@@ -81,6 +106,11 @@ public class JeffBezosEntity extends MonsterEntity implements IAnimatable {
     private boolean hasNextDialogue()
     {
         return currentDialogue <= DIALOGUE.size() - 1;
+    }
+
+    private boolean hasNextFinalDialogue()
+    {
+        return currentDialogue <= DIALOGUE_FINAL.size() - 1;
     }
 
     @Override

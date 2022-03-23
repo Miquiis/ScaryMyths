@@ -1,8 +1,11 @@
 package me.miquiis.onlyblock.common.entities;
 
+import me.miquiis.onlyblock.common.capability.CurrencyCapability;
+import me.miquiis.onlyblock.common.classes.ExpExplosion;
 import me.miquiis.onlyblock.common.entities.renderer.GoldenProjectileRenderer;
 import me.miquiis.onlyblock.common.registries.EntityRegister;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.ThrowableEntity;
 import net.minecraft.network.IPacket;
 import net.minecraft.util.math.EntityRayTraceResult;
@@ -29,11 +32,26 @@ public class GoldenProjectileEntity extends ThrowableEntity implements IAnimatab
 
     @Override
     protected void onImpact(RayTraceResult result) {
+        if (result.getType() == RayTraceResult.Type.ENTITY)
+        {
+            EntityRayTraceResult entityRayTraceResult = (EntityRayTraceResult) result;
+            if (entityRayTraceResult.getEntity() instanceof SpaceshipEntity)
+            {
+                return;
+            }
+        }
         if (!world.isRemote)
         {
+            if (getShooter() != null)
+            {
+                ServerPlayerEntity player = (ServerPlayerEntity) getShooter();
+                player.getCapability(CurrencyCapability.CURRENCY_CAPABILITY).orElse(null).addOrSubtractAmount(5000);
+            }
             this.remove();
-            world.createExplosion(this, getPosX(), getPosY(), getPosZ(), 5f, Explosion.Mode.DESTROY);
         }
+        ExpExplosion expExplosion = new ExpExplosion(world, null, null, null, getPosX(), getPosY(), getPosZ(), 10f, false, Explosion.Mode.DESTROY, true);
+        expExplosion.doExplosionA();
+        expExplosion.doExplosionB(true);
         super.onImpact(result);
     }
 
@@ -54,9 +72,6 @@ public class GoldenProjectileEntity extends ThrowableEntity implements IAnimatab
             remove();
         }
         super.tick();
-////        this.setRenderYawOffset(100);
-//        this.rotationYaw = 100;
-//        this.prevRotationYaw = 100;
     }
 
     @Override

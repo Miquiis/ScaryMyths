@@ -29,6 +29,10 @@ public class ItemRegister {
             new WhistleItem(new Item.Properties().group(ItemGroup.MISC))
     );
 
+    public static final RegistryObject<Item> LAPTOP_PASSWORD = ITEMS.register("laptop_password", () ->
+            new LaptopPasscodeItem(new Item.Properties().group(ItemGroup.MISC).rarity(Rarity.EPIC))
+    );
+
     public static final RegistryObject<Item> GOLDEN_BAZOOKA = ITEMS.register("golden_bazooka", () ->
             new GoldenBazooka(new Item.Properties().group(ItemGroup.COMBAT).maxStackSize(1))
     );

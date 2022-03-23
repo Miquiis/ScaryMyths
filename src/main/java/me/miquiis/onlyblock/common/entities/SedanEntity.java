@@ -33,11 +33,13 @@ public class SedanEntity extends MobEntity implements IAnimatable {
     public SedanEntity(EntityType<? extends MobEntity> type, World worldIn) {
         super(type, worldIn);
         this.randomSpeed = MathUtils.getRandomMinMax(-0.2, 0.1);
+        enablePersistence();
     }
 
     public SedanEntity(World worldIn) {
         super(EntityRegister.SEDAN.get(), worldIn);
         this.randomSpeed = MathUtils.getRandomMinMax(-0.2, 0.1);
+        enablePersistence();
     }
 
     @Override

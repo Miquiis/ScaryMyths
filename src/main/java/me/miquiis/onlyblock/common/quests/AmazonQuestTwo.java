@@ -1,15 +1,16 @@
 package me.miquiis.onlyblock.common.quests;
 
 import me.miquiis.onlyblock.common.entities.BuffetEntity;
+import me.miquiis.onlyblock.common.entities.JeffBezosEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-public class StockQuestFour extends Quest {
+public class AmazonQuestTwo extends Quest {
 
-    public StockQuestFour(PlayerEntity player) {
-        super(player, "stock_quest_four", "Find and Eliminate Buffet", 0f);
+    public AmazonQuestTwo(PlayerEntity player) {
+        super(player, "amazon_quest_two", "Eliminate Jeff Bezos", 0f);
     }
 
     @SubscribeEvent
@@ -17,7 +18,7 @@ public class StockQuestFour extends Quest {
     {
         if (getPlayer() == null) return;
         if (event.getEntityLiving().world.isRemote) return;
-        if (event.getEntityLiving() instanceof BuffetEntity)
+        if (event.getEntityLiving() instanceof JeffBezosEntity)
         {
             updateProgress((ServerPlayerEntity)getPlayer());
         }

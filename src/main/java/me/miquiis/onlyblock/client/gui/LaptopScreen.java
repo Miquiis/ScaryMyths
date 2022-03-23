@@ -8,6 +8,8 @@ import me.miquiis.onlyblock.common.capability.interfaces.ICurrency;
 import me.miquiis.onlyblock.common.classes.JHTML;
 import me.miquiis.onlyblock.common.registries.ItemRegister;
 import me.miquiis.onlyblock.common.utils.MathUtils;
+import me.miquiis.onlyblock.server.network.OnlyBlockNetwork;
+import me.miquiis.onlyblock.server.network.messages.BuyItemFromShopPacket;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
@@ -74,6 +76,9 @@ public class LaptopScreen extends Screen {
     private Button chromeButton;
     private Button closeWindowButton;
 
+    private Button buyGoldenBazooka;
+    private Button buyGoldenHeli;
+
     public LaptopScreen() {
         super(new StringTextComponent("Laptop"));
         this.currentPage = LaptopPage.LOGIN_PAGE;
@@ -93,6 +98,12 @@ public class LaptopScreen extends Screen {
         this.closeWindowButton = this.addButton(new Button(0, 0, 0, 0, new StringTextComponent("close_window"), p_onPress_1_ -> {
             currentPage = LaptopPage.PC;
         }));
+        this.buyGoldenBazooka = this.addButton(new Button(0, 0, 0, 0, new StringTextComponent("buy_golden_bazooka"), p_onPress_1_ -> {
+            OnlyBlockNetwork.CHANNEL.sendToServer(new BuyItemFromShopPacket(new ItemStack(ItemRegister.GOLDEN_BAZOOKA.get())));
+        }));
+        this.buyGoldenHeli = this.addButton(new Button(0, 0, 0, 0, new StringTextComponent("buy_golden_heli"), p_onPress_1_ -> {
+            OnlyBlockNetwork.CHANNEL.sendToServer(new BuyItemFromShopPacket(new ItemStack(ItemRegister.GOLDEN_HELICOPTER.get())));
+        }));
     }
 
     @Override
@@ -101,6 +112,11 @@ public class LaptopScreen extends Screen {
         JHTML.Canvas(1920, 1080, true,
                 currentPage == LaptopPage.AMAZON_PAGE ? getPCBackground(getAmazonTab()) : currentPage == LaptopPage.PC ? getPCBackground() : getLoginBackground()
         ).render(matrixStack, getMinecraft(), 0, 0);
+    }
+
+    @Override
+    public boolean isPauseScreen() {
+        return false;
     }
 
     @Override
@@ -205,13 +221,15 @@ public class LaptopScreen extends Screen {
 
     private JHTML.Canvas getAmazonTab()
     {
+        buyGoldenBazooka.active = true;
+        buyGoldenHeli.active = true;
         return createWindow(
                 JHTML.Box(1070, 50, AMAZON_TOP_BAR),
                 JHTML.Box(1070, 30, AMAZON_MID_BAR),
                 JHTML.Box(1070, 30, AMAZON_BOTTOM_BAR),
                 JHTML.Box(1070, 440, false, Color.LIGHT_GRAY.getRGB(),
-                        createSellWindow(new ItemStack(ItemRegister.GOLDEN_BAZOOKA.get()), "Golden Bazooka", 0),
-                        createSellWindow(new ItemStack(ItemRegister.GOLDEN_HELICOPTER.get()), "Golden Helicopter", 0),
+                        createSellWindow(new ItemStack(ItemRegister.GOLDEN_BAZOOKA.get()), "Golden Bazooka", 1000000),
+                        createSellWindow(new ItemStack(ItemRegister.GOLDEN_HELICOPTER.get()), "Golden Helicopter", 1000000),
                         createSellWindow(new ItemStack(Items.BARRIER), "*OUT OF ORDER*", 0)
                 )
         ).setAbsolutePosition();
@@ -225,7 +243,20 @@ public class LaptopScreen extends Screen {
                 JHTML.Text(0, 0, 20, 0, 0, "\u00A72$" + itemPrice, 3f).setCenteredHorizontally(),
                 JHTML.Image(280, 40, 0, 30, 0, 0, false, new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/laptop/buy_button.png"),
                         JHTML.Text(0, 0, 0,0, 0, "Buy", 3f, true, Color.WHITE.getRGB()).setCenteredHorizontally().setCenteredVertically()
-                ).setCenteredHorizontally()
+                ).setCenteredHorizontally().setOnRenderEvent((x, y, width1, height1) -> {
+                    if (name.equalsIgnoreCase("golden helicopter"))
+                    {
+                        this.buyGoldenHeli.x = (int) x;
+                        this.buyGoldenHeli.y = (int)y;
+                        this.buyGoldenHeli.setHeight((int)height1);
+                        this.buyGoldenHeli.setWidth((int)width1);
+                    } else if (name.equalsIgnoreCase("golden bazooka")) {
+                        this.buyGoldenBazooka.x = (int) x;
+                        this.buyGoldenBazooka.y = (int)y;
+                        this.buyGoldenBazooka.setHeight((int)height1);
+                        this.buyGoldenBazooka.setWidth((int)width1);
+                    }
+                })
         );
     }
 

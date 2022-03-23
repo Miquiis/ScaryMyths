@@ -1,6 +1,7 @@
 package me.miquiis.onlyblock.common.entities;
 
 import me.miquiis.onlyblock.common.registries.EntityRegister;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
@@ -15,18 +16,30 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
-public class BuffetEntity extends MonsterEntity implements IAnimatable {
+public class GiantEarthEntity extends MonsterEntity implements IAnimatable {
 
     private AnimationFactory factory = new AnimationFactory(this);
 
-    public BuffetEntity(EntityType<? extends MonsterEntity> type, World worldIn) {
+    public GiantEarthEntity(EntityType<? extends MonsterEntity> type, World worldIn) {
         super(type, worldIn);
-        this.setHealth(1);
+        setInvulnerable(true);
+        enablePersistence();
+        this.ignoreFrustumCheck = true;
     }
 
-    public BuffetEntity(World worldIn) {
-        super(EntityRegister.BUFFETT.get(),worldIn);
-        this.setHealth(1);
+    public GiantEarthEntity(World worldIn) {
+        super(EntityRegister.GIANT_EARTH.get(),worldIn);
+        setInvulnerable(true);
+        enablePersistence();
+        this.ignoreFrustumCheck = true;
+    }
+
+    @Override
+    protected void collideWithEntity(Entity entityIn) {
+    }
+
+    @Override
+    public void applyEntityCollision(Entity entityIn) {
     }
 
     public static AttributeModifierMap.MutableAttribute registerAttributes() {
@@ -34,20 +47,13 @@ public class BuffetEntity extends MonsterEntity implements IAnimatable {
     }
 
     private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
-        if (event.isMoving())
-        {
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("walk",true));
-        } else
-        {
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("idle",true));
-        }
         return PlayState.CONTINUE;
     }
 
 
     @Override
     public void registerControllers(AnimationData data) {
-        data.addAnimationController(new AnimationController<BuffetEntity>(this, "controller", 10, this::predicate));
+        data.addAnimationController(new AnimationController<GiantEarthEntity>(this, "controller", 10, this::predicate));
     }
 
     @Override
