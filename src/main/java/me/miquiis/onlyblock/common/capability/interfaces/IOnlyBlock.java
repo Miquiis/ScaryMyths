@@ -14,12 +14,18 @@ public interface IOnlyBlock {
     void setPlayer(ServerPlayerEntity player);
     void deserializeNBT(CompoundNBT data);
 
+    void tickTime();
     void setCurrentQuest(Quest quest);
     void reset();
+    void setCurrentTime(long currentTime);
+    void resetCurrentTime();
+    void setBankruptTime(int minutes);
 
     CompoundNBT serializeNBT();
     AmazonIsland getAmazonIsland();
     BillionaireIsland getBillionaireIsland();
     StockIsland getStockIsland();
     Quest getCurrentQuest();
+    long getCurrentTime();
+    long getBankruptTime();
 }

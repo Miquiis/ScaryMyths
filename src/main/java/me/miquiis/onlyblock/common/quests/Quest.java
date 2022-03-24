@@ -4,6 +4,7 @@ import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.common.capability.interfaces.IOnlyBlock;
 import me.miquiis.onlyblock.common.capability.models.OnlyBlockModel;
 import me.miquiis.onlyblock.common.managers.QuestManager;
+import me.miquiis.onlyblock.common.utils.TitleUtils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
@@ -31,6 +32,11 @@ public class Quest implements QuestManager.IQuest {
         this.isOver = false;
         this.player = player;
         MinecraftForge.EVENT_BUS.register(this);
+        if (player instanceof ServerPlayerEntity) onQuestStart((ServerPlayerEntity)player);
+    }
+
+    public boolean isOver() {
+        return isOver;
     }
 
     @Override
@@ -59,7 +65,10 @@ public class Quest implements QuestManager.IQuest {
 
     @Override
     public void onQuestStart(ServerPlayerEntity player) {
-
+        if (player != null)
+        {
+            TitleUtils.sendTitleToPlayer(player, "&e&lQuest Unlocked", title, 20, 100, 20);
+        }
     }
 
     @Override
@@ -72,25 +81,35 @@ public class Quest implements QuestManager.IQuest {
 
     @Override
     public void onQuestEnd(ServerPlayerEntity player) {
+        System.out.println(player);
+        this.isOver = true;
         MinecraftForge.EVENT_BUS.unregister(this);
         IOnlyBlock onlyBlock = OnlyBlockModel.getCapability(player);
         onlyBlock.setCurrentQuest(null);
+    }
+
+    public void clear()
+    {
         this.isOver = true;
+        MinecraftForge.EVENT_BUS.unregister(this);
     }
 
     public void updateProgress(ServerPlayerEntity player)
     {
-        checkEnd(player);
+        if (checkEnd(player)) return;
         IOnlyBlock onlyBlock = OnlyBlockModel.getCapability(player);
         onlyBlock.sync(player);
     }
 
-    public void checkEnd(ServerPlayerEntity player)
+    public boolean checkEnd(ServerPlayerEntity player)
     {
         if (this.progress >= 1f)
         {
+            System.out.println("Ending Quest");
             onQuestEnd(player);
+            return true;
         }
+        return false;
     }
 
     public CompoundNBT serializeNBT()

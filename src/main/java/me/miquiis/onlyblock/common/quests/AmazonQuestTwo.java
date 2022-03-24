@@ -1,5 +1,6 @@
 package me.miquiis.onlyblock.common.quests;
 
+import me.miquiis.onlyblock.common.capability.models.OnlyBlockModel;
 import me.miquiis.onlyblock.common.entities.BuffetEntity;
 import me.miquiis.onlyblock.common.entities.JeffBezosEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,5 +29,11 @@ public class AmazonQuestTwo extends Quest {
     public void updateProgress(ServerPlayerEntity player) {
         this.setProgress(1);
         super.updateProgress(player);
+    }
+
+    @Override
+    public void onQuestEnd(ServerPlayerEntity player) {
+        super.onQuestEnd(player);
+        OnlyBlockModel.getCapability(player).getAmazonIsland().setAcquired(true);
     }
 }

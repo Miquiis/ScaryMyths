@@ -3,6 +3,7 @@ package me.miquiis.onlyblock.common.registries;
 import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.common.blocks.AmazonTNTBlock;
 import me.miquiis.onlyblock.common.blocks.BaseHorizontalBlock;
+import me.miquiis.onlyblock.common.items.PackageItem;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.BlockItem;
@@ -22,7 +23,7 @@ public class BlockRegister {
     public static final DeferredRegister<Block> BLOCKS
             = DeferredRegister.create(ForgeRegistries.BLOCKS, OnlyBlock.MOD_ID);
 
-    public static final RegistryObject<Block> AMAZON_PACKAGE = registerBlock("amazon_package", () ->
+    public static final RegistryObject<Block> AMAZON_PACKAGE = registerPackageBlock("amazon_package", () ->
             new BaseHorizontalBlock(AbstractBlock.Properties.create(Material.WOOD).hardnessAndResistance(0.5f).sound(SoundType.PLANT))
     );
 
@@ -68,8 +69,20 @@ public class BlockRegister {
         return toReturn;
     }
 
+    private static<T extends Block> RegistryObject<T> registerPackageBlock(String name, Supplier<T> block) {
+        RegistryObject<T> toReturn = BLOCKS.register(name, block);
+        registerPackageBlockItem(name, toReturn);
+        return toReturn;
+    }
+
     private static <T extends Block> void registerBlockItem(String name, RegistryObject<T> block) {
         ItemRegister.ITEMS.register(name, () -> new BlockItem(block.get(),
+                new Item.Properties().group(ItemGroup.MISC))
+        );
+    }
+
+    private static <T extends Block> void registerPackageBlockItem(String name, RegistryObject<T> block) {
+        ItemRegister.ITEMS.register(name, () -> new PackageItem(block.get(),
                 new Item.Properties().group(ItemGroup.MISC))
         );
     }

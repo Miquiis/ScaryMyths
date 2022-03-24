@@ -9,7 +9,7 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 public class OnlyBlockNetwork {
 
-    public static final String NETWORK_VERSION = "0.1.0";
+    public static final String NETWORK_VERSION = "2.1.0";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(OnlyBlock.MOD_ID, "network"), () -> NETWORK_VERSION,
@@ -22,7 +22,8 @@ public class OnlyBlockNetwork {
         CHANNEL.registerMessage(2, OpenShopPacket.class, OpenShopPacket::encode, OpenShopPacket::decode, OpenShopPacket::handle);
         CHANNEL.registerMessage(3, OnlyBlockPacket.class, OnlyBlockPacket::encode, OnlyBlockPacket::decode, OnlyBlockPacket::handle);
         CHANNEL.registerMessage(4, CloseScreenPacket.class, CloseScreenPacket::encode, CloseScreenPacket::decode, CloseScreenPacket::handle);
-        CHANNEL.registerMessage(5, ShootFromSpaceshipPacket.class, ShootFromSpaceshipPacket::encode, ShootFromSpaceshipPacket::decode, ShootFromSpaceshipPacket::handle);
+        CHANNEL.registerMessage(5, ShootMissilePacket.class, ShootMissilePacket::encode, ShootMissilePacket::decode, ShootMissilePacket::handle);
+        CHANNEL.registerMessage(6, OpenAmazonPackage.class, OpenAmazonPackage::encode, OpenAmazonPackage::decode, OpenAmazonPackage::handle);
     }
 
 }

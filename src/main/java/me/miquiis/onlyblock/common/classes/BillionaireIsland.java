@@ -2,6 +2,8 @@ package me.miquiis.onlyblock.common.classes;
 
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import me.miquiis.onlyblock.common.entities.AsteroidEntity;
+import me.miquiis.onlyblock.common.entities.ElonMuskEntity;
+import me.miquiis.onlyblock.common.entities.JeffBezosEntity;
 import me.miquiis.onlyblock.common.utils.MathUtils;
 import me.miquiis.onlyblock.common.utils.TitleUtils;
 import me.miquiis.onlyblock.common.utils.WorldEditUtils;
@@ -12,9 +14,11 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class BillionaireIsland implements IUnlockable {
 
@@ -25,6 +29,7 @@ public class BillionaireIsland implements IUnlockable {
     private int currentWave;
     private int earthHeath;
     private long currentTime;
+    private UUID elonSpawned;
     private List<Entity> spawnedMeteors;
 
     public BillionaireIsland()
@@ -48,14 +53,23 @@ public class BillionaireIsland implements IUnlockable {
 
     public void tickTime(ServerPlayerEntity player) {
         currentTime++;
-        if (currentTime % (20 * 45) == 0)
+        if (currentTime % (20 * 15) == 0 && currentWave < 2 && getAliveMeteors() == 0)
         {
-            TitleUtils.sendTitleToPlayer(player, "&cWAVE INCOMING", "&fMore meteors are on the way", 20, 60, 20);
+            System.out.println("Wave Incoming");
+            TitleUtils.sendTitleToPlayer(player, "&c&lWAVE INCOMING", "&fMore meteors are on the way", 20, 60, 20);
             spawnWave(player);
-        } else if (currentWave == 0)
+        } else if (currentTime == 20)
         {
-            TitleUtils.sendTitleToPlayer(player, "&cWAVE STARTING", "&fMeteors are coming towards Earth", 20, 60, 20);
+            System.out.println("Wave Starting");
+            TitleUtils.sendTitleToPlayer(player, "&c&lWAVE STARTING", "&fMeteors are coming towards Earth", 20, 60, 20);
             spawnWave(player);
+        }
+
+        if (currentTime % (20 * 15) == 0 && currentWave >= 2 && getAliveMeteors() == 0) {
+            player.stopRiding();
+            player.setPositionAndUpdate(13, 66, 137);
+            hasMinigameStarted = false;
+            return;
         }
     }
 
@@ -65,11 +79,16 @@ public class BillionaireIsland implements IUnlockable {
 
     public void spawnWave(PlayerEntity player)
     {
-        int randomAmount = MathUtils.getRandomMax(10) + MathUtils.getRandomMax((3 * currentWave) + 1);
+        spawnedMeteors.forEach(entity -> {
+            System.out.println(entity.getPositionVec());
+        });
+        spawnedMeteors.removeIf(entity -> entity == null || !entity.isAlive() || entity.removed || entity.getPositionVec().distanceTo(EARTH_CENTER) > 200);
+        if (currentWave == 3) return;
+        int randomAmount = currentWave == 0 ? 3 : currentWave == 1 ? 5 : currentWave == 2 ? 10 : 3;
         for (int i = 0; i < randomAmount; i++)
         {
             final double angle = MathUtils.getRandomMinMax(0, 360 * 5);
-            final double radius = 500;
+            final double radius = 300;
             final float pitch = MathUtils.getRandomMinMax(-45, 10);
 
             Vector3d lookVec = getVectorForRotation(pitch, 0, (float)angle);
@@ -77,12 +96,16 @@ public class BillionaireIsland implements IUnlockable {
             double z = radius * lookVec.getZ();
             double y = radius * lookVec.getY();
 
-            Vector3d vec = new Vector3d(player.getPosX() + x, (player.getPosY() + 2f) + y, player.getPosZ() + z);;
+            Vector3d vec = new Vector3d(EARTH_CENTER.getX() + x, (EARTH_CENTER.getY() + 2f) + y, EARTH_CENTER.getZ() + z);;
 
             AsteroidEntity asteroidEntity = new AsteroidEntity(player.world, EARTH_CENTER);
             asteroidEntity.setPosition(vec.getX(), vec.getY(), vec.getZ());
             asteroidEntity.setOwner(player.getUniqueID());
+            asteroidEntity.setGlowing(true);
+            asteroidEntity.enablePersistence();
+
             spawnedMeteors.add(asteroidEntity);
+
             player.world.addEntity(asteroidEntity);
         }
         currentWave++;
@@ -113,6 +136,8 @@ public class BillionaireIsland implements IUnlockable {
             System.out.println("Earth Reset");
             earthHeath = 100;
         }
+        if (compoundNBT.contains("ElonSpawned"))
+        elonSpawned = compoundNBT.getUniqueId("ElonSpawned");
     }
 
     public CompoundNBT serializeNBT()
@@ -123,7 +148,14 @@ public class BillionaireIsland implements IUnlockable {
         compoundNBT.putLong("CurrentTime", currentTime);
         compoundNBT.putBoolean("MinigameStarted", hasMinigameStarted);
         compoundNBT.putInt("EarthHealth", earthHeath);
+        if (elonSpawned != null)
+        compoundNBT.putUniqueId("ElonSpawned", elonSpawned);
         return compoundNBT;
+    }
+
+    public int getAliveMeteors()
+    {
+        return (int)spawnedMeteors.stream().filter(entity -> entity != null && entity.isAlive() && !entity.removed).peek(System.out::println).count();
     }
 
     @Override
@@ -139,12 +171,23 @@ public class BillionaireIsland implements IUnlockable {
     public void unlock(PlayerEntity player) {
         isLocked = false;
         WorldEditUtils.pasteSchematic("rocket_no_entity", player.world, 1.51, 65.00, 130.47);
+        spawnElon(player.world);
     }
 
     @Override
     public void lock(PlayerEntity player) {
         isLocked = true;
         WorldEditUtils.pasteSchematic("b_rocket_no_entity", player.world, 1.51, 65.00, 130.47);
+        if (elonSpawned != null)
+        ((ServerWorld)player.world).getEntityByUuid(elonSpawned).remove();
+    }
+
+    private void spawnElon(World world) {
+        ElonMuskEntity entity = new ElonMuskEntity(world);
+        entity.setPositionAndRotation(11.5, 66, 139.5, 180, 0);
+        entity.enablePersistence();
+        elonSpawned = entity.getUniqueID();
+        world.addEntity(entity);
     }
 
     private final Vector3d getVectorForRotation(float pitch, float yaw, float angle) {
@@ -159,5 +202,9 @@ public class BillionaireIsland implements IUnlockable {
 
     public void damageEarth() {
         earthHeath -= 10;
+    }
+
+    public float getMeteorsPercentage() {
+        return getAliveMeteors() / (float)spawnedMeteors.size();
     }
 }

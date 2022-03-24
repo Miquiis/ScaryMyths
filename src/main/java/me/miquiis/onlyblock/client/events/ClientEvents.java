@@ -9,22 +9,23 @@ import me.miquiis.onlyblock.common.capability.interfaces.IOnlyBlock;
 import me.miquiis.onlyblock.common.capability.models.OnlyBlockModel;
 import me.miquiis.onlyblock.common.classes.OldEasyGUI;
 import me.miquiis.onlyblock.common.entities.GoldenHelicopterEntity;
+import me.miquiis.onlyblock.server.network.OnlyBlockNetwork;
+import me.miquiis.onlyblock.server.network.messages.OpenAmazonPackage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.entity.item.ArmorStandEntity;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.EntityViewRenderEvent;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -40,6 +41,22 @@ public class ClientEvents {
 
     public static float clamp(float val, float max, float min) {
         return val > max ? max : val < min ? min : val;
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onClickEvent(InputEvent.KeyInputEvent event)
+    {
+        if (event.getAction() != 0) return;
+        if (event.getKey() != 85) return;
+
+        if (Minecraft.getInstance().currentScreen instanceof ContainerScreen)
+        {
+            ContainerScreen<?> containerScreen = (ContainerScreen<?>) Minecraft.getInstance().currentScreen;
+            if (containerScreen.getSlotUnderMouse() != null)
+            {
+                OnlyBlockNetwork.CHANNEL.sendToServer(new OpenAmazonPackage(containerScreen.getSlotUnderMouse().getStack()));
+            }
+        }
     }
 
     @SubscribeEvent

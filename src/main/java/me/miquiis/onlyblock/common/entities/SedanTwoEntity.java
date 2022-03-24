@@ -1,6 +1,8 @@
 package me.miquiis.onlyblock.common.entities;
 
 import me.miquiis.onlyblock.common.blocks.BaseHorizontalBlock;
+import me.miquiis.onlyblock.common.capability.CurrencyCapability;
+import me.miquiis.onlyblock.common.capability.interfaces.ICurrency;
 import me.miquiis.onlyblock.common.registries.BlockRegister;
 import me.miquiis.onlyblock.common.registries.EntityRegister;
 import me.miquiis.onlyblock.common.utils.MathUtils;
@@ -76,6 +78,10 @@ public class SedanTwoEntity extends MobEntity implements IAnimatable {
         {
             Vector3d direction = entityIn.getLookVec().mul(-1, -1, -1).mul(0.5, 0.5, 0.5);
             entityIn.addVelocity(direction.getX(), 0.3, direction.getZ());
+        }else
+        {
+            ICurrency currency = entityIn.getCapability(CurrencyCapability.CURRENCY_CAPABILITY).orElse(null);
+            currency.addOrSubtractAmount(-25000);
         }
         super.onCollideWithPlayer(entityIn);
     }

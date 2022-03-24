@@ -3,6 +3,8 @@ package me.miquiis.onlyblock.common.registries;
 import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.common.items.*;
 import me.miquiis.onlyblock.common.items.renderer.GoldenHelicopterItemRenderer;
+import me.miquiis.onlyblock.common.items.renderer.JetpackItemRenderer;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.*;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.RegistryObject;
@@ -24,6 +26,10 @@ public class ItemRegister {
     public static final RegistryObject<Item> GOOD_STOCK = ITEMS.register("good_stock", () ->
             new Item(new Item.Properties().group(ItemGroup.MISC))
     );
+
+    public static final RegistryObject<JetpackArmorItem> JETPACK = ITEMS.register("jetpack",
+            () -> new JetpackArmorItem(ArmorMaterial.DIAMOND, EquipmentSlotType.CHEST, new Item.Properties().group(ItemGroup.COMBAT).setISTER(() -> JetpackItemRenderer::new)));
+
 
     public static final RegistryObject<Item> GHAST_WHISTLE = ITEMS.register("whistle", () ->
             new WhistleItem(new Item.Properties().group(ItemGroup.MISC))

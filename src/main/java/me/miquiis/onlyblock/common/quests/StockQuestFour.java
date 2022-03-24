@@ -1,5 +1,6 @@
 package me.miquiis.onlyblock.common.quests;
 
+import me.miquiis.onlyblock.common.capability.models.OnlyBlockModel;
 import me.miquiis.onlyblock.common.entities.BuffetEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -15,10 +16,12 @@ public class StockQuestFour extends Quest {
     @SubscribeEvent
     public void onLivingDeathEvent(LivingDeathEvent event)
     {
+        if (isOver()) return;
         if (getPlayer() == null) return;
         if (event.getEntityLiving().world.isRemote) return;
         if (event.getEntityLiving() instanceof BuffetEntity)
         {
+            System.out.println("End quest " + getPlayer());
             updateProgress((ServerPlayerEntity)getPlayer());
         }
     }
@@ -27,5 +30,11 @@ public class StockQuestFour extends Quest {
     public void updateProgress(ServerPlayerEntity player) {
         this.setProgress(1);
         super.updateProgress(player);
+    }
+
+    @Override
+    public void onQuestEnd(ServerPlayerEntity player) {
+        super.onQuestEnd(player);
+        OnlyBlockModel.getCapability(player).getStockIsland().setAcquired(true);
     }
 }

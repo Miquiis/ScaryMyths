@@ -45,6 +45,28 @@ public class OnlyBlockCommand {
                     context.getSource().asPlayer().sendStatusMessage(new StringTextComponent("\u00A7a\u00A7lMultiplier set."), false);
                     return 1;
                 })))
+                .then(Commands.literal("time")
+                        .then(Commands.literal("add").then(Commands.argument("seconds", IntegerArgumentType.integer()).executes(context -> {
+                            IOnlyBlock onlyBlock = OnlyBlockModel.getCapability(context.getSource().asPlayer());
+                            onlyBlock.setCurrentTime(onlyBlock.getCurrentTime() + IntegerArgumentType.getInteger(context, "seconds") * 20L);
+                            return 1;
+                        })))
+                        .then(Commands.literal("set").then(Commands.argument("seconds", IntegerArgumentType.integer()).executes(context -> {
+                            IOnlyBlock onlyBlock = OnlyBlockModel.getCapability(context.getSource().asPlayer());
+                            onlyBlock.setCurrentTime(IntegerArgumentType.getInteger(context, "seconds") * 20L);
+                            return 1;
+                        })))
+                        .then(Commands.literal("reset").executes(context -> {
+                            IOnlyBlock onlyBlock = OnlyBlockModel.getCapability(context.getSource().asPlayer());
+                            onlyBlock.resetCurrentTime();
+                            return 1;
+                        }))
+                        .then(Commands.literal("setMaxTime").then(Commands.argument("minutes", IntegerArgumentType.integer()).executes(context -> {
+                            IOnlyBlock onlyBlock = OnlyBlockModel.getCapability(context.getSource().asPlayer());
+                            onlyBlock.setBankruptTime(IntegerArgumentType.getInteger(context, "minutes"));
+                            return 1;
+                        })))
+                )
                 .then(Commands.literal("islands").then(Commands.argument("option", StringArgumentType.string()).suggests(this::listIslandOptions).then(Commands.argument("island", StringArgumentType.string()).suggests(this::listIslands).executes(context -> {
                     String option = StringArgumentType.getString(context, "option");
                     String island = StringArgumentType.getString(context, "island");

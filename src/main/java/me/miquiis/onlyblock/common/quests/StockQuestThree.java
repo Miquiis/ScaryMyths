@@ -14,6 +14,7 @@ public class StockQuestThree extends Quest {
 
     public StockQuestThree(PlayerEntity player) {
         super(player, "stock_quest_three", "Reach 10k by Absorbing Good Stocks", 0f);
+        System.out.println("Create instande of Quest Three");
         prevAmount = 0;
         currentAmount = 0;
     }
@@ -21,15 +22,12 @@ public class StockQuestThree extends Quest {
     @SubscribeEvent
     public void onPlayerTickEvent(TickEvent.PlayerTickEvent event)
     {
-        if (!event.player.world.isRemote && event.phase == TickEvent.Phase.START)
+        if (!event.player.world.isRemote && !isOver() && event.phase == TickEvent.Phase.START && event.player.world.getGameTime() % 20 == 0)
         {
             prevAmount = currentAmount;
             currentAmount = event.player.getCapability(CurrencyCapability.CURRENCY_CAPABILITY).orElse(null).getAmount();
             if (prevAmount != currentAmount)
             {
-                System.out.println(prevAmount);
-                System.out.println(currentAmount);
-                System.out.println("Sending update");
                 this.updateProgress((ServerPlayerEntity)event.player);
             }
         }

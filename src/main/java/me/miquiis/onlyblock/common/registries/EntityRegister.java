@@ -48,7 +48,7 @@ public class EntityRegister {
 
     public static final RegistryObject<EntityType<AsteroidEntity>> ASTEROID = ENTITIES.register("asteroid",
             () -> EntityType.Builder.<AsteroidEntity>create(AsteroidEntity::new, EntityClassification.MISC)
-                    .size(5.0f, 5.0f).trackingRange(20)
+                    .size(20.0f, 20.0f).trackingRange(20)
                     .build(new ResourceLocation(OnlyBlock.MOD_ID, "asteroid").toString())
     );
 

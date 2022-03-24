@@ -13,6 +13,7 @@ public class SoundRegister {
     public static final DeferredRegister<SoundEvent> SOUND_EVENT = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, OnlyBlock.MOD_ID);
 
     public static final RegistryObject<SoundEvent> KATCHING = registerSoundEvent("katching");
+    public static final RegistryObject<SoundEvent> WHISTLE = registerSoundEvent("whistle");
 
     private static RegistryObject<SoundEvent> registerSoundEvent(String name)
     {

@@ -19,11 +19,12 @@ public class StockQuestTwo extends Quest {
     @SubscribeEvent
     public void onPlayerTickEvent(TickEvent.PlayerTickEvent event)
     {
-        if (!event.player.world.isRemote && event.phase == TickEvent.Phase.END)
+        if (!event.player.world.isRemote && event.phase == TickEvent.Phase.END && !isOver())
         {
             stockSwordCount = event.player.inventory.count(ItemRegister.STOCK_SWORD.get());
             if (stockSwordCount > 0)
             {
+                System.out.println("Send Progress");
                 this.updateProgress((ServerPlayerEntity)event.player);
             }
         }

@@ -2,5 +2,9 @@
   "katching": {
     "subtitle": "Money Sound Effect",
     "sounds": ["onlyblock:katching"]
+  },
+  "whistle": {
+    "subtitle": "Whistle",
+    "sounds": ["onlyblock:whistle"]
   }
 }

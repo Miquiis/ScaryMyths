@@ -91,10 +91,11 @@ public class AmazonIsland implements IUnlockable {
 
     private final Vector3d CENTER_ISLAND = new Vector3d(176, 100, 0);
 
-    private final long TIME_MAX = 60 * 20 * 3;
+    private final long TIME_MAX = 60 * 20 * 2;
 
     private Vector3d currentDelivery;
     private boolean isLocked;
+    private boolean isAcquired;
     private int currentPackage;
     private long currentTime;
 
@@ -107,6 +108,7 @@ public class AmazonIsland implements IUnlockable {
         currentDelivery = null;
         spawnedCars = new ArrayList<>();
         isLocked = true;
+        isAcquired = false;
     }
 
     public void startMinigame(PlayerEntity player, World world)
@@ -168,10 +170,12 @@ public class AmazonIsland implements IUnlockable {
         currentPackage = 0;
         currentTime = 0;
         spawnedCars = new ArrayList<>();
+        isAcquired = false;
     }
 
-    public void deliver(ServerPlayerEntity player)
+    public void deliver(ServerPlayerEntity player, boolean shouldPay)
     {
+        if (currentDelivery == null) return;
         if (currentPackage != 9)
         {
             if (currentPackage == 8)
@@ -179,18 +183,25 @@ public class AmazonIsland implements IUnlockable {
                 currentTime = TIME_MAX - 20 * 5;
             }
 
-            ICurrency currency = player.getCapability(CurrencyCapability.CURRENCY_CAPABILITY).orElse(null);
-            currency.addOrSubtractAmount(PROGRESSIVE_PRICE.get(currentPackage));
-            player.world.playSound(null, player.getPosX(), player.getPosY(), player.getPosZ(), SoundRegister.KATCHING.get(), SoundCategory.PLAYERS, 0.5f, 1f);
+            if (shouldPay)
+            {
+                ICurrency currency = player.getCapability(CurrencyCapability.CURRENCY_CAPABILITY).orElse(null);
+                currency.addOrSubtractAmount(PROGRESSIVE_PRICE.get(currentPackage));
+                player.world.playSound(null, player.getPosX(), player.getPosY(), player.getPosZ(), SoundRegister.KATCHING.get(), SoundCategory.PLAYERS, 0.5f, 1f);
+                player.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(player.getAttributeValue(Attributes.MOVEMENT_SPEED) + 0.001);
+            }
 
             currentDelivery = POSSIBLE_DELIVERIES.get(MathUtils.getRandomMax(POSSIBLE_DELIVERIES.size()));
             currentPackage++;
             player.inventory.addItemStackToInventory(createNextPackage());
-            player.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(player.getAttributeValue(Attributes.MOVEMENT_SPEED) + 0.001);
         } else
         {
             endMinigame(player);
         }
+    }
+
+    public int getCurrentPackage() {
+        return currentPackage;
     }
 
     private void endMinigame(PlayerEntity player)
@@ -236,6 +247,10 @@ public class AmazonIsland implements IUnlockable {
         {
             isLocked = compoundNBT.getBoolean("IsLocked");
         }
+        if (compoundNBT.contains("IsAcquired"))
+        {
+            isAcquired = compoundNBT.getBoolean("IsAcquired");
+        } else isAcquired = false;
         if (compoundNBT.contains("CurrentPackage"))
         {
             currentPackage = compoundNBT.getInt("CurrentPackage");
@@ -250,6 +265,9 @@ public class AmazonIsland implements IUnlockable {
     {
         ItemStack packageItem = new ItemStack(BlockRegister.AMAZON_PACKAGE.get().asItem(), 1);
         packageItem.setDisplayName(new StringTextComponent("\u00A76\u00A7lPackage: \u00A7a\u00A7l$" + PROGRESSIVE_PRICE.get(currentPackage)));
+        CompoundNBT compoundNBT = packageItem.getOrCreateTag();
+        compoundNBT.putInt("ItemPrice", PROGRESSIVE_PRICE.get(currentPackage));
+        packageItem.setTag(compoundNBT);
         return packageItem;
     }
 
@@ -282,12 +300,21 @@ public class AmazonIsland implements IUnlockable {
         compoundNBT.putInt("CurrentPackage", currentPackage);
         compoundNBT.putBoolean("IsLocked", isLocked);
         compoundNBT.putLong("CurrentTime", currentTime);
+        compoundNBT.putBoolean("IsAcquired", isAcquired);
         return compoundNBT;
     }
 
     @Override
     public boolean isLocked() {
         return isLocked;
+    }
+
+    public boolean isAcquired() {
+        return isAcquired;
+    }
+
+    public void setAcquired(boolean acquired) {
+        isAcquired = acquired;
     }
 
     @Override

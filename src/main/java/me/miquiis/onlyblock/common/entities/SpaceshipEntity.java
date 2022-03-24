@@ -6,6 +6,7 @@ import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.IPacket;
 import net.minecraft.util.ActionResultType;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
@@ -35,7 +36,7 @@ public class SpaceshipEntity extends AnimalEntity implements IAnimatable {
     }
 
     public SpaceshipEntity(World worldIn) {
-        super(EntityRegister.GOLDEN_HELI.get(), worldIn);
+        super(EntityRegister.SPACESHIP.get(), worldIn);
         this.preventEntitySpawning = true;
         this.ignoreFrustumCheck = true;
         setInvulnerable(true);
@@ -45,6 +46,10 @@ public class SpaceshipEntity extends AnimalEntity implements IAnimatable {
     public void updatePassenger(Entity passenger) {
         Vector3d vector3d = (new Vector3d((double)5.5, -1.0D, 0D)).rotateYaw(-this.rotationYaw * ((float)Math.PI / 180F) - ((float)Math.PI / 2F));
         passenger.setPosition(this.getPosX() + vector3d.x, this.getPosY() + 0.80f, this.getPosZ() + vector3d.z);
+    }
+
+    @Override
+    protected void damageEntity(DamageSource damageSrc, float damageAmount) {
     }
 
     @Override
@@ -65,7 +70,6 @@ public class SpaceshipEntity extends AnimalEntity implements IAnimatable {
     @Override
     public void tick() {
         super.tick();
-        //this.setRotation(ticksExisted, 0);
         this.fallDistance = 0;
         if (canPassengerSteer())
         {
@@ -145,7 +149,7 @@ public class SpaceshipEntity extends AnimalEntity implements IAnimatable {
     }
 
     private PlayState predicate(AnimationEvent animationEvent) {
-        animationEvent.getController().setAnimation(new AnimationBuilder().addAnimation("fly"));
+        //animationEvent.getController().setAnimation(new AnimationBuilder().addAnimation("fly"));
         return PlayState.CONTINUE;
     }
 

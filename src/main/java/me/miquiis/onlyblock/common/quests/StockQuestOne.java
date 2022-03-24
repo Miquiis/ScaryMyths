@@ -14,7 +14,7 @@ public class StockQuestOne extends Quest {
     private int prevOresFound;
 
     public StockQuestOne(PlayerEntity player) {
-        super(player, "stock_quest_one", "Find 3 Stock Ores in Chests", 0f);
+        super(player, "stock_quest_one", "Find 2 Stock Ores in Chests", 0f);
         stockOresFound = 0;
         prevOresFound = 0;
     }
@@ -22,7 +22,7 @@ public class StockQuestOne extends Quest {
     @SubscribeEvent
     public void onPlayerTickEvent(TickEvent.PlayerTickEvent event)
     {
-        if (!event.player.world.isRemote && event.phase == TickEvent.Phase.END)
+        if (!event.player.world.isRemote && event.phase == TickEvent.Phase.END && !isOver())
         {
             prevOresFound = stockOresFound;
             stockOresFound = event.player.inventory.count(BlockRegister.STOCK_ORE.get().asItem());
@@ -35,7 +35,7 @@ public class StockQuestOne extends Quest {
 
     @Override
     public void updateProgress(ServerPlayerEntity player) {
-        this.setProgress(stockOresFound / 3f);
+        this.setProgress(stockOresFound / 2f);
         super.updateProgress(player);
     }
 

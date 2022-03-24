@@ -54,6 +54,7 @@ public class GoodStockEntity extends ProjectileItemEntity {
                 }
                 return;
             }
+            player.heal(4);
             onlyBlock.setCurrentQuest(new StockQuestOne(player));
             onlyBlock.getStockIsland().hit();
         }

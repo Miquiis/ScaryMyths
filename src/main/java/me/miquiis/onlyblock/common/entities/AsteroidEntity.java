@@ -111,21 +111,6 @@ public class AsteroidEntity extends MobEntity implements IAnimatable {
         return owner == null ? null : this.world.getPlayerByUuid(owner);
     }
 
-    @Override
-    public boolean canBeCollidedWith() {
-        return false;
-    }
-
-    @Override
-    public boolean canBePushed() {
-        return false;
-    }
-
-    @Override
-    public boolean canCollide(Entity entity) {
-        return false;
-    }
-
     public void setOwner(UUID owner) { this.owner = owner; }
 
     public AsteroidEntity(World worldIn, double startingAngle, float startPitch, double radius, Vector3d gravCenter) {
@@ -188,9 +173,9 @@ public class AsteroidEntity extends MobEntity implements IAnimatable {
             {
                 final double angle = i + (ticksExisted % 100);
                 Vector3d lookVec = getVectorForRotation(0, 0, (float)angle);
-                double x = 15 * lookVec.getX();
-                double z = 15 * lookVec.getZ();
-                double y = 15 * lookVec.getY();
+                double x = 50 * lookVec.getX();
+                double z = 50 * lookVec.getZ();
+                double y = 50 * lookVec.getY();
 
                 Vector3d vec = new Vector3d(getPosX() + x, (getPosY() + 2f) + y, getPosZ() + z);
                 world.addParticle(ParticleTypes.FLAME,true, vec.getX(), vec.getY(), vec.getZ(), 0, 0, 0);
@@ -198,20 +183,20 @@ public class AsteroidEntity extends MobEntity implements IAnimatable {
             }
         }
 
-        if (!world.isRemote && isProjectile)
+        if (isProjectile)
         {
             if (gravCenter.distanceTo(getPositionVec()) < 32f)
             {
-                remove();
                 world.createExplosion(this, getPosX(), getPosY(), getPosZ(), 3f, Explosion.Mode.NONE);
-                if (getOwner() != null)
+                remove();
+                if (!world.isRemote && getOwner() != null)
                 {
                     IOnlyBlock onlyBlock = OnlyBlockModel.getCapability(getOwner());
                     onlyBlock.getBillionaireIsland().damageEarth();
                     onlyBlock.sync((ServerPlayerEntity)getOwner());
                 }
             }
-            this.setMotion(gravCenter.subtract(getPositionVec()).mul(0.05, 0.05, 0.05));
+            this.setMotion(gravCenter.subtract(getPositionVec()).normalize().mul(0.8, 0.8, 0.8));
         }
 
         if (!world.isRemote && !isProjectile)

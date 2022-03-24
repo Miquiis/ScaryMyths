@@ -14,10 +14,11 @@ import me.miquiis.onlyblock.server.commands.OnlyBlockCommand;
 import me.miquiis.onlyblock.server.network.OnlyBlockNetwork;
 import me.miquiis.onlyblock.server.network.messages.CloseScreenPacket;
 import me.miquiis.onlyblock.server.network.messages.OpenShopPacket;
-import me.miquiis.onlyblock.server.network.messages.ShootFromSpaceshipPacket;
+import me.miquiis.onlyblock.server.network.messages.ShootMissilePacket;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
@@ -36,6 +37,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.server.command.ConfigCommand;
@@ -80,13 +82,6 @@ public class ForgeEvents {
     }
 
     @SubscribeEvent
-    public static void onPlayerRightClick(PlayerInteractEvent.RightClickEmpty event)
-    {
-        if (event.getHand() != Hand.MAIN_HAND) return;
-        OnlyBlockNetwork.CHANNEL.sendToServer(new ShootFromSpaceshipPacket());
-    }
-
-    @SubscribeEvent
     public static void onPlayerDropItem(ItemTossEvent event)
     {
         if (!event.getPlayer().world.isRemote)
@@ -95,12 +90,12 @@ public class ForgeEvents {
             if (onlyBlock.getAmazonIsland().getCurrentDelivery() != null)
             {
                 Vector3d delivery = onlyBlock.getAmazonIsland().getCurrentDelivery();
-                if (event.getPlayer().getPositionVec().distanceTo(delivery) <= 5)
+                if (event.getPlayer().getPositionVec().distanceTo(delivery) <= 5 && onlyBlock.getAmazonIsland().getCurrentPackage() != 9)
                 {
                     event.getPlayer().world.playSound(null, event.getEntityItem().getPosX(), event.getEntityItem().getPosY(), event.getEntityItem().getPosZ(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.5f, 1f);
                     event.getPlayer().world.playSound(null, event.getPlayer().getPosX(), event.getPlayer().getPosY(), event.getPlayer().getPosZ(), SoundRegister.KATCHING.get(), SoundCategory.PLAYERS, 0.5f, 1f);
                     event.getEntityItem().remove();
-                    onlyBlock.getAmazonIsland().deliver((ServerPlayerEntity)event.getPlayer());
+                    onlyBlock.getAmazonIsland().deliver((ServerPlayerEntity)event.getPlayer(), true);
                     onlyBlock.sync((ServerPlayerEntity)event.getPlayer());
                 }
             }
@@ -109,14 +104,38 @@ public class ForgeEvents {
 
     private static final ResourceLocation DELIVER_BAR = new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/deliver_amount_bar.png");
     private static final ResourceLocation QUEST_BAR = new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/quest_bar.png");
+    private static final ResourceLocation METEOR_BAR = new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/meteor_bar.png");
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event)
     {
         if (event.phase != TickEvent.Phase.START) return;
+        if (event.player.inventory.armorInventory.stream().anyMatch(itemStack -> itemStack.getItem() == ItemRegister.JETPACK.get()))
+        {
+            event.player.abilities.allowFlying = true;
+        } else
+        {
+            if (!event.player.isCreative() && !event.player.isSpectator()) {
+                event.player.abilities.allowFlying = false;
+            }
+        }
         if (!event.player.world.isRemote)
         {
-
             IOnlyBlock onlyBlock = OnlyBlockModel.getCapability(event.player);
+
+            onlyBlock.tickTime();
+
+            BarInfo bankruptInfo = BarManager.getBarInfoByID("bankrupt");
+            boolean hasAnyBarsUp = onlyBlock.getCurrentQuest() != null || onlyBlock.getAmazonIsland().getCurrentDelivery() != null || onlyBlock.getBillionaireIsland().hasMinigameStarted();
+            if (hasAnyBarsUp || onlyBlock.getCurrentTime() >= onlyBlock.getBankruptTime())
+            {
+                if (bankruptInfo != null) BarManager.removeBar(bankruptInfo.getUniqueID());
+            } else
+            {
+                if (bankruptInfo == null) BarManager.addBar(UUID.randomUUID(), "bankrupt", new StringTextComponent("\u00A7c\u00A7lTime Until Bankrupt"), 1f - (onlyBlock.getCurrentTime() / (float)onlyBlock.getBankruptTime()), (ServerPlayerEntity) event.player, METEOR_BAR, new int[]{255, 85, 85}, false);
+                else {
+                    BarManager.updateBar(bankruptInfo.getUniqueID(), (ServerPlayerEntity) event.player, 1f - (onlyBlock.getCurrentTime() / (float)onlyBlock.getBankruptTime()), new StringTextComponent("\u00A7c\u00A7lTime Until Bankrupt"), METEOR_BAR, bankruptInfo.getRawColor());
+                }
+            }
 
             BarInfo barInfo = BarManager.getBarInfoByID("deliver");
             if (onlyBlock.getAmazonIsland().getCurrentDelivery() == null)
@@ -144,6 +163,18 @@ public class ForgeEvents {
                 }
             }
 
+            BarInfo meteors_left = BarManager.getBarInfoByID("meteors_left");
+            if (!onlyBlock.getBillionaireIsland().hasMinigameStarted())
+            {
+                if (meteors_left != null) BarManager.removeBar(meteors_left.getUniqueID());
+            } else
+            {
+                if (meteors_left == null) BarManager.addBar(UUID.randomUUID(), "meteors_left", new StringTextComponent("\u00A7c\u00A7lMeteors Left: " + onlyBlock.getBillionaireIsland().getAliveMeteors()), onlyBlock.getBillionaireIsland().getMeteorsPercentage(), (ServerPlayerEntity) event.player, METEOR_BAR, new int[]{255, 85, 85}, false);
+                else {
+                    BarManager.updateBar(meteors_left.getUniqueID(), (ServerPlayerEntity) event.player, onlyBlock.getBillionaireIsland().getMeteorsPercentage(), new StringTextComponent("\u00A7c\u00A7lMeteors Left: " + onlyBlock.getBillionaireIsland().getAliveMeteors()), METEOR_BAR, meteors_left.getRawColor());
+                }
+            }
+
             BarInfo questBarInfo = BarManager.getBarInfoByID("quest");
             if (onlyBlock.getCurrentQuest() == null)
             {
@@ -165,6 +196,7 @@ public class ForgeEvents {
                         for (int i = 0; i < 5; i++)
                         {
                             Vector3d pos = onlyBlock.getAmazonIsland().getRandomTNTLocation();
+                            if (!event.player.world.isAreaLoaded(new BlockPos(pos), 10)) break;
                             AmazonTNTEntity amazonTNTEntity = new AmazonTNTEntity(event.player.world, pos.getX(), pos.getY(), pos.getZ(), null);
                             event.player.world.addEntity(amazonTNTEntity);
                         }
@@ -173,6 +205,16 @@ public class ForgeEvents {
             }
 
             ICurrency currency = event.player.getCapability(CurrencyCapability.CURRENCY_CAPABILITY).orElse(null);
+
+            if (onlyBlock.getStockIsland().isAcquired() && event.player.world.getGameTime() % (20 * 60) == 0)
+            {
+                currency.addOrSubtractAmount(100);
+            }
+
+            if (onlyBlock.getAmazonIsland().isAcquired() && event.player.world.getGameTime() % (20 * 60) == 0)
+            {
+                currency.addOrSubtractAmount(50000);
+            }
 
             if (currency.getAmount() >= 500 && onlyBlock.getStockIsland().isLocked())
             {

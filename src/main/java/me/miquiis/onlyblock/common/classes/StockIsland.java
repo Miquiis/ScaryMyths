@@ -32,6 +32,7 @@ public class StockIsland implements IUnlockable {
     ));
 
     private boolean isLocked;
+    private boolean isAcquired;
     private boolean firstHit;
     private boolean pacificToggle;
     private List<Entity> spawnedGhasts;
@@ -40,6 +41,7 @@ public class StockIsland implements IUnlockable {
     {
         this.isLocked = true;
         this.firstHit = true;
+        this.isAcquired = false;
         pacificToggle = false;
     }
 
@@ -56,6 +58,14 @@ public class StockIsland implements IUnlockable {
         buffetEntity.setPositionAndRotation(60, 184, -169, 90, 0);
         buffetEntity.enablePersistence();
         world.addEntity(buffetEntity);
+    }
+
+    public void setAcquired(boolean acquired) {
+        isAcquired = acquired;
+    }
+
+    public boolean isAcquired() {
+        return isAcquired;
     }
 
     private void spawnGhasts(World world)
@@ -93,6 +103,12 @@ public class StockIsland implements IUnlockable {
         } else {
             pacificToggle = false;
         }
+        if (compoundNBT.contains("IsAcquired"))
+        {
+            isAcquired = compoundNBT.getBoolean("IsAcquired");
+        } else {
+            isAcquired = false;
+        }
     }
 
     public CompoundNBT serializeNBT()
@@ -101,6 +117,7 @@ public class StockIsland implements IUnlockable {
         compoundNBT.putBoolean("IsLocked", isLocked);
         compoundNBT.putBoolean("IsFirstHit", firstHit);
         compoundNBT.putBoolean("PacificToggle", pacificToggle);
+        compoundNBT.putBoolean("IsAcquired", isAcquired);
         return compoundNBT;
     }
 

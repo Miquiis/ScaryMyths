@@ -142,7 +142,7 @@ public class StockGhastEntity extends GhastEntity {
                             return;
                         } else
                         {
-                            if (MathUtils.chance(40))
+                            if (MathUtils.chance(60))
                             {
                                 BadStockEntity goodStockEntity = new BadStockEntity(world);
                                 goodStockEntity.setPosition(spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ());
