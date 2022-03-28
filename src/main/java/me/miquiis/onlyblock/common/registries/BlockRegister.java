@@ -3,6 +3,8 @@ package me.miquiis.onlyblock.common.registries;
 import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.common.blocks.AmazonTNTBlock;
 import me.miquiis.onlyblock.common.blocks.BaseHorizontalBlock;
+import me.miquiis.onlyblock.common.blocks.MoneyPrinterBlock;
+import me.miquiis.onlyblock.common.blocks.MoneyVacuumBlock;
 import me.miquiis.onlyblock.common.items.PackageItem;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
@@ -41,6 +43,14 @@ public class BlockRegister {
 
     public static final RegistryObject<Block> CASH_BLOCK = registerBlock("cash_block", () ->
             new Block(AbstractBlock.Properties.create(Material.ROCK).hardnessAndResistance(1.0f).sound(SoundType.PLANT))
+    );
+
+    public static final RegistryObject<Block> MONEY_PRINTER = registerBlock("money_printer", () ->
+            new MoneyPrinterBlock(AbstractBlock.Properties.create(Material.ANVIL).hardnessAndResistance(3f).sound(SoundType.ANVIL).notSolid())
+    );
+
+    public static final RegistryObject<Block> VACUUM_BLOCK = registerBlock("money_vacuum", () ->
+            new MoneyVacuumBlock(AbstractBlock.Properties.create(Material.ANVIL).hardnessAndResistance(1.0f).sound(SoundType.ANVIL))
     );
 
     public static final RegistryObject<Block> STOCK_ORE = registerBlock("stock_ore", () ->

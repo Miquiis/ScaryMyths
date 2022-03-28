@@ -4,9 +4,11 @@ import me.miquiis.custombar.common.BarInfo;
 import me.miquiis.custombar.common.BarManager;
 import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.common.capability.CurrencyCapability;
+import me.miquiis.onlyblock.common.capability.WorldOnlyBlockCapability;
 import me.miquiis.onlyblock.common.capability.interfaces.ICurrency;
 import me.miquiis.onlyblock.common.capability.interfaces.IOnlyBlock;
 import me.miquiis.onlyblock.common.capability.models.OnlyBlockModel;
+import me.miquiis.onlyblock.common.capability.models.WorldOnlyBlock;
 import me.miquiis.onlyblock.common.entities.*;
 import me.miquiis.onlyblock.common.registries.*;
 import me.miquiis.onlyblock.common.utils.TitleUtils;
@@ -16,6 +18,7 @@ import me.miquiis.onlyblock.server.network.messages.CloseScreenPacket;
 import me.miquiis.onlyblock.server.network.messages.OpenShopPacket;
 import me.miquiis.onlyblock.server.network.messages.ShootMissilePacket;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,6 +31,7 @@ import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.DimensionType;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -249,6 +253,7 @@ public class ForgeEvents {
             });
         });
         OnlyBlockModel.getCapability(event.getPlayer()).deserializeNBT(OnlyBlockModel.getCapability(event.getOriginal()).serializeNBT());
+        WorldOnlyBlock.getCapability(event.getPlayer().world).deserializeNBT(WorldOnlyBlock.getCapability(event.getOriginal().world).serializeNBT());
     }
 
     @SubscribeEvent
@@ -260,6 +265,7 @@ public class ForgeEvents {
                 iCurrency.sync((ServerPlayerEntity) event.getPlayer());
             });
             OnlyBlockModel.getCapability(event.getPlayer()).sync((ServerPlayerEntity)event.getPlayer());
+            WorldOnlyBlock.getCapability(event.getPlayer().world).sync((ServerPlayerEntity)event.getPlayer());
         }
     }
 
@@ -272,6 +278,7 @@ public class ForgeEvents {
                 iCurrency.sync((ServerPlayerEntity)event.getPlayer());
             });
             OnlyBlockModel.getCapability(event.getPlayer()).sync((ServerPlayerEntity)event.getPlayer());
+            WorldOnlyBlock.getCapability(event.getPlayer().world).sync((ServerPlayerEntity)event.getPlayer());
         }
     }
 
@@ -283,6 +290,27 @@ public class ForgeEvents {
                 iCurrency.sync((ServerPlayerEntity)event.getPlayer());
             });
             OnlyBlockModel.getCapability(event.getPlayer()).sync((ServerPlayerEntity)event.getPlayer());
+        }
+    }
+
+    @SubscribeEvent
+    public static void onDayChange(TickEvent.WorldTickEvent event)
+    {
+        if (event.phase == TickEvent.Phase.START && event.world.getDimensionKey().getLocation().toString().contains("overworld"))
+        {
+            if (event.world.getDayTime() % 24000 == 0)
+            {
+                WorldOnlyBlock.getCapability(event.world).skipDay();
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerTickEvent(TickEvent.PlayerTickEvent event)
+    {
+        if (event.phase == TickEvent.Phase.END && event.player.world.isRemote)
+        {
+            //System.out.println(WorldOnlyBlock.getCapability(event.player.world).getDaysLeft());
         }
     }
 

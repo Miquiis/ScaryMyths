@@ -16,15 +16,17 @@ import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.entity.model.PlayerModel;
 import net.minecraft.entity.item.ArmorStandEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.EntityViewRenderEvent;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.client.event.*;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -56,6 +58,39 @@ public class ClientEvents {
             {
                 OnlyBlockNetwork.CHANNEL.sendToServer(new OpenAmazonPackage(containerScreen.getSlotUnderMouse().getStack()));
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerRender(RenderLivingEvent<PlayerEntity, PlayerModel<PlayerEntity>> event)
+    {
+        if (event.getEntity() instanceof PlayerEntity)
+        {
+            renderName((PlayerEntity)event.getEntity(), new StringTextComponent("\u00A7a\u00A7lDays: \u00A7c\u00A7l100"), event.getMatrixStack(), event.getBuffers(), event.getLight());
+        }
+    }
+
+    private static void renderName(PlayerEntity entityIn, ITextComponent displayNameIn, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+        double d0 = Minecraft.getInstance().getRenderManager().squareDistanceTo(entityIn);
+        if (net.minecraftforge.client.ForgeHooksClient.isNameplateInRenderDistance(entityIn, d0)) {
+            boolean flag = !entityIn.isDiscrete();
+            float f = entityIn.getHeight() + 0.5F;
+            int i = "deadmau5".equals(displayNameIn.getString()) ? -10 : 0;
+            matrixStackIn.push();
+            matrixStackIn.translate(0.0D, (double)f, 0.0D);
+            matrixStackIn.rotate(Minecraft.getInstance().getRenderManager().getCameraOrientation());
+            matrixStackIn.scale(-0.025F, -0.025F, 0.025F);
+            Matrix4f matrix4f = matrixStackIn.getLast().getMatrix();
+            float f1 = Minecraft.getInstance().gameSettings.getTextBackgroundOpacity(0.25F);
+            int j = (int)(f1 * 255.0F) << 24;
+            FontRenderer fontrenderer = Minecraft.getInstance().fontRenderer;
+            float f2 = (float)(-fontrenderer.getStringPropertyWidth(displayNameIn) / 2);
+            fontrenderer.func_243247_a(displayNameIn, f2, (float)i, 553648127, false, matrix4f, bufferIn, flag, j, packedLightIn);
+            if (flag) {
+                fontrenderer.func_243247_a(displayNameIn, f2, (float)i, -1, false, matrix4f, bufferIn, false, 0, packedLightIn);
+            }
+
+            matrixStackIn.pop();
         }
     }
 
@@ -93,36 +128,14 @@ public class ClientEvents {
     @SubscribeEvent
     public static void onLastWorldRender(RenderWorldLastEvent event)
     {
-        IOnlyBlock onlyBlockCap = OnlyBlockModel.getCapability(Minecraft.getInstance().player);
-        if (onlyBlockCap != null && onlyBlockCap.getAmazonIsland() != null && onlyBlockCap.getAmazonIsland().getCurrentDelivery() != null)
-        {
-            Vector3d currentDelivery = onlyBlockCap.getAmazonIsland().getCurrentDelivery();
-            double distance = Minecraft.getInstance().player.getPositionVec().distanceTo(currentDelivery);
-            float distanceScale = 0.05f + (float)distance / 300f;
-
-            renderTextInWorld(event.getMatrixStack(), new StringTextComponent(Math.round(distance) + "m"), currentDelivery.getX() + 0.5, currentDelivery.getY(), currentDelivery.getZ() + 0.5, 0, distanceScale, Color.WHITE.getRGB());
-            renderTextInWorld(event.getMatrixStack(), new StringTextComponent("Next Delivery"), currentDelivery.getX() + 0.5, currentDelivery.getY(), currentDelivery.getZ() + 0.5, 10.0, distanceScale, new Color(255,153,0).getRGB());
-        }
+        IRenderTypeBuffer.Impl buffer = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
+        renderTextInWorld(event.getMatrixStack(), new StringTextComponent("Player One"), 171.5, 88, -97.5, 20, 0.03f, Color.WHITE.getRGB(), true);
+        renderTextInWorld(event.getMatrixStack(), new StringTextComponent("Money: $99999"), 171.5, 88, -97.5, 10, 0.03f, Color.green.getRGB(), true);
+        renderTextInWorld(event.getMatrixStack(), new StringTextComponent("Days Left: 100"), 171.5, 88, -97.5, 0, 0.03f, Color.RED.getRGB(), true);
+        buffer.finish();
     }
 
-    @SubscribeEvent
-    public static void onPlayerTick(TickEvent.PlayerTickEvent event)
-    {
-        if (event.player.world.isRemote && event.phase == TickEvent.Phase.END)
-        {
-            ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity) event.player;
-            if (event.player.getRidingEntity() != null)
-            {
-                if (event.player.getRidingEntity() instanceof GoldenHelicopterEntity)
-                {
-                    GoldenHelicopterEntity goldenHelicopterEntity = (GoldenHelicopterEntity) event.player.getRidingEntity();
-                    //goldenHelicopterEntity.updateInputs(clientPlayerEntity.movementInput.forwardKeyDown, clientPlayerEntity.movementInput.backKeyDown, clientPlayerEntity.movementInput.leftKeyDown, clientPlayerEntity.movementInput.rightKeyDown);
-                }
-            }
-        }
-    }
-
-    private static void renderTextInWorld(MatrixStack matrixStack, StringTextComponent text, double x, double y, double z, double offsetY, float scale, int color)
+    private static void renderTextInWorld(MatrixStack matrixStack, StringTextComponent text, double x, double y, double z, double offsetY, float scale, int color, boolean hasBackground)
     {
         Minecraft mc = Minecraft.getInstance();
         IRenderTypeBuffer.Impl buffer = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
@@ -139,9 +152,13 @@ public class ClientEvents {
         matrixStack.scale(-scale, -scale, 0.025f);
 
         float f2 = (float)(-fontRenderer.getStringPropertyWidth(text) / 2);
-        fontRenderer.func_243247_a(text, f2, (float) ((-fontRenderer.FONT_HEIGHT / 2) - offsetY), color, false, matrixStack.getLast().getMatrix(), buffer, true, 0, 15728880);
+        float f1 = hasBackground ? Minecraft.getInstance().gameSettings.getTextBackgroundOpacity(0.25F) : 0;
+        int j = (int)(f1 * 255.0F) << 24;
+
+        fontRenderer.func_243247_a(text, f2, (float) ((-fontRenderer.FONT_HEIGHT / 2) - offsetY), color, false, matrixStack.getLast().getMatrix(), buffer, false, j, 15728880);
 
         matrixStack.pop();
-        buffer.finish();
+        RenderSystem.enableDepthTest();
+        RenderSystem.depthMask(true);
     }
 }

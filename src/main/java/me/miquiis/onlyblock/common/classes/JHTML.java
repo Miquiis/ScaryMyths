@@ -17,6 +17,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.client.gui.GuiUtils;
 
 import java.awt.*;
 import java.util.*;
@@ -363,10 +364,12 @@ public class JHTML {
 
         @Override
         protected void renderSelf(MatrixStack matrixStack, Minecraft minecraft) {
-            super.renderSelf(matrixStack, minecraft);
+            onRenderEvent.onRender(realX, realY, realW, realH);
+            //super.renderSelf(matrixStack, minecraft);
             minecraft.getTextureManager().bindTexture(texture);
             RenderSystem.enableBlend();
-            AbstractGui.blit(matrixStack, 0, 0, 0, 0, (int)width, (int)height, uWidth, vHeight);
+            matrixStack.scale(2, 2, 2);
+            GuiUtils.drawTexturedModalRect(matrixStack, 0, 0, 32, 32, 32, 32, 1);
             RenderSystem.disableBlend();
         }
     }

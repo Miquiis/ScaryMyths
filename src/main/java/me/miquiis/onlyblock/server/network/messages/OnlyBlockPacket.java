@@ -1,8 +1,6 @@
 package me.miquiis.onlyblock.server.network.messages;
 
-import me.miquiis.onlyblock.common.capability.CurrencyCapability;
-import me.miquiis.onlyblock.common.capability.models.OnlyBlockModel;
-import net.minecraft.client.Minecraft;
+import me.miquiis.onlyblock.client.gui.HandlePacketUtils;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.api.distmarker.Dist;
@@ -30,11 +28,13 @@ public class OnlyBlockPacket {
     public static void handle(final OnlyBlockPacket msg, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-                Minecraft mc = Minecraft.getInstance();
-                OnlyBlockModel.getCapability(mc.player).deserializeNBT(msg.nbt);
+                HandlePacketUtils.handleOnlyBlockPacket(msg, ctx);
             });
         });
         ctx.get().setPacketHandled(true);
     }
 
+    public CompoundNBT getNbt() {
+        return nbt;
+    }
 }

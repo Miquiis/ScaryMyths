@@ -5,6 +5,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -22,5 +23,12 @@ public class CapabilityEvents {
             event.addCapability(new ResourceLocation(OnlyBlock.MOD_ID, "onlyblock"), new OnlyBlockCapability(event.getObject() instanceof ServerPlayerEntity ? (ServerPlayerEntity)event.getObject() : null));
         }
     }
+
+    @SubscribeEvent
+    public static void attachCapabilitiesWorld(final AttachCapabilitiesEvent<World> event)
+    {
+        event.addCapability(new ResourceLocation(OnlyBlock.MOD_ID, "world_onlyblock"), new WorldOnlyBlockCapability(event.getObject()));
+    }
+
 
 }

@@ -1,10 +1,13 @@
 package me.miquiis.onlyblock.common.managers;
 
 import me.miquiis.onlyblock.OnlyBlock;
+import me.miquiis.onlyblock.common.capability.CurrencyCapability;
+import me.miquiis.onlyblock.common.capability.interfaces.ICurrency;
 import me.miquiis.onlyblock.common.classes.LootTable;
 import me.miquiis.onlyblock.common.registries.ItemRegister;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
@@ -47,17 +50,21 @@ public class BlockManager {
             itemEntity.setDefaultPickupDelay();
             world.addEntity(itemEntity);
         }
+
+        ICurrency currency = player.getCapability(CurrencyCapability.CURRENCY_CAPABILITY).orElse(null);
+
+        if (player.getHeldItemMainhand().getItem() == ItemRegister.CRYPTO_PICKAXE.get()) /** Change to pickaxe **/ {
+            currency.addOrSubtractAmount(2);
+        } else if (player.getHeldItemMainhand().getItem() == ItemRegister.DEBIT_CARD_AXE.get()) /** Change to Axe **/ {
+            currency.addOrSubtractAmount(5);
+        } else {
+            currency.addOrSubtractAmount(1);
+        }
     }
 
     private LootTable.Loot getLootFromPlayer(ServerPlayerEntity player)
     {
-        if (player.getHeldItemMainhand().getItem() == ItemRegister.CASH_PICKAXE.get())
-        {
-            return getLootTable("level_1").getLoot();
-        } else
-        {
-            return getLootTable("level_2").getLoot();
-        }
+        return getLootTable("level_1").getLoot();
     }
 
     private void setupFolder()

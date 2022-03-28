@@ -13,7 +13,7 @@ public class CashPickaxe extends PickaxeItem {
 
     @Override
     public float getDestroySpeed(ItemStack stack, BlockState state) {
-        if (state.getBlock() == BlockRegister.CASH_PILE.get()) return 50f;
+        if (state.getBlock() == BlockRegister.CASH_PILE.get()) return 3f;
         return super.getDestroySpeed(stack, state);
     }
 }

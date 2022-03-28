@@ -9,6 +9,8 @@ import me.miquiis.onlyblock.common.items.JetpackArmorItem;
 import me.miquiis.onlyblock.common.items.ModSpawnEgg;
 import me.miquiis.onlyblock.common.items.renderer.JetpackArmorRenderer;
 import me.miquiis.onlyblock.common.registries.EntityRegister;
+import me.miquiis.onlyblock.common.registries.TileEntityRegister;
+import me.miquiis.onlyblock.common.tileentities.renderer.MoneyPrinterTileRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.*;
 import net.minecraft.entity.EntityType;
@@ -17,6 +19,7 @@ import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -40,6 +43,8 @@ public class ModClientEvents {
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.ASTEROID.get(), AsteroidRenderer::new);
 
         GeoArmorRenderer.registerArmorRenderer(JetpackArmorItem.class, new JetpackArmorRenderer());
+
+        ClientRegistry.bindTileEntityRenderer(TileEntityRegister.MONEY_PRINTER_TILE_ENTITY.get(), MoneyPrinterTileRenderer::new);
 
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.VAN.get(), VanRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.VAN_TWO.get(), VanTwoRenderer::new);

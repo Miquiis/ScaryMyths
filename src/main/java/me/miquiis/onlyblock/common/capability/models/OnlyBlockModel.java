@@ -36,7 +36,6 @@ public class OnlyBlockModel implements IOnlyBlock {
 
     @Override
     public void sync(ServerPlayerEntity player) {
-        System.out.println("Syncing with " + player);
         if (player == null) return;
         OnlyBlockNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new OnlyBlockPacket(serializeNBT()));
     }

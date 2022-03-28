@@ -55,8 +55,12 @@ public class ItemRegister {
             new CashPickaxe(ItemTier.IRON, 3, -2.0F, (new Item.Properties()).group(ItemGroup.TOOLS))
     );
 
-    public static final RegistryObject<Item> CASH_AXE = ITEMS.register("cash_axe", () ->
-            new AxeItem(ItemTier.WOOD, 8.0F, -2.6F, (new Item.Properties()).group(ItemGroup.TOOLS))
+    public static final RegistryObject<Item> CRYPTO_PICKAXE = ITEMS.register("crypto_pickaxe", () ->
+            new CashPickaxe(ItemTier.IRON, 3, -2.0F, (new Item.Properties()).group(ItemGroup.TOOLS))
+    );
+
+    public static final RegistryObject<Item> DEBIT_CARD_AXE = ITEMS.register("debit_card_axe", () ->
+            new AxeItem(ItemTier.IRON, 5.0F, -2.6F, (new Item.Properties()).group(ItemGroup.TOOLS))
     );
 
     public static final RegistryObject<Item> STOCK_SWORD = ITEMS.register("stock_sword", () ->
