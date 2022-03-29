@@ -1,18 +1,12 @@
 package me.miquiis.onlyblock;
 
-import me.miquiis.onlyblock.common.capability.CurrencyCapability;
-import me.miquiis.onlyblock.common.capability.OnlyBlockCapability;
+import me.miquiis.custombar.common.BarManager;
 import me.miquiis.onlyblock.common.capability.WorldOnlyBlockCapability;
-import me.miquiis.onlyblock.common.managers.BlockManager;
-import me.miquiis.onlyblock.common.managers.FileManager;
 import me.miquiis.onlyblock.common.registries.*;
 import me.miquiis.onlyblock.server.network.OnlyBlockNetwork;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.settings.PointOfView;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
@@ -27,9 +21,6 @@ public class OnlyBlock
     public static final String MOD_ID = "onlyblock";
 
     private static OnlyBlock instance;
-
-    private FileManager onlyBlockFolder;
-    private BlockManager blockManager;
 
     public OnlyBlock() {
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -55,10 +46,8 @@ public class OnlyBlock
     {
         instance = this;
         OnlyBlockNetwork.init();
-        CurrencyCapability.register();
-        OnlyBlockCapability.register();
         WorldOnlyBlockCapability.register();
-        //BarManager.init();
+        BarManager.init();
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event)
@@ -74,16 +63,7 @@ public class OnlyBlock
     @SubscribeEvent
     public void onServerStarting(FMLServerStartingEvent event)
     {
-        this.onlyBlockFolder = new FileManager("onlyblock", event.getServer().getDataDirectory(), "1.1");
-        this.blockManager = new BlockManager(this);
-    }
 
-    public BlockManager getBlockManager() {
-        return blockManager;
-    }
-
-    public FileManager getOnlyBlockFolder() {
-        return onlyBlockFolder;
     }
 
     public static OnlyBlock getInstance() {

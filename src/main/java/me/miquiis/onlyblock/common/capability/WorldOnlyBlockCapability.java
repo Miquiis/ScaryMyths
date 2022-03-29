@@ -1,12 +1,8 @@
 package me.miquiis.onlyblock.common.capability;
 
-import me.miquiis.onlyblock.common.capability.interfaces.IOnlyBlock;
 import me.miquiis.onlyblock.common.capability.interfaces.IWorldOnlyBlock;
-import me.miquiis.onlyblock.common.capability.models.OnlyBlockModel;
 import me.miquiis.onlyblock.common.capability.models.WorldOnlyBlock;
-import me.miquiis.onlyblock.common.capability.storages.OnlyBlockStorage;
 import me.miquiis.onlyblock.common.capability.storages.WorldOnlyBlockStorage;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.world.World;
@@ -28,6 +24,7 @@ public class WorldOnlyBlockCapability implements ICapabilitySerializable<Compoun
 
     public WorldOnlyBlockCapability(World world)
     {
+        instance.ifPresent(iWorldOnlyBlock -> iWorldOnlyBlock.setWorld(world));
         if (world instanceof ServerWorld)
         instance.ifPresent(iOnlyBlock -> iOnlyBlock.setServerWorld((ServerWorld)world));
     }

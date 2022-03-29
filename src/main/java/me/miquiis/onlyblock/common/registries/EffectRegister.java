@@ -14,10 +14,6 @@ public class EffectRegister {
 
     public static final DeferredRegister<Effect> EFFECTS = DeferredRegister.create(ForgeRegistries.POTIONS, OnlyBlock.MOD_ID);
 
-    public static final RegistryObject<Effect> MONEY_BOOST = EFFECTS.register("money_boost", () ->
-            new ModEffect(EffectType.BENEFICIAL, new Color(46, 217, 91).getRGB())
-    );
-
     public static void register(IEventBus bus)
     {
         EFFECTS.register(bus);

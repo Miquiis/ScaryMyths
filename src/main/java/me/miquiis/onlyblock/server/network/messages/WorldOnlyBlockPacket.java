@@ -1,6 +1,5 @@
 package me.miquiis.onlyblock.server.network.messages;
 
-import me.miquiis.onlyblock.common.capability.CurrencyCapability;
 import me.miquiis.onlyblock.common.capability.WorldOnlyBlockCapability;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;

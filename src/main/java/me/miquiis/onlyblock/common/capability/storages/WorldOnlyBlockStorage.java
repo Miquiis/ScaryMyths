@@ -1,8 +1,6 @@
 package me.miquiis.onlyblock.common.capability.storages;
 
-import me.miquiis.onlyblock.common.capability.interfaces.IOnlyBlock;
 import me.miquiis.onlyblock.common.capability.interfaces.IWorldOnlyBlock;
-import me.miquiis.onlyblock.common.capability.models.OnlyBlockModel;
 import me.miquiis.onlyblock.common.capability.models.WorldOnlyBlock;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;

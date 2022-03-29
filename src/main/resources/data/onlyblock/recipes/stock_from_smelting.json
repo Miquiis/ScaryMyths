@@ -1,9 +1,0 @@
-{
-  "type": "minecraft:smelting",
-  "ingredient": {
-    "item": "onlyblock:stock_ore"
-  },
-  "result": "onlyblock:good_stock",
-  "experience": 0.5,
-  "cookingtime": 200
-}

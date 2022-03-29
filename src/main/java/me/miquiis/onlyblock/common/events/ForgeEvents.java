@@ -3,35 +3,23 @@ package me.miquiis.onlyblock.common.events;
 import me.miquiis.custombar.common.BarInfo;
 import me.miquiis.custombar.common.BarManager;
 import me.miquiis.onlyblock.OnlyBlock;
-import me.miquiis.onlyblock.common.capability.CurrencyCapability;
-import me.miquiis.onlyblock.common.capability.WorldOnlyBlockCapability;
-import me.miquiis.onlyblock.common.capability.interfaces.ICurrency;
-import me.miquiis.onlyblock.common.capability.interfaces.IOnlyBlock;
-import me.miquiis.onlyblock.common.capability.models.OnlyBlockModel;
+import me.miquiis.onlyblock.common.capability.interfaces.IWorldOnlyBlock;
 import me.miquiis.onlyblock.common.capability.models.WorldOnlyBlock;
 import me.miquiis.onlyblock.common.entities.*;
 import me.miquiis.onlyblock.common.registries.*;
-import me.miquiis.onlyblock.common.utils.TitleUtils;
 import me.miquiis.onlyblock.server.commands.OnlyBlockCommand;
-import me.miquiis.onlyblock.server.network.OnlyBlockNetwork;
-import me.miquiis.onlyblock.server.network.messages.CloseScreenPacket;
-import me.miquiis.onlyblock.server.network.messages.OpenShopPacket;
-import me.miquiis.onlyblock.server.network.messages.ShootMissilePacket;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.container.MerchantContainer;
+import net.minecraft.inventory.container.SimpleNamedContainerProvider;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.item.Items;
+import net.minecraft.item.MerchantOffers;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.DimensionType;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -41,11 +29,10 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.server.command.ConfigCommand;
 
+import java.util.OptionalInt;
 import java.util.UUID;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = OnlyBlock.MOD_ID)
@@ -59,237 +46,49 @@ public class ForgeEvents {
         ConfigCommand.register(event.getDispatcher());
     }
 
-    @SubscribeEvent
-    public static void onPlayerInteract(PlayerInteractEvent.RightClickBlock event)
-    {
-        if (event.getWorld().isRemote) return;
-        if (event.getHand() == Hand.MAIN_HAND)
-        {
-            BlockState blockState = event.getWorld().getBlockState(event.getPos());
-            if (blockState.getBlock() == BlockRegister.LAPTOP.get())
-            {
-                OnlyBlockNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) event.getPlayer()), new OpenShopPacket());
-            }
-        }
-    }
+//    @SubscribeEvent
+//    public static void onPlayerInteract(PlayerInteractEvent.RightClickBlock event)
+//    {
+//        if (event.getWorld().isRemote) return;
+//        if (event.getHand() == Hand.MAIN_HAND)
+//        {
+//            BlockState blockState = event.getWorld().getBlockState(event.getPos());
+//            if (blockState.getBlock() == BlockRegister.LAPTOP.get())
+//            {
+//                BuildKeeperEntity lifeKeeperEntity = new BuildKeeperEntity(event.getWorld(), event.getPlayer());
+//                OptionalInt optionalint = event.getPlayer().openContainer(new SimpleNamedContainerProvider((id, playerInventory, player2) -> {
+//                    return new MerchantContainer(id, playerInventory, lifeKeeperEntity);
+//                }, new StringTextComponent("Merchant")));
+//                if (optionalint.isPresent()) {
+//                    MerchantOffers merchantoffers = lifeKeeperEntity.getOffers();
+//                    if (!merchantoffers.isEmpty()) {
+//                        event.getPlayer().openMerchantContainer(optionalint.getAsInt(), merchantoffers, 0, 0, true, true);
+//                    }
+//                }
+//            }
+//        }
+//    }
 
-    @SubscribeEvent
-    public static void onBlockBreak(BlockEvent.BreakEvent event)
-    {
-        if (event.getWorld().isRemote()) return;
-        if (event.getPlayer().isCreative()) return;
-        if (event.getState().getBlock() == BlockRegister.CASH_PILE.get())
-        {
-            event.setCanceled(true);
-            OnlyBlock.getInstance().getBlockManager().onBlockBreak(event);
-        }
-    }
-
-    @SubscribeEvent
-    public static void onPlayerDropItem(ItemTossEvent event)
-    {
-        if (!event.getPlayer().world.isRemote)
-        {
-            IOnlyBlock onlyBlock = OnlyBlockModel.getCapability(event.getPlayer());
-            if (onlyBlock.getAmazonIsland().getCurrentDelivery() != null)
-            {
-                Vector3d delivery = onlyBlock.getAmazonIsland().getCurrentDelivery();
-                if (event.getPlayer().getPositionVec().distanceTo(delivery) <= 5 && onlyBlock.getAmazonIsland().getCurrentPackage() != 9)
-                {
-                    event.getPlayer().world.playSound(null, event.getEntityItem().getPosX(), event.getEntityItem().getPosY(), event.getEntityItem().getPosZ(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.5f, 1f);
-                    event.getPlayer().world.playSound(null, event.getPlayer().getPosX(), event.getPlayer().getPosY(), event.getPlayer().getPosZ(), SoundRegister.KATCHING.get(), SoundCategory.PLAYERS, 0.5f, 1f);
-                    event.getEntityItem().remove();
-                    onlyBlock.getAmazonIsland().deliver((ServerPlayerEntity)event.getPlayer(), true);
-                    onlyBlock.sync((ServerPlayerEntity)event.getPlayer());
-                }
-            }
-        }
-    }
-
-    private static final ResourceLocation DELIVER_BAR = new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/deliver_amount_bar.png");
-    private static final ResourceLocation QUEST_BAR = new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/quest_bar.png");
-    private static final ResourceLocation METEOR_BAR = new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/meteor_bar.png");
+    private static final ResourceLocation WAVE_BAR = new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/wave_bar.png");
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event)
     {
-        if (event.phase != TickEvent.Phase.START) return;
-        if (event.player.inventory.armorInventory.stream().anyMatch(itemStack -> itemStack.getItem() == ItemRegister.JETPACK.get()))
-        {
-            event.player.abilities.allowFlying = true;
-        } else
-        {
-            if (!event.player.isCreative() && !event.player.isSpectator()) {
-                event.player.abilities.allowFlying = false;
-            }
-        }
         if (!event.player.world.isRemote)
         {
-            IOnlyBlock onlyBlock = OnlyBlockModel.getCapability(event.player);
+            IWorldOnlyBlock onlyBlock = WorldOnlyBlock.getCapability(event.player.world);
 
-            onlyBlock.tickTime();
-
-            BarInfo bankruptInfo = BarManager.getBarInfoByID("bankrupt");
-            boolean hasAnyBarsUp = onlyBlock.getCurrentQuest() != null || onlyBlock.getAmazonIsland().getCurrentDelivery() != null || onlyBlock.getBillionaireIsland().hasMinigameStarted();
-            if (hasAnyBarsUp || onlyBlock.getCurrentTime() >= onlyBlock.getBankruptTime())
+            BarInfo currentWave = BarManager.getBarInfoByID("wave");
+            if (!onlyBlock.hasWaveStarted())
             {
-                if (bankruptInfo != null) BarManager.removeBar(bankruptInfo.getUniqueID());
+                if (currentWave != null) BarManager.removeBar(currentWave.getUniqueID());
             } else
             {
-                if (bankruptInfo == null) BarManager.addBar(UUID.randomUUID(), "bankrupt", new StringTextComponent("\u00A7c\u00A7lTime Until Bankrupt"), 1f - (onlyBlock.getCurrentTime() / (float)onlyBlock.getBankruptTime()), (ServerPlayerEntity) event.player, METEOR_BAR, new int[]{255, 85, 85}, false);
+                if (currentWave == null) BarManager.addBar(UUID.randomUUID(), "wave", new StringTextComponent("\u00A7c\u00A7lMobs Left: " + onlyBlock.getMobsLeft()), onlyBlock.getMobsPercentage(), (ServerPlayerEntity) event.player, WAVE_BAR, new int[]{255, 85, 85}, false);
                 else {
-                    BarManager.updateBar(bankruptInfo.getUniqueID(), (ServerPlayerEntity) event.player, 1f - (onlyBlock.getCurrentTime() / (float)onlyBlock.getBankruptTime()), new StringTextComponent("\u00A7c\u00A7lTime Until Bankrupt"), METEOR_BAR, bankruptInfo.getRawColor());
+                    BarManager.updateBar(currentWave.getUniqueID(), (ServerPlayerEntity) event.player, onlyBlock.getMobsPercentage(), new StringTextComponent("\u00A7c\u00A7lMobs Left: " + onlyBlock.getMobsLeft()), WAVE_BAR, currentWave.getRawColor());
                 }
             }
 
-            BarInfo barInfo = BarManager.getBarInfoByID("deliver");
-            if (onlyBlock.getAmazonIsland().getCurrentDelivery() == null)
-            {
-                if (barInfo != null) BarManager.removeBar(barInfo.getUniqueID());
-            } else
-            {
-                onlyBlock.getAmazonIsland().tickTime((ServerPlayerEntity)event.player);
-                if (barInfo == null) BarManager.addBar(UUID.randomUUID(), "deliver", new StringTextComponent("\u00A7lTime Remaining"), onlyBlock.getAmazonIsland().getPercentage(), (ServerPlayerEntity) event.player, DELIVER_BAR, new int[]{0, 236, 65}, false);
-                else {
-                    BarManager.updateBar(barInfo.getUniqueID(), (ServerPlayerEntity) event.player, onlyBlock.getAmazonIsland().getPercentage(), new StringTextComponent("\u00A7lTime Remaining"), DELIVER_BAR, barInfo.getRawColor());
-                }
-            }
-
-            BarInfo earthHealth = BarManager.getBarInfoByID("earth_health");
-            if (!onlyBlock.getBillionaireIsland().hasMinigameStarted())
-            {
-                if (earthHealth != null) BarManager.removeBar(earthHealth.getUniqueID());
-            } else
-            {
-                onlyBlock.getBillionaireIsland().tickTime((ServerPlayerEntity)event.player);
-                if (earthHealth == null) BarManager.addBar(UUID.randomUUID(), "earth_health", new StringTextComponent("\u00A72\u00A7lEarth Health"), onlyBlock.getBillionaireIsland().getEarthPercentage(), (ServerPlayerEntity) event.player, DELIVER_BAR, new int[]{0, 170, 0}, false);
-                else {
-                    BarManager.updateBar(earthHealth.getUniqueID(), (ServerPlayerEntity) event.player, onlyBlock.getBillionaireIsland().getEarthPercentage(), new StringTextComponent("\u00A72\u00A7lEarth Health"), DELIVER_BAR, earthHealth.getRawColor());
-                }
-            }
-
-            BarInfo meteors_left = BarManager.getBarInfoByID("meteors_left");
-            if (!onlyBlock.getBillionaireIsland().hasMinigameStarted())
-            {
-                if (meteors_left != null) BarManager.removeBar(meteors_left.getUniqueID());
-            } else
-            {
-                if (meteors_left == null) BarManager.addBar(UUID.randomUUID(), "meteors_left", new StringTextComponent("\u00A7c\u00A7lMeteors Left: " + onlyBlock.getBillionaireIsland().getAliveMeteors()), onlyBlock.getBillionaireIsland().getMeteorsPercentage(), (ServerPlayerEntity) event.player, METEOR_BAR, new int[]{255, 85, 85}, false);
-                else {
-                    BarManager.updateBar(meteors_left.getUniqueID(), (ServerPlayerEntity) event.player, onlyBlock.getBillionaireIsland().getMeteorsPercentage(), new StringTextComponent("\u00A7c\u00A7lMeteors Left: " + onlyBlock.getBillionaireIsland().getAliveMeteors()), METEOR_BAR, meteors_left.getRawColor());
-                }
-            }
-
-            BarInfo questBarInfo = BarManager.getBarInfoByID("quest");
-            if (onlyBlock.getCurrentQuest() == null)
-            {
-                if (questBarInfo != null) BarManager.removeBar(questBarInfo.getUniqueID());
-            } else
-            {
-                if (questBarInfo == null) BarManager.addBar(UUID.randomUUID(), "quest", new StringTextComponent(onlyBlock.getCurrentQuest().getTitle()), onlyBlock.getCurrentQuest().getProgress(), (ServerPlayerEntity) event.player, QUEST_BAR, new int[]{235, 235, 52}, false);
-                else {
-                    BarManager.updateBar(questBarInfo.getUniqueID(), (ServerPlayerEntity) event.player, onlyBlock.getCurrentQuest().getProgress(), new StringTextComponent(onlyBlock.getCurrentQuest().getTitle()), QUEST_BAR, questBarInfo.getRawColor());
-                }
-            }
-
-            if (onlyBlock.getAmazonIsland() != null)
-            {
-                if (!onlyBlock.getAmazonIsland().isLocked())
-                {
-                    if (event.player.world.getGameTime() % 20 == 0)
-                    {
-                        for (int i = 0; i < 5; i++)
-                        {
-                            Vector3d pos = onlyBlock.getAmazonIsland().getRandomTNTLocation();
-                            if (!event.player.world.isAreaLoaded(new BlockPos(pos), 10)) break;
-                            AmazonTNTEntity amazonTNTEntity = new AmazonTNTEntity(event.player.world, pos.getX(), pos.getY(), pos.getZ(), null);
-                            event.player.world.addEntity(amazonTNTEntity);
-                        }
-                    }
-                }
-            }
-
-            ICurrency currency = event.player.getCapability(CurrencyCapability.CURRENCY_CAPABILITY).orElse(null);
-
-            if (onlyBlock.getStockIsland().isAcquired() && event.player.world.getGameTime() % (20 * 60) == 0)
-            {
-                currency.addOrSubtractAmount(100);
-            }
-
-            if (onlyBlock.getAmazonIsland().isAcquired() && event.player.world.getGameTime() % (20 * 60) == 0)
-            {
-                currency.addOrSubtractAmount(50000);
-            }
-
-            if (currency.getAmount() >= 500 && onlyBlock.getStockIsland().isLocked())
-            {
-                TitleUtils.sendTitleToPlayer((ServerPlayerEntity)event.player, "\u00A7a\u00A7lIsland Unlocked", "\u00A7eStock Island is Unlocked!", 20, 100, 20);
-                onlyBlock.getStockIsland().unlock(event.player);
-            } else if (currency.getAmount() >= 100000 && onlyBlock.getAmazonIsland().isLocked())
-            {
-                TitleUtils.sendTitleToPlayer((ServerPlayerEntity)event.player, "\u00A7a\u00A7lIsland Unlocked", "\u00A7eAmazon Island is Unlocked!", 20, 100, 20);
-                onlyBlock.getAmazonIsland().unlock(event.player);
-                //onlyBlock.getAmazonIsland().startMinigame(event.player.world);
-            } else if (currency.getAmount() >= 1000000 && onlyBlock.getBillionaireIsland().isLocked())
-            {
-                TitleUtils.sendTitleToPlayer((ServerPlayerEntity)event.player, "\u00A7a\u00A7lIsland Unlocked", "\u00A7eMillionaire Island is Unlocked!", 20, 100, 20);
-                onlyBlock.getBillionaireIsland().unlock(event.player);
-            }
-
-            if (currency.getAmount() < 1000000 && !onlyBlock.getBillionaireIsland().isLocked())
-            {
-                TitleUtils.sendTitleToPlayer((ServerPlayerEntity)event.player, "\u00A7c\u00A7lIsland Locked", "\u00A7eMillionaire Island is Locked!", 20, 100, 20);
-                onlyBlock.getBillionaireIsland().lock(event.player);
-                OnlyBlockNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)event.player), new CloseScreenPacket());
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public static void onPlayerClone(PlayerEvent.Clone event)
-    {
-        event.getOriginal().getCapability(CurrencyCapability.CURRENCY_CAPABILITY).ifPresent(oldCurrency -> {
-            event.getPlayer().getCapability(CurrencyCapability.CURRENCY_CAPABILITY).ifPresent(iCurrency -> {
-                iCurrency.setAmount(oldCurrency.getAmount(), false);
-            });
-        });
-        OnlyBlockModel.getCapability(event.getPlayer()).deserializeNBT(OnlyBlockModel.getCapability(event.getOriginal()).serializeNBT());
-        WorldOnlyBlock.getCapability(event.getPlayer().world).deserializeNBT(WorldOnlyBlock.getCapability(event.getOriginal().world).serializeNBT());
-    }
-
-    @SubscribeEvent
-    public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event)
-    {
-        if (!event.getPlayer().world.isRemote)
-        {
-            event.getPlayer().getCapability(CurrencyCapability.CURRENCY_CAPABILITY).ifPresent(iCurrency -> {
-                iCurrency.sync((ServerPlayerEntity) event.getPlayer());
-            });
-            OnlyBlockModel.getCapability(event.getPlayer()).sync((ServerPlayerEntity)event.getPlayer());
-            WorldOnlyBlock.getCapability(event.getPlayer().world).sync((ServerPlayerEntity)event.getPlayer());
-        }
-    }
-
-    @SubscribeEvent
-    public static void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event)
-    {
-        if (!event.getPlayer().world.isRemote)
-        {
-            event.getPlayer().getCapability(CurrencyCapability.CURRENCY_CAPABILITY).ifPresent(iCurrency -> {
-                iCurrency.sync((ServerPlayerEntity)event.getPlayer());
-            });
-            OnlyBlockModel.getCapability(event.getPlayer()).sync((ServerPlayerEntity)event.getPlayer());
-            WorldOnlyBlock.getCapability(event.getPlayer().world).sync((ServerPlayerEntity)event.getPlayer());
-        }
-    }
-
-    @SubscribeEvent
-    public static void changeDimesionEvent(final PlayerEvent.PlayerChangedDimensionEvent event) {
-        if (!event.getPlayer().world.isRemote)
-        {
-            event.getPlayer().getCapability(CurrencyCapability.CURRENCY_CAPABILITY).ifPresent(iCurrency -> {
-                iCurrency.sync((ServerPlayerEntity)event.getPlayer());
-            });
-            OnlyBlockModel.getCapability(event.getPlayer()).sync((ServerPlayerEntity)event.getPlayer());
         }
     }
 
@@ -306,23 +105,49 @@ public class ForgeEvents {
     }
 
     @SubscribeEvent
-    public static void onPlayerTickEvent(TickEvent.PlayerTickEvent event)
+    public static void onWorldTickEvent(TickEvent.WorldTickEvent event)
     {
-        if (event.phase == TickEvent.Phase.END && event.player.world.isRemote)
+        if (event.phase == TickEvent.Phase.END && !event.world.isRemote && event.world.getDimensionKey().getLocation().toString().contains("overworld"))
         {
-            //System.out.println(WorldOnlyBlock.getCapability(event.player.world).getDaysLeft());
+            IWorldOnlyBlock worldOnlyBlock = WorldOnlyBlock.getCapability(event.world);
+            if (worldOnlyBlock.getNextIronDropTime() == 1)
+            {
+                ItemEntity itemEntity = new ItemEntity(event.world, worldOnlyBlock.getIronGenerator().getX() + 0.5, worldOnlyBlock.getIronGenerator().getY() + 2, worldOnlyBlock.getIronGenerator().getZ() + 0.5);
+                //itemEntity.setVelocity(0, 0, 0);
+                itemEntity.setMotion(0, 0, 0);
+                itemEntity.setItem(new ItemStack(Items.IRON_INGOT));
+                itemEntity.setNoDespawn();
+                event.world.addEntity(itemEntity);
+            }
+
+            if (worldOnlyBlock.getNextGoldDropTime() == 1)
+            {
+                ItemEntity itemEntity = new ItemEntity(event.world, worldOnlyBlock.getGoldGenerator().getX() + 0.5, worldOnlyBlock.getGoldGenerator().getY() + 2, worldOnlyBlock.getGoldGenerator().getZ() + 0.5);
+                itemEntity.setMotion(0, 0, 0);
+                itemEntity.setItem(new ItemStack(Items.GOLD_INGOT));
+                itemEntity.setNoDespawn();
+                event.world.addEntity(itemEntity);
+            }
+
+            if (worldOnlyBlock.getNextDiamondDropTime() == 1)
+            {
+                ItemEntity itemEntity = new ItemEntity(event.world, worldOnlyBlock.getDiamondGenerator().getX() + 0.5, worldOnlyBlock.getDiamondGenerator().getY() + 2, worldOnlyBlock.getDiamondGenerator().getZ() + 0.5);
+                itemEntity.setMotion(0, 0, 0);
+                itemEntity.setItem(new ItemStack(Items.DIAMOND));
+                itemEntity.setNoDespawn();
+                event.world.addEntity(itemEntity);
+            }
+
+            if (worldOnlyBlock.getNextEmeraldDropTime() == 1)
+            {
+                ItemEntity itemEntity = new ItemEntity(event.world, worldOnlyBlock.getEmeraldGenerator().getX() + 0.5, worldOnlyBlock.getEmeraldGenerator().getY() + 2, worldOnlyBlock.getEmeraldGenerator().getZ() + 0.5);
+                itemEntity.setMotion(0, 0, 0);
+                itemEntity.setItem(new ItemStack(Items.EMERALD));
+                itemEntity.setNoDespawn();
+                event.world.addEntity(itemEntity);
+            }
+
         }
     }
 
-    public static void spawnItem(World worldIn, BlockPos pos, ItemStack stack) {
-        if (!worldIn.isRemote && !stack.isEmpty() && worldIn.getGameRules().getBoolean(GameRules.DO_TILE_DROPS) && !worldIn.restoringBlockSnapshots) {
-            float f = 0.5F;
-            double d0 = (double)(worldIn.rand.nextFloat() * 0.5F) + 0.25D;
-            double d1 = (double)(worldIn.rand.nextFloat() * 0.5F) + 0.25D;
-            double d2 = (double)(worldIn.rand.nextFloat() * 0.5F) + 0.25D;
-            ItemEntity itementity = new ItemEntity(worldIn, (double)pos.getX() + d0, (double)pos.getY() + d1, (double)pos.getZ() + d2, stack);
-            itementity.setDefaultPickupDelay();
-            worldIn.addEntity(itementity);
-        }
-    }
 }

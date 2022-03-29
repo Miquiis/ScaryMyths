@@ -1,17 +1,3 @@
 {
-  "item.onlyblock.cash": "Cash",
-  "item.onlyblock.bad_stock": "Bad Stock",
-  "item.onlyblock.good_stock": "Good Stock",
-  "item.onlyblock.whistle": "Ghast Whistle",
-  "item.onlyblock.golden_bazooka": "Golden Bazooka",
-  "item.onlyblock.golden_helicopter": "Golden Helicopter",
-  "item.onlyblock.cash_sword": "Cash Sword",
-  "item.onlyblock.cash_pickaxe": "Cash Pickaxe",
-  "item.onlyblock.cash_axe": "Cash Axe",
-  "item.onlyblock.stock_sword": "Stock Sword",
-  "item.onlyblock.laptop_password": "Laptop Password",
-  "item.onlyblock.jetpack": "Jetpack",
-  "block.onlyblock.amazon_package": "Amazon Package",
-  "block.onlyblock.cash_block": "Cash Block",
-  "block.onlyblock.stock_ore": "Stock Ore"
+
 }
