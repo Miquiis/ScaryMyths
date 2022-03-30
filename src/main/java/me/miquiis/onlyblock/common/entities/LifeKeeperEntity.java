@@ -1,7 +1,6 @@
 package me.miquiis.onlyblock.common.entities;
 
 import me.miquiis.onlyblock.common.registries.EntityRegister;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.merchant.IMerchant;
@@ -12,7 +11,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.MerchantOffer;
 import net.minecraft.item.MerchantOffers;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.potion.*;
 import net.minecraft.util.ActionResultType;

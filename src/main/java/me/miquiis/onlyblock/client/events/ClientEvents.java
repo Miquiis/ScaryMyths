@@ -85,8 +85,6 @@ public class ClientEvents {
         matrixStack.translate(x, y, z);
         matrixStack.rotate(Vector3f.YP.rotationDegrees(Minecraft.getInstance().world.getGameTime() * 10));
         matrixStack.scale(scale, scale, scale);
-        //matrixStack.translate(0, -scale / 2, 0);
-        //matrixStack.translate(0, -0.5, 0);
 
         Minecraft.getInstance().getItemRenderer().renderItem(item, ItemCameraTransforms.TransformType.GROUND, 15728880, OverlayTexture.NO_OVERLAY, matrixStack, buffer);
 

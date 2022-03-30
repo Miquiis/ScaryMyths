@@ -6,12 +6,10 @@ import me.miquiis.onlyblock.common.classes.JHTML;
 import me.miquiis.onlyblock.server.network.OnlyBlockNetwork;
 import me.miquiis.onlyblock.server.network.messages.IPlayerSelectablePacket;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.AbstractClientPlayerEntity;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
 import java.awt.*;

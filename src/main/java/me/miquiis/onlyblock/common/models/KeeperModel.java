@@ -2,7 +2,6 @@ package me.miquiis.onlyblock.common.models;
 
 import me.miquiis.onlyblock.OnlyBlock;
 import net.minecraft.util.ResourceLocation;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 
 public class KeeperModel extends AnimatedGeoModel {

@@ -3,7 +3,6 @@ package me.miquiis.onlyblock.common.utils;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.play.server.STitlePacket;
 import net.minecraft.util.text.StringTextComponent;
-import org.stringtemplate.v4.ST;
 
 public class TitleUtils {
 

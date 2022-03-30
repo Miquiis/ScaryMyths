@@ -1,13 +1,8 @@
 package me.miquiis.onlyblock.common.classes;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.MainWindow;
 import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.util.text.StringTextComponent;
-import org.lwjgl.opengl.GL11;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

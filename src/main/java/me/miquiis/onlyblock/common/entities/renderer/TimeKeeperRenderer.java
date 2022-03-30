@@ -1,6 +1,5 @@
 package me.miquiis.onlyblock.common.entities.renderer;
 
-import me.miquiis.onlyblock.common.entities.BuildKeeperEntity;
 import me.miquiis.onlyblock.common.entities.TimeKeeperEntity;
 import me.miquiis.onlyblock.common.models.KeeperModel;
 import net.minecraft.client.renderer.entity.EntityRendererManager;

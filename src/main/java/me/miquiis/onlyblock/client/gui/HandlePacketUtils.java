@@ -1,11 +1,8 @@
 package me.miquiis.onlyblock.client.gui;
 
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.fml.network.NetworkEvent;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 public class HandlePacketUtils {
 
