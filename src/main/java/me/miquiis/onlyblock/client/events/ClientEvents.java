@@ -41,6 +41,7 @@ public class ClientEvents {
 
     private static void renderGenerator(MatrixStack matrixStack, StringTextComponent text, StringTextComponent timeLeft, ItemStack item, Vector3d position)
     {
+        if (Minecraft.getInstance().player.getPositionVec().distanceTo(position) > 128) return;
         renderTextInWorld(matrixStack, text, position.getX() + 0.5, position.getY() + 1.8, position.getZ() + 0.5, 0, 0.05f, Color.WHITE.getRGB(), true);
         renderTextInWorld(matrixStack, new StringTextComponent("\u00A7aGenerating in: \u00a7e" + timeLeft.getText()), position.getX() + 0.5, position.getY() + 1, position.getZ() + 0.5, 0, 0.03f, Color.WHITE.getRGB(), true);
         renderItemInWorld(matrixStack, item, position.getX() + 0.5, position.getY() + 2, position.getZ() + 0.5, 0, 3f);

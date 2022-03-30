@@ -16,6 +16,7 @@ public interface IWorldOnlyBlock {
     void setServerWorld(ServerWorld worldOnlyBlockCapability);
     void setDaysLeft(int daysLeft);
     void skipDay();
+    void activateWaves();
     void reset();
 
     Vector3d getIronGenerator();
@@ -38,6 +39,7 @@ public interface IWorldOnlyBlock {
     int getNextDiamondDropTime();
     int getNextEmeraldDropTime();
 
+    boolean hasActivatedWaves();
     boolean hasWaveStarted();
     float getMobsPercentage();
     int getMobsLeft();

@@ -7,6 +7,7 @@ import me.miquiis.onlyblock.common.capability.interfaces.IWorldOnlyBlock;
 import me.miquiis.onlyblock.common.capability.models.WorldOnlyBlock;
 import me.miquiis.onlyblock.common.entities.*;
 import me.miquiis.onlyblock.common.registries.*;
+import me.miquiis.onlyblock.common.utils.TitleUtils;
 import me.miquiis.onlyblock.server.commands.OnlyBlockCommand;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.item.ItemEntity;
@@ -22,6 +23,7 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
@@ -46,29 +48,6 @@ public class ForgeEvents {
         ConfigCommand.register(event.getDispatcher());
     }
 
-//    @SubscribeEvent
-//    public static void onPlayerInteract(PlayerInteractEvent.RightClickBlock event)
-//    {
-//        if (event.getWorld().isRemote) return;
-//        if (event.getHand() == Hand.MAIN_HAND)
-//        {
-//            BlockState blockState = event.getWorld().getBlockState(event.getPos());
-//            if (blockState.getBlock() == BlockRegister.LAPTOP.get())
-//            {
-//                BuildKeeperEntity lifeKeeperEntity = new BuildKeeperEntity(event.getWorld(), event.getPlayer());
-//                OptionalInt optionalint = event.getPlayer().openContainer(new SimpleNamedContainerProvider((id, playerInventory, player2) -> {
-//                    return new MerchantContainer(id, playerInventory, lifeKeeperEntity);
-//                }, new StringTextComponent("Merchant")));
-//                if (optionalint.isPresent()) {
-//                    MerchantOffers merchantoffers = lifeKeeperEntity.getOffers();
-//                    if (!merchantoffers.isEmpty()) {
-//                        event.getPlayer().openMerchantContainer(optionalint.getAsInt(), merchantoffers, 0, 0, true, true);
-//                    }
-//                }
-//            }
-//        }
-//    }
-
     private static final ResourceLocation WAVE_BAR = new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/wave_bar.png");
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event)
@@ -89,6 +68,44 @@ public class ForgeEvents {
                 }
             }
 
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerUseClock(PlayerInteractEvent.RightClickItem event)
+    {
+        if (!event.getWorld().isRemote && event.getHand() == Hand.MAIN_HAND)
+        {
+            ItemStack itemUsed = event.getItemStack();
+            if (itemUsed.getOrCreateTag().contains("TimeForward"))
+            {
+                int amountForwared = itemUsed.getOrCreateTag().getInt("TimeForward");
+                IWorldOnlyBlock worldOnlyBlock = WorldOnlyBlock.getCapability(event.getWorld());
+                worldOnlyBlock.setDaysLeft(worldOnlyBlock.getDaysLeft() - amountForwared);
+                ((ServerWorld)event.getWorld()).setDayTime(1);
+                event.getWorld().getServer().getPlayerList().getPlayers().forEach(player -> {
+                    TitleUtils.sendTitleToPlayer(player, "\u00A76\u00A7lTime Forwarded", "\u00A7fTime has been forwared by " + amountForwared + " days.", 20, 100, 20);
+                });
+                itemUsed.shrink(1);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerPressurePlate(TickEvent.PlayerTickEvent event)
+    {
+        if (event.phase == TickEvent.Phase.END && !event.player.world.isRemote)
+        {
+            if (event.player.world.getBlockState(event.player.getPosition()).getBlock().getRegistryName().toString().contains("pressure_plate"))
+            {
+                IWorldOnlyBlock worldOnlyBlock = WorldOnlyBlock.getCapability(event.player.world);
+                if (worldOnlyBlock.hasActivatedWaves()) return;
+                worldOnlyBlock.activateWaves();
+                worldOnlyBlock.sync();
+                event.player.getServer().getPlayerList().getPlayers().forEach(player -> {
+                    TitleUtils.sendTitleToPlayer(player, "&c&lTrap Activated", "&f&lWaves are now unleashed...", 20, 100, 20);
+                });
+            }
         }
     }
 

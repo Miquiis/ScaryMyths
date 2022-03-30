@@ -5,6 +5,7 @@ import me.miquiis.onlyblock.common.capability.WorldOnlyBlockCapability;
 import me.miquiis.onlyblock.common.capability.interfaces.IWorldOnlyBlock;
 import me.miquiis.onlyblock.common.capability.storages.WorldOnlyBlockStorage;
 import me.miquiis.onlyblock.common.classes.Wave;
+import me.miquiis.onlyblock.common.utils.MathUtils;
 import me.miquiis.onlyblock.server.network.OnlyBlockNetwork;
 import me.miquiis.onlyblock.server.network.messages.WorldOnlyBlockPacket;
 import net.minecraft.command.Commands;
@@ -32,6 +33,7 @@ public class WorldOnlyBlock implements IWorldOnlyBlock {
     private int daysLeft;
     private Vector3d ironGenerator, goldGenerator, emeraldGenerator, diamondGenerator;
     private int ironPerDay, goldPerDay, diamondPerDay, emeraldPerDay;
+    private boolean hasActivatedWaves;
 
     private static final List<Wave> waves = new ArrayList<>(Arrays.asList(
             new Wave(1, new ArrayList<>(Arrays.asList(
@@ -48,7 +50,7 @@ public class WorldOnlyBlock implements IWorldOnlyBlock {
                     new Wave.WaveSpawner(10, EntityType.CREEPER)
             ))),
             new Wave(40, new ArrayList<>(Arrays.asList(
-                    new Wave.WaveSpawner(10, EntityType.PIGLIN),
+                    new Wave.WaveSpawner(10, EntityType.ZOMBIFIED_PIGLIN),
                     new Wave.WaveSpawner(5, EntityType.SKELETON)
             ))),
             new Wave(50, new ArrayList<>(Arrays.asList(
@@ -84,18 +86,19 @@ public class WorldOnlyBlock implements IWorldOnlyBlock {
 
     public WorldOnlyBlock()
     {
-        this.ironGenerator = new Vector3d(15, 84, 2);
-        this.goldGenerator = new Vector3d(5, 84, 2);
-        this.emeraldGenerator = new Vector3d(-5, 84, 2);
-        this.diamondGenerator = new Vector3d(-15, 84, 2);
+        this.ironGenerator = new Vector3d(1, 40, -70);
+        this.goldGenerator = new Vector3d(61, 40, 39);
+        this.emeraldGenerator = new Vector3d(-15, 40, 73);
+        this.diamondGenerator = new Vector3d(-94, 40, 17);
 
-        this.ironPerDay = 20;
+        this.ironPerDay = 35;
         this.goldPerDay = 50;
         this.diamondPerDay = 30;
         this.emeraldPerDay = 25;
 
         this.spawnedMobs = new ArrayList<>();
         this.isWaveActive = false;
+        this.hasActivatedWaves = false;
         this.lastDayWaveSpawned = -1;
 
         this.daysLeft = 100;
@@ -103,12 +106,12 @@ public class WorldOnlyBlock implements IWorldOnlyBlock {
 
     private void resetGenerators()
     {
-        this.ironGenerator = new Vector3d(15, 84, 2);
-        this.goldGenerator = new Vector3d(5, 84, 2);
-        this.emeraldGenerator = new Vector3d(-5, 84, 2);
-        this.diamondGenerator = new Vector3d(-15, 84, 2);
+        this.ironGenerator = new Vector3d(1, 40, -70);
+        this.goldGenerator = new Vector3d(61, 40, 39);
+        this.emeraldGenerator = new Vector3d(-15, 40, 73);
+        this.diamondGenerator = new Vector3d(-94, 40, 17);
 
-        this.ironPerDay = 20;
+        this.ironPerDay = 35;
         this.goldPerDay = 50;
         this.diamondPerDay = 30;
         this.emeraldPerDay = 25;
@@ -179,10 +182,10 @@ public class WorldOnlyBlock implements IWorldOnlyBlock {
 
         if (difference > 0)
         {
-            spawnIronAtGenerator(difference * ironPerDay, true);
-            spawnGoldAtGenerator(difference * goldPerDay, true);
-            spawnDiamondAtGenerator(difference * diamondPerDay, true);
-            spawnEmeraldAtGenerator(difference * emeraldPerDay, true);
+            spawnIronAtGenerator((int) ((difference * ironPerDay) * 0.25), true);
+            spawnGoldAtGenerator((int) ((difference * goldPerDay) * 0.25), true);
+            spawnDiamondAtGenerator((int) ((difference * diamondPerDay) * 0.25), true);
+            spawnEmeraldAtGenerator((int) ((difference * emeraldPerDay) * 0.25), true);
         }
 
         sync();
@@ -196,10 +199,17 @@ public class WorldOnlyBlock implements IWorldOnlyBlock {
     }
 
     @Override
+    public void activateWaves() {
+        this.hasActivatedWaves = true;
+        checkSpawnWave();
+    }
+
+    @Override
     public void reset() {
         this.spawnedMobs = new ArrayList<>();
         this.isWaveActive = false;
         this.lastDayWaveSpawned = -1;
+        this.hasActivatedWaves = false;
         this.daysLeft = 100;
     }
 
@@ -286,6 +296,11 @@ public class WorldOnlyBlock implements IWorldOnlyBlock {
     }
 
     @Override
+    public boolean hasActivatedWaves() {
+        return hasActivatedWaves;
+    }
+
+    @Override
     public boolean hasWaveStarted() {
         return isWaveActive;
     }
@@ -304,7 +319,9 @@ public class WorldOnlyBlock implements IWorldOnlyBlock {
 
     private void checkSpawnWave()
     {
-        if (getCurrentDays() / 10 > lastDayWaveSpawned)
+        if (!hasActivatedWaves) return;
+        if (getMobsLeft() > 0) return;
+        if (lastDayWaveSpawned == -1 || getCurrentDays() / 10 > lastDayWaveSpawned)
         {
             Wave waveToSpawn = getWaveByDays(getCurrentDays());
             if (waveToSpawn == null) return;
@@ -314,13 +331,29 @@ public class WorldOnlyBlock implements IWorldOnlyBlock {
                 for (int i = 0; i < waveSpawner.getAmount(); i++)
                 {
                     Entity entity = waveSpawner.getEntityType().create(worldInstance);
-                    entity.setPosition(0, 100, 0);
+
+                    if (MathUtils.chance(25)) {
+                        if (MathUtils.chance(25)) {
+                            entity.setPosition(ironGenerator.getX(), ironGenerator.getY(), ironGenerator.getZ());
+                        } else {
+                            entity.setPosition(goldGenerator.getX(), goldGenerator.getY(), goldGenerator.getZ());
+                        }
+                    } else {
+                        if (MathUtils.chance(25)) {
+                            entity.setPosition(diamondGenerator.getX(), diamondGenerator.getY(), diamondGenerator.getZ());
+                        } else
+                        {
+                            entity.setPosition(emeraldGenerator.getX(), emeraldGenerator.getY(), emeraldGenerator.getZ());
+                        }
+                    }
+
                     if (entity instanceof LivingEntity)
                     {
                         MobEntity livingEntity = (MobEntity) entity;
                         livingEntity.onInitialSpawn(serverWorld, serverWorld.getDifficultyForLocation(new BlockPos(0, 100, 0)), SpawnReason.MOB_SUMMONED, null, null);
                         livingEntity.enablePersistence();
                         livingEntity.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(9999);
+                        livingEntity.setAttackTarget(serverWorld.getRandomPlayer());
                         livingEntity.setAggroed(true);
                         spawnedMobs.add(livingEntity);
                     }
