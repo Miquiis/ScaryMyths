@@ -3,24 +3,27 @@ package me.miquiis.onlyblock.client.events;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.miquiis.onlyblock.OnlyBlock;
-import me.miquiis.onlyblock.common.capability.interfaces.IWorldOnlyBlock;
-import me.miquiis.onlyblock.common.capability.models.WorldOnlyBlock;
+import me.miquiis.onlyblock.client.gui.LeaderboardInventoryScreen;
+import me.miquiis.onlyblock.common.capability.interfaces.IOnlyMoneyBlock;
+import me.miquiis.onlyblock.common.capability.models.OnlyMoneyBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.screen.inventory.InventoryScreen;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-
-import java.awt.*;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = OnlyBlock.MOD_ID, value = Dist.CLIENT)
 public class ClientEvents {
@@ -28,23 +31,58 @@ public class ClientEvents {
     @SubscribeEvent
     public static void onLastWorldRender(RenderWorldLastEvent event)
     {
-        IWorldOnlyBlock worldOnlyBlock = WorldOnlyBlock.getCapability(Minecraft.getInstance().world);
         IRenderTypeBuffer.Impl buffer = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
-
-        renderGenerator(event.getMatrixStack(), new StringTextComponent("\u00A7fIron Generator"), new StringTextComponent(convertSeconds(worldOnlyBlock.getNextIronDropTime() / 20)), new ItemStack(Items.IRON_BLOCK), worldOnlyBlock.getIronGenerator());
-        renderGenerator(event.getMatrixStack(), new StringTextComponent("\u00A76Gold Generator"), new StringTextComponent(convertSeconds(worldOnlyBlock.getNextGoldDropTime() / 20)), new ItemStack(Items.GOLD_BLOCK), worldOnlyBlock.getGoldGenerator());
-        renderGenerator(event.getMatrixStack(), new StringTextComponent("\u00A7bDiamond Generator"), new StringTextComponent(convertSeconds(worldOnlyBlock.getNextDiamondDropTime() / 20)), new ItemStack(Items.DIAMOND_BLOCK), worldOnlyBlock.getDiamondGenerator());
-        renderGenerator(event.getMatrixStack(), new StringTextComponent("\u00A72Emerald Generator"), new StringTextComponent(convertSeconds(worldOnlyBlock.getNextEmeraldDropTime() / 20)), new ItemStack(Items.EMERALD_BLOCK), worldOnlyBlock.getEmeraldGenerator());
-
         buffer.finish();
     }
 
-    private static void renderGenerator(MatrixStack matrixStack, StringTextComponent text, StringTextComponent timeLeft, ItemStack item, Vector3d position)
+    @SubscribeEvent
+    public static void onInventoryOpen(GuiScreenEvent event)
     {
-        if (Minecraft.getInstance().player.getPositionVec().distanceTo(position) > 128) return;
-        renderTextInWorld(matrixStack, text, position.getX() + 0.5, position.getY() + 1.8, position.getZ() + 0.5, 0, 0.05f, Color.WHITE.getRGB(), true);
-        renderTextInWorld(matrixStack, new StringTextComponent("\u00A7aGenerating in: \u00a7e" + timeLeft.getText()), position.getX() + 0.5, position.getY() + 1, position.getZ() + 0.5, 0, 0.03f, Color.WHITE.getRGB(), true);
-        renderItemInWorld(matrixStack, item, position.getX() + 0.5, position.getY() + 2, position.getZ() + 0.5, 0, 3f);
+        if (event.getGui() instanceof InventoryScreen)
+        {
+            if (!(event.getGui() instanceof LeaderboardInventoryScreen))
+            {
+                Minecraft.getInstance().displayGuiScreen(new LeaderboardInventoryScreen(event.getGui().getMinecraft().player));
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerRender(RenderLivingEvent<?,?> event)
+    {
+        if (event.getEntity() instanceof PlayerEntity)
+        {
+            float yOffset = Minecraft.getInstance().player.equals(event.getEntity()) ? 0f : 0.3f;
+            IOnlyMoneyBlock moneyBlock = OnlyMoneyBlock.getCapability((PlayerEntity)event.getEntity());
+            renderName((PlayerEntity)event.getEntity(), new StringTextComponent("\u00A7e\u00A7l" + moneyBlock.getDays() + " Days"), yOffset + yOffset, event.getMatrixStack(), event.getBuffers(), event.getLight());
+            if (yOffset == 0.3f)
+            renderName((PlayerEntity)event.getEntity(), new StringTextComponent("\u00A7a\u00A7l$" + moneyBlock.getCash()), yOffset, event.getMatrixStack(), event.getBuffers(), event.getLight());
+        }
+    }
+
+    private static void renderName(PlayerEntity entityIn, ITextComponent displayNameIn, float yOffset, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+        EntityRendererManager renderManager = Minecraft.getInstance().getRenderManager();
+        double d0 = renderManager.squareDistanceTo(entityIn);
+        if (net.minecraftforge.client.ForgeHooksClient.isNameplateInRenderDistance(entityIn, d0)) {
+            boolean flag = !entityIn.isDiscrete();
+            float f = entityIn.getHeight() + 0.5F + yOffset;
+            int i = "deadmau5".equals(displayNameIn.getString()) ? -10 : 0;
+            matrixStackIn.push();
+            matrixStackIn.translate(0.0D, (double)f, 0.0D);
+            matrixStackIn.rotate(renderManager.getCameraOrientation());
+            matrixStackIn.scale(-0.025F, -0.025F, 0.025F);
+            Matrix4f matrix4f = matrixStackIn.getLast().getMatrix();
+            float f1 = Minecraft.getInstance().gameSettings.getTextBackgroundOpacity(0.25F);
+            int j = (int)(f1 * 255.0F) << 24;
+            FontRenderer fontrenderer = Minecraft.getInstance().fontRenderer;
+            float f2 = (float)(-fontrenderer.getStringPropertyWidth(displayNameIn) / 2);
+            fontrenderer.func_243247_a(displayNameIn, f2, (float)i, 553648127, false, matrix4f, bufferIn, flag, j, packedLightIn);
+            if (flag) {
+                fontrenderer.func_243247_a(displayNameIn, f2, (float)i, -1, false, matrix4f, bufferIn, false, 0, packedLightIn);
+            }
+
+            matrixStackIn.pop();
+        }
     }
 
     private static void renderTextInWorld(MatrixStack matrixStack, StringTextComponent text, double x, double y, double z, double offsetY, float scale, int color, boolean hasBackground)

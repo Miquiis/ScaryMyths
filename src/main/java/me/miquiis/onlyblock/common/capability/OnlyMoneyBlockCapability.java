@@ -1,12 +1,12 @@
 package me.miquiis.onlyblock.common.capability;
 
-import me.miquiis.onlyblock.common.capability.interfaces.IWorldOnlyBlock;
-import me.miquiis.onlyblock.common.capability.models.WorldOnlyBlock;
-import me.miquiis.onlyblock.common.capability.storages.WorldOnlyBlockStorage;
+import me.miquiis.onlyblock.common.capability.interfaces.IOnlyMoneyBlock;
+import me.miquiis.onlyblock.common.capability.models.OnlyMoneyBlock;
+import me.miquiis.onlyblock.common.capability.storages.OnlyMoneyBlockStorage;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -16,22 +16,21 @@ import net.minecraftforge.common.util.LazyOptional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class WorldOnlyBlockCapability implements ICapabilitySerializable<CompoundNBT> {
+public class OnlyMoneyBlockCapability implements ICapabilitySerializable<CompoundNBT> {
 
-    @CapabilityInject(IWorldOnlyBlock.class)
-    public static final Capability<IWorldOnlyBlock> CURRENT_CAPABILITY = null;
-    private LazyOptional<IWorldOnlyBlock> instance = LazyOptional.of(CURRENT_CAPABILITY::getDefaultInstance);
+    @CapabilityInject(IOnlyMoneyBlock.class)
+    public static final Capability<IOnlyMoneyBlock> CURRENT_CAPABILITY = null;
+    private LazyOptional<IOnlyMoneyBlock> instance = LazyOptional.of(CURRENT_CAPABILITY::getDefaultInstance);
 
-    public WorldOnlyBlockCapability(World world)
+    public OnlyMoneyBlockCapability(PlayerEntity playerEntity)
     {
-        instance.ifPresent(iWorldOnlyBlock -> iWorldOnlyBlock.setWorld(world));
-        if (world instanceof ServerWorld)
-        instance.ifPresent(iOnlyBlock -> iOnlyBlock.setServerWorld((ServerWorld)world));
+        if (playerEntity instanceof ServerPlayerEntity)
+        instance.ifPresent(iOnlyBlock -> iOnlyBlock.setServerPlayer((ServerPlayerEntity) playerEntity));
     }
 
     public static void register()
     {
-        CapabilityManager.INSTANCE.register(IWorldOnlyBlock.class, new WorldOnlyBlockStorage(), WorldOnlyBlock::new);
+        CapabilityManager.INSTANCE.register(IOnlyMoneyBlock.class, new OnlyMoneyBlockStorage(), OnlyMoneyBlock::new);
     }
 
     @Nonnull

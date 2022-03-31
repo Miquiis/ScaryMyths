@@ -1,6 +1,6 @@
 package me.miquiis.onlyblock.server.network.messages;
 
-import me.miquiis.onlyblock.common.capability.WorldOnlyBlockCapability;
+import me.miquiis.onlyblock.common.capability.OnlyMoneyBlockCapability;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
@@ -10,27 +10,27 @@ import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class WorldOnlyBlockPacket {
+public class OnlyMoneyBlockPacket {
 
     private final CompoundNBT nbt;
 
-    public WorldOnlyBlockPacket(CompoundNBT nbt) {
+    public OnlyMoneyBlockPacket(CompoundNBT nbt) {
         this.nbt = nbt;
     }
 
-    public static void encode(WorldOnlyBlockPacket msg, PacketBuffer buf) {
+    public static void encode(OnlyMoneyBlockPacket msg, PacketBuffer buf) {
         buf.writeCompoundTag(msg.nbt);
     }
 
-    public static WorldOnlyBlockPacket decode(PacketBuffer buf) {
-        return new WorldOnlyBlockPacket(buf.readCompoundTag());
+    public static OnlyMoneyBlockPacket decode(PacketBuffer buf) {
+        return new OnlyMoneyBlockPacket(buf.readCompoundTag());
     }
 
-    public static void handle(final WorldOnlyBlockPacket msg, Supplier<NetworkEvent.Context> ctx) {
+    public static void handle(final OnlyMoneyBlockPacket msg, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
                 Minecraft mc = Minecraft.getInstance();
-                mc.world.getCapability(WorldOnlyBlockCapability.CURRENT_CAPABILITY).ifPresent(cap -> cap.deserializeNBT(msg.nbt));
+                mc.player.getCapability(OnlyMoneyBlockCapability.CURRENT_CAPABILITY).ifPresent(cap -> cap.deserializeNBT(msg.nbt));
             });
         });
         ctx.get().setPacketHandled(true);

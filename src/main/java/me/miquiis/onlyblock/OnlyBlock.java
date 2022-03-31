@@ -1,7 +1,8 @@
 package me.miquiis.onlyblock;
 
 import me.miquiis.custombar.common.BarManager;
-import me.miquiis.onlyblock.common.capability.WorldOnlyBlockCapability;
+import me.miquiis.onlyblock.common.capability.OnlyMoneyBlockCapability;
+import me.miquiis.onlyblock.common.capability.WorldOnlyMoneyBlockCapability;
 import me.miquiis.onlyblock.common.registries.*;
 import me.miquiis.onlyblock.server.network.OnlyBlockNetwork;
 import net.minecraftforge.common.MinecraftForge;
@@ -46,7 +47,8 @@ public class OnlyBlock
     {
         instance = this;
         OnlyBlockNetwork.init();
-        WorldOnlyBlockCapability.register();
+        WorldOnlyMoneyBlockCapability.register();
+        OnlyMoneyBlockCapability.register();
         BarManager.init();
     }
 
