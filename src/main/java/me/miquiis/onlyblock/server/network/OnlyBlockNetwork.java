@@ -18,6 +18,7 @@ public class OnlyBlockNetwork {
     public static void init() {
         CHANNEL.registerMessage(1, WorldOnlyMoneyBlockPacket.class, WorldOnlyMoneyBlockPacket::encode, WorldOnlyMoneyBlockPacket::decode, WorldOnlyMoneyBlockPacket::handle);
         CHANNEL.registerMessage(2, OnlyMoneyBlockPacket.class, OnlyMoneyBlockPacket::encode, OnlyMoneyBlockPacket::decode, OnlyMoneyBlockPacket::handle);
+        CHANNEL.registerMessage(3, ATMPacket.class, ATMPacket::encode, ATMPacket::decode, ATMPacket::handle);
     }
 
 }

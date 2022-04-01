@@ -3,9 +3,11 @@ package me.miquiis.onlyblock.client.events;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.miquiis.onlyblock.OnlyBlock;
+import me.miquiis.onlyblock.client.gui.ATMScreen;
 import me.miquiis.onlyblock.client.gui.LeaderboardInventoryScreen;
 import me.miquiis.onlyblock.common.capability.interfaces.IOnlyMoneyBlock;
 import me.miquiis.onlyblock.common.capability.models.OnlyMoneyBlock;
+import me.miquiis.onlyblock.common.classes.OldEasyGUI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.inventory.InventoryScreen;
@@ -24,6 +26,8 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+
+import java.awt.*;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = OnlyBlock.MOD_ID, value = Dist.CLIENT)
 public class ClientEvents {
@@ -44,6 +48,28 @@ public class ClientEvents {
             {
                 Minecraft.getInstance().displayGuiScreen(new LeaderboardInventoryScreen(event.getGui().getMinecraft().player));
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onGUIRender(RenderGameOverlayEvent event)
+    {
+        if (event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE) {
+            event.setCanceled(true);
+
+            final Minecraft minecraft = Minecraft.getInstance();
+
+            IOnlyMoneyBlock currency = OnlyMoneyBlock.getCapability(minecraft.player);
+
+            OldEasyGUI.StringGUIElement stringGUIElement = new OldEasyGUI.StringGUIElement(
+                    new OldEasyGUI.Anchor(OldEasyGUI.VAnchor.BOTTOM, OldEasyGUI.HAnchor.CENTER),
+                    event.getMatrixStack(), event.getWindow(), Minecraft.getInstance().fontRenderer,
+                    "$" + currency.getCash(),
+                    true,
+                    0f, 22f, 0.80f,
+                    true,
+                    new Color(46, 217, 91).getRGB());
+            stringGUIElement.render(null);
         }
     }
 

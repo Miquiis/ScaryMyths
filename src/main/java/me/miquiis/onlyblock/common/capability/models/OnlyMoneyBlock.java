@@ -12,6 +12,7 @@ import net.minecraftforge.fml.network.PacketDistributor;
 public class OnlyMoneyBlock implements IOnlyMoneyBlock {
 
     private ServerPlayerEntity serverPlayer;
+    private String pin;
     private int days, bankAccount, cash, frozenDay;
     private boolean isFrozen;
 
@@ -22,6 +23,12 @@ public class OnlyMoneyBlock implements IOnlyMoneyBlock {
         this.cash = 0;
         this.frozenDay = -1;
         this.isFrozen = false;
+        this.pin = "";
+    }
+
+    @Override
+    public String getPin() {
+        return pin;
     }
 
     @Override
@@ -47,6 +54,12 @@ public class OnlyMoneyBlock implements IOnlyMoneyBlock {
     @Override
     public int getFrozenDay() {
         return frozenDay;
+    }
+
+    @Override
+    public void setPin(String pin) {
+        this.pin = pin;
+        sync(false);
     }
 
     @Override
@@ -133,6 +146,7 @@ public class OnlyMoneyBlock implements IOnlyMoneyBlock {
         this.cash = data.getInt("Cash");
         this.frozenDay = data.getInt("FrozenDay");
         this.isFrozen = data.getBoolean("IsFrozen");
+        this.pin = data.getString("Pin");
     }
 
     @Override
@@ -143,6 +157,7 @@ public class OnlyMoneyBlock implements IOnlyMoneyBlock {
         compoundNBT.putInt("Cash", cash);
         compoundNBT.putInt("FrozenDay", frozenDay);
         compoundNBT.putBoolean("IsFrozen", isFrozen);
+        compoundNBT.putString("Pin", pin);
         return compoundNBT;
     }
 
