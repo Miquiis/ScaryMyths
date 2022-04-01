@@ -67,7 +67,7 @@ public class ForgeEvents {
     {
         if (!event.getPlayer().world.isRemote)
         {
-            OnlyMoneyBlock.getCapability(event.getPlayer()).sync();
+            OnlyMoneyBlock.getCapability(event.getPlayer()).sync(false);
         }
     }
 
@@ -76,7 +76,7 @@ public class ForgeEvents {
     {
         if (!event.getPlayer().world.isRemote)
         {
-            OnlyMoneyBlock.getCapability(event.getPlayer()).sync();
+            OnlyMoneyBlock.getCapability(event.getPlayer()).sync(true);
         }
     }
 
@@ -84,7 +84,7 @@ public class ForgeEvents {
     public static void changeDimesionEvent(final PlayerEvent.PlayerChangedDimensionEvent event) {
         if (!event.getPlayer().world.isRemote)
         {
-            OnlyMoneyBlock.getCapability(event.getPlayer()).sync();
+            OnlyMoneyBlock.getCapability(event.getPlayer()).sync(false);
         }
     }
 

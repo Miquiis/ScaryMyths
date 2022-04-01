@@ -30,7 +30,7 @@ public class OnlyMoneyBlockPacket {
         ctx.get().enqueueWork(() -> {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
                 Minecraft mc = Minecraft.getInstance();
-                mc.player.getCapability(OnlyMoneyBlockCapability.CURRENT_CAPABILITY).ifPresent(cap -> cap.deserializeNBT(msg.nbt));
+                mc.world.getEntityByID(msg.nbt.getInt("ClientID")).getCapability(OnlyMoneyBlockCapability.CURRENT_CAPABILITY).ifPresent(cap -> cap.deserializeNBT(msg.nbt));
             });
         });
         ctx.get().setPacketHandled(true);

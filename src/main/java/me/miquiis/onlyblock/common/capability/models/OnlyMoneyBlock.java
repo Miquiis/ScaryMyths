@@ -52,37 +52,37 @@ public class OnlyMoneyBlock implements IOnlyMoneyBlock {
     @Override
     public void setDays(int days) {
         this.days = days;
-        sync();
+        sync(true);
     }
 
     @Override
     public void sumDays(int days) {
         this.days += days;
-        sync();
+        sync(true);
     }
 
     @Override
     public void setBankAccount(int amount) {
         this.bankAccount = amount;
-        sync();
+        sync(true);
     }
 
     @Override
     public void setCash(int amount) {
         this.cash = amount;
-        sync();
+        sync(true);
     }
 
     @Override
     public void sumBankAccount(int amount) {
         this.bankAccount += amount;
-        sync();
+        sync(true);
     }
 
     @Override
     public void sumCash(int amount) {
         this.cash += amount;
-        sync();
+        sync(true);
     }
 
     @Override
@@ -92,10 +92,27 @@ public class OnlyMoneyBlock implements IOnlyMoneyBlock {
     }
 
     @Override
-    public void sync() {
+    public void sync(boolean syncAll) {
         if (serverPlayer != null)
         {
-            OnlyBlockNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new OnlyMoneyBlockPacket(serializeNBT()));
+            CompoundNBT compoundNBT = serializeNBT();
+            compoundNBT.putInt("ClientID", serverPlayer.getEntityId());
+            OnlyBlockNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new OnlyMoneyBlockPacket(compoundNBT));
+        }
+        if (syncAll)
+        syncToAll();
+    }
+
+    @Override
+    public void syncToAll() {
+        if (serverPlayer != null)
+        {
+            serverPlayer.getServer().getPlayerList().getPlayers().forEach(player -> {
+                if (serverPlayer.equals(player)) return;
+                CompoundNBT compoundNBT = serializeNBT();
+                compoundNBT.putInt("ClientID", serverPlayer.getEntityId());
+                OnlyBlockNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new OnlyMoneyBlockPacket(compoundNBT));
+            });
         }
     }
 
