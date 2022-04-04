@@ -19,6 +19,9 @@ public class OnlyBlockNetwork {
         CHANNEL.registerMessage(1, WorldOnlyMoneyBlockPacket.class, WorldOnlyMoneyBlockPacket::encode, WorldOnlyMoneyBlockPacket::decode, WorldOnlyMoneyBlockPacket::handle);
         CHANNEL.registerMessage(2, OnlyMoneyBlockPacket.class, OnlyMoneyBlockPacket::encode, OnlyMoneyBlockPacket::decode, OnlyMoneyBlockPacket::handle);
         CHANNEL.registerMessage(3, ATMPacket.class, ATMPacket::encode, ATMPacket::decode, ATMPacket::handle);
+        CHANNEL.registerMessage(4, BuyItemFromShopPacket.class, BuyItemFromShopPacket::encode, BuyItemFromShopPacket::decode, BuyItemFromShopPacket::handle);
+        CHANNEL.registerMessage(5, BuySabotagePacket.class, BuySabotagePacket::encode, BuySabotagePacket::decode, BuySabotagePacket::handle);
+        CHANNEL.registerMessage(6, OpenPlayerSelectPacket.class, OpenPlayerSelectPacket::encode, OpenPlayerSelectPacket::decode, OpenPlayerSelectPacket::handle);
     }
 
 }

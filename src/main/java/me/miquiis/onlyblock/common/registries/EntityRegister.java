@@ -25,6 +25,12 @@ public class EntityRegister {
                     .build(new ResourceLocation(OnlyBlock.MOD_ID, "life_keeper").toString())
     );
 
+    public static final RegistryObject<EntityType<CustomFallingBlockEntity>> CUSTOM_FALLING_BLOCK = ENTITIES.register("custom_falling_block",
+            () -> EntityType.Builder.<CustomFallingBlockEntity>create(CustomFallingBlockEntity::new, EntityClassification.MISC)
+                    .size(0.98F, 0.98F).trackingRange(10).updateInterval(20)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "custom_falling_block").toString())
+    );
+
     public static final RegistryObject<EntityType<BuildKeeperEntity>> BUILD_KEEPER = ENTITIES.register("build_keeper", () ->
             EntityType.Builder.<BuildKeeperEntity>create(BuildKeeperEntity::new, EntityClassification.MISC)
                     .size(1.5f, 2f)
@@ -39,6 +45,76 @@ public class EntityRegister {
                     .build(new ResourceLocation(OnlyBlock.MOD_ID, "time_keeper").toString())
     );
 
+    public static final RegistryObject<EntityType<MutantCreeperEntity>> MUTANT_CREEPER = ENTITIES.register("mutant_creeper", () ->
+            EntityType.Builder.<MutantCreeperEntity>create(MutantCreeperEntity::new, EntityClassification.MISC)
+                    .size(1.5f, 1.8f)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "mutant_creeper").toString())
+    );
+
+    public static final RegistryObject<EntityType<MutantSkeletonEntity>> MUTANT_SKELETON = ENTITIES.register("mutant_skeleton", () ->
+            EntityType.Builder.<MutantSkeletonEntity>create(MutantSkeletonEntity::new, EntityClassification.MISC)
+                    .size(1f, 2f)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "mutant_skeleton").toString())
+    );
+
+    public static final RegistryObject<EntityType<MutantZombieEntity>> MUTANT_ZOMBIE = ENTITIES.register("mutant_zombie", () ->
+            EntityType.Builder.<MutantZombieEntity>create(MutantZombieEntity::new, EntityClassification.MISC)
+                    .size(1.5f, 2.5f)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "mutant_zombie").toString())
+    );
+
+    public static final RegistryObject<EntityType<BobEntity>> BOB = ENTITIES.register("bob", () ->
+            EntityType.Builder.<BobEntity>create(BobEntity::new, EntityClassification.MISC)
+                    .size(1f, 2f)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "bob").toString())
+    );
+
+    public static final RegistryObject<EntityType<AlfredEntity>> ALFRED = ENTITIES.register("alfred", () ->
+            EntityType.Builder.<AlfredEntity>create(AlfredEntity::new, EntityClassification.MISC)
+                    .size(1f, 2f)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "alfred").toString())
+    );
+
+    public static final RegistryObject<EntityType<DealerEntity>> DEALER = ENTITIES.register("dealer", () ->
+            EntityType.Builder.<DealerEntity>create(DealerEntity::new, EntityClassification.MISC)
+                    .size(1f, 2f)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "dealer").toString())
+    );
+
+    public static final RegistryObject<EntityType<HackerEntity>> HACKER = ENTITIES.register("hacker", () ->
+            EntityType.Builder.<HackerEntity>create(HackerEntity::new, EntityClassification.MISC)
+                    .size(1f, 2f)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "hacker").toString())
+    );
+
+    public static final RegistryObject<EntityType<NoobEntity>> NOOB = ENTITIES.register("noob", () ->
+            EntityType.Builder.<NoobEntity>create(NoobEntity::new, EntityClassification.MISC)
+                    .size(1f, 2f)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "noob").toString())
+    );
+
+    public static final RegistryObject<EntityType<SaleEntity>> SALE = ENTITIES.register("sale",
+            () -> EntityType.Builder.<SaleEntity>create(SaleEntity::new, EntityClassification.MISC)
+                    .size(2.0F, 2.0F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "sale").toString())
+    );
+
+    public static final RegistryObject<EntityType<SoldEntity>> SOLD = ENTITIES.register("sold",
+            () -> EntityType.Builder.<SoldEntity>create(SoldEntity::new, EntityClassification.MISC)
+                    .size(2.0F, 2.0F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "sold").toString())
+    );
+
     public static void register(IEventBus bus)
     {
         ENTITIES.register(bus);
@@ -47,9 +123,22 @@ public class EntityRegister {
     @SubscribeEvent
     public static void onEntityRegister(EntityAttributeCreationEvent event)
     {
+        event.put(MUTANT_CREEPER.get(), MutantCreeperEntity.registerAttributes().create());
+        event.put(MUTANT_ZOMBIE.get(), MutantZombieEntity.registerAttributes().create());
+        event.put(MUTANT_SKELETON.get(), MutantSkeletonEntity.registerAttributes().create());
+
         event.put(LIFE_KEEPER.get(), LifeKeeperEntity.func_233666_p_().create());
         event.put(BUILD_KEEPER.get(), BuildKeeperEntity.func_233666_p_().create());
         event.put(TIME_KEEPER.get(), TimeKeeperEntity.func_233666_p_().create());
+
+        event.put(DEALER.get(), DealerEntity.func_233666_p_().create());
+        event.put(BOB.get(), BobEntity.func_233666_p_().create());
+        event.put(ALFRED.get(), AlfredEntity.func_233666_p_().create());
+        event.put(NOOB.get(), NoobEntity.func_233666_p_().create());
+        event.put(HACKER.get(), HackerEntity.func_233666_p_().create());
+
+        event.put(SALE.get(), SaleEntity.func_233666_p_().create());
+        event.put(SOLD.get(), SaleEntity.func_233666_p_().create());
     }
 
 }

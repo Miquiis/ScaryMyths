@@ -5,9 +5,15 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.client.gui.ATMScreen;
 import me.miquiis.onlyblock.client.gui.LeaderboardInventoryScreen;
+import me.miquiis.onlyblock.client.gui.ShopScreen;
 import me.miquiis.onlyblock.common.capability.interfaces.IOnlyMoneyBlock;
+import me.miquiis.onlyblock.common.capability.interfaces.IWorldOnlyMoneyBlock;
 import me.miquiis.onlyblock.common.capability.models.OnlyMoneyBlock;
+import me.miquiis.onlyblock.common.capability.models.WorldOnlyMoneyBlock;
 import me.miquiis.onlyblock.common.classes.OldEasyGUI;
+import me.miquiis.onlyblock.common.entities.*;
+import me.miquiis.onlyblock.common.registries.BlockRegister;
+import me.miquiis.onlyblock.common.registries.ItemRegister;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.inventory.InventoryScreen;
@@ -17,6 +23,8 @@ import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
@@ -24,10 +32,13 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.*;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = OnlyBlock.MOD_ID, value = Dist.CLIENT)
 public class ClientEvents {
@@ -49,6 +60,72 @@ public class ClientEvents {
                 Minecraft.getInstance().displayGuiScreen(new LeaderboardInventoryScreen(event.getGui().getMinecraft().player));
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void onEntityInteract(PlayerInteractEvent.EntityInteract event)
+    {
+        IWorldOnlyMoneyBlock worldOnlyMoneyBlock = WorldOnlyMoneyBlock.getCapability(event.getWorld());
+        if (event.getTarget() instanceof NoobEntity && event.getHand() == Hand.MAIN_HAND && event.getWorld().isRemote)
+        {
+            if (worldOnlyMoneyBlock.getMcDonaldsBusiness().getBusinessOwner() != null)
+            {
+                Minecraft.getInstance().displayGuiScreen(new ShopScreen("McDonald's", new ArrayList<>(Arrays.asList(
+                        new ShopScreen.ItemSlot(new ItemStack(ItemRegister.BIG_MAC.get()), 0, 100)
+                ))));
+            } else
+            {
+                Minecraft.getInstance().displayGuiScreen(new ShopScreen("McDonald's", new ArrayList<>(Arrays.asList(
+                        new ShopScreen.ItemSlot(createOutOfOrderItem(), 0, 999999999)
+                ))));
+            }
+        }
+
+        if (event.getTarget() instanceof BobEntity && event.getHand() == Hand.MAIN_HAND && event.getWorld().isRemote)
+        {
+            Minecraft.getInstance().displayGuiScreen(new ShopScreen("Bob The Builder", new ArrayList<>(Arrays.asList(
+                    new ShopScreen.ItemSlot(new ItemStack(Items.DIRT, 64), 0, 5000),
+                    new ShopScreen.ItemSlot(new ItemStack(Items.COBBLESTONE, 10), 1, 1000),
+                    new ShopScreen.ItemSlot(new ItemStack(Items.OAK_PLANKS, 12), 2, 2000),
+                    new ShopScreen.ItemSlot(new ItemStack(ItemRegister.BRIDGER.get()), 3, 10000),
+                    new ShopScreen.ItemSlot(new ItemStack(BlockRegister.SPEED_BOOST.get(), 4), 2, 1000)
+            ))));
+        }
+
+        if (event.getTarget() instanceof DealerEntity && event.getHand() == Hand.MAIN_HAND && event.getWorld().isRemote)
+        {
+            Minecraft.getInstance().displayGuiScreen(new ShopScreen("Dealer", new ArrayList<>(Arrays.asList(
+                    new ShopScreen.ItemSlot(new ItemStack(ItemRegister.CRYPTO_MINER.get()), 0, 1000),
+                    new ShopScreen.ItemSlot(new ItemStack(ItemRegister.DEBIT_CARD_SWORD.get()), 1, 5000)
+            ))));
+        }
+
+        if (event.getTarget() instanceof AlfredEntity && event.getHand() == Hand.MAIN_HAND && event.getWorld().isRemote)
+        {
+            Minecraft.getInstance().displayGuiScreen(new ShopScreen("Alfred", new ArrayList<>(Arrays.asList(
+                    new ShopScreen.ItemSlot(new ItemStack(BlockRegister.MONEY_PRINTER.get()), 0, 5000),
+                    new ShopScreen.ItemSlot(new ItemStack(Items.DIAMOND_HELMET), 1, 3000),
+                    new ShopScreen.ItemSlot(new ItemStack(Items.DIAMOND_CHESTPLATE), 2, 4000),
+                    new ShopScreen.ItemSlot(new ItemStack(Items.DIAMOND_LEGGINGS), 3, 3500),
+                    new ShopScreen.ItemSlot(new ItemStack(Items.DIAMOND_BOOTS), 4, 2000)
+            ))));
+        }
+
+        if (event.getTarget() instanceof HackerEntity && event.getHand() == Hand.MAIN_HAND && event.getWorld().isRemote)
+        {
+            Minecraft.getInstance().displayGuiScreen(new ShopScreen("Hacker", new ArrayList<>(Arrays.asList(
+                    new ShopScreen.ItemSlot(new ItemStack(ItemRegister.SABOTAGE.get()), 0, 50000),
+                    new ShopScreen.ItemSlot(createOutOfOrderItem(), 1, 999999999),
+                    new ShopScreen.ItemSlot(createOutOfOrderItem(), 2, 999999999),
+                    new ShopScreen.ItemSlot(createOutOfOrderItem(), 3, 999999999)
+            ))));
+        }
+    }
+
+    private static ItemStack createOutOfOrderItem()
+    {
+        ItemStack itemStack = new ItemStack(Items.BARRIER);
+        return itemStack.setDisplayName(new StringTextComponent("\u00A7c\u00A7l** OUT OF ORDER **"));
     }
 
     @SubscribeEvent

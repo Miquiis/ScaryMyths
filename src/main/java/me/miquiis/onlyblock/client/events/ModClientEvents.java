@@ -1,11 +1,14 @@
 package me.miquiis.onlyblock.client.events;
 
 import me.miquiis.onlyblock.OnlyBlock;
-import me.miquiis.onlyblock.common.entities.renderer.BuildKeeperRenderer;
-import me.miquiis.onlyblock.common.entities.renderer.LifeKeeperRenderer;
-import me.miquiis.onlyblock.common.entities.renderer.TimeKeeperRenderer;
+import me.miquiis.onlyblock.common.entities.MutantCreeperEntity;
+import me.miquiis.onlyblock.common.entities.MutantSkeletonEntity;
+import me.miquiis.onlyblock.common.entities.renderer.*;
+import me.miquiis.onlyblock.common.models.*;
 import me.miquiis.onlyblock.common.registries.BlockRegister;
 import me.miquiis.onlyblock.common.registries.EntityRegister;
+import me.miquiis.onlyblock.common.registries.TileEntityRegister;
+import me.miquiis.onlyblock.common.tileentity.renderer.MoneyPrinterTileRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.entity.EntityType;
@@ -25,9 +28,26 @@ public class ModClientEvents {
     @SubscribeEvent
     public static void doClientStuff(final FMLClientSetupEvent event)
     {
+        ClientRegistry.bindTileEntityRenderer(TileEntityRegister.MONEY_PRINTER_TILE_ENTITY.get(), MoneyPrinterTileRenderer::new);
+
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.CUSTOM_FALLING_BLOCK.get(), CustomFallingBlockRenderer::new);
+
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.LIFE_KEEPER.get(), LifeKeeperRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.TIME_KEEPER.get(), TimeKeeperRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.BUILD_KEEPER.get(), BuildKeeperRenderer::new);
+
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.MUTANT_CREEPER.get(), MutantCreeperRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.MUTANT_ZOMBIE.get(), MutantZombieRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.MUTANT_SKELETON.get(), MutantSkeletonRenderer::new);
+
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.SOLD.get(), SoldRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.SALE.get(), SaleRenderer::new);
+
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.ALFRED.get(), manager -> new PlayerRenderer(manager, new AlfredModel()));
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.BOB.get(), manager -> new PlayerRenderer(manager, new BobModel()));
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.DEALER.get(), manager -> new PlayerRenderer(manager, new DealerModel()));
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.NOOB.get(), manager -> new PlayerRenderer(manager, new NoobModel()));
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.HACKER.get(), manager -> new PlayerRenderer(manager, new HackerModel()));
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
