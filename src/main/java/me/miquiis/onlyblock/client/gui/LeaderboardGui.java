@@ -61,8 +61,6 @@ public class LeaderboardGui extends AbstractGui implements IRenderable, IGuiEven
         for (AbstractClientPlayerEntity clientPlayerEntity : sortedList)
         {
             IOnlyMoneyBlock onlyMoneyBlock = OnlyMoneyBlock.getCapability(clientPlayerEntity);
-            System.out.println(clientPlayerEntity.getName());
-            System.out.println(onlyMoneyBlock.getBankAccount());
             int i = (this.width - 125) / 2 - 86;
             int j = (this.height - 143) / 2 + (30 * count);
             this.mc.getTextureManager().bindTexture(LEADERBOARD);

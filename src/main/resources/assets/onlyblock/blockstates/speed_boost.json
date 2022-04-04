@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "onlyblock:block/speed_boost", "y": 180 },
+    "facing=south": { "model": "onlyblock:block/speed_boost"},
+    "facing=east": { "model": "onlyblock:block/speed_boost", "y": 270},
+    "facing=west": { "model": "onlyblock:block/speed_boost", "y": 90}
+  }
+}

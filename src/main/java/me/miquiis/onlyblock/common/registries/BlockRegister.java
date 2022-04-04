@@ -2,6 +2,7 @@ package me.miquiis.onlyblock.common.registries;
 
 import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.common.blocks.BaseHorizontalBlock;
+import me.miquiis.onlyblock.common.blocks.SpeedBoostBlock;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.BlockItem;
@@ -23,6 +24,10 @@ public class BlockRegister {
 
     public static final RegistryObject<Block> ATM = registerBlock("atm", () ->
             new BaseHorizontalBlock(AbstractBlock.Properties.create(Material.IRON).hardnessAndResistance(2f).sound(SoundType.ANVIL).notSolid().setOpaque(BlockRegister::isntSolid).setSuffocates(BlockRegister::isntSolid).setBlocksVision(BlockRegister::isntSolid))
+    );
+
+    public static final RegistryObject<Block> SPEED_BOOST = registerBlock("speed_boost", () ->
+            new SpeedBoostBlock(AbstractBlock.Properties.create(Material.WOOL).hardnessAndResistance(0.2f).sound(SoundType.CLOTH).notSolid().setOpaque(BlockRegister::isntSolid).setBlocksVision(BlockRegister::isntSolid))
     );
 
     private static boolean needsPostProcessing(BlockState state, IBlockReader reader, BlockPos pos) {

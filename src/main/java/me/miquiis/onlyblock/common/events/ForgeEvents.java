@@ -4,8 +4,12 @@ import me.miquiis.custombar.common.BarInfo;
 import me.miquiis.custombar.common.BarManager;
 import me.miquiis.onlyblock.OnlyBlock;
 import me.miquiis.onlyblock.common.capability.models.OnlyMoneyBlock;
+import me.miquiis.onlyblock.common.registries.BlockRegister;
 import me.miquiis.onlyblock.common.utils.TitleUtils;
 import me.miquiis.onlyblock.server.commands.OnlyBlockCommand;
+import me.miquiis.onlyblock.server.network.OnlyBlockNetwork;
+import me.miquiis.onlyblock.server.network.messages.ATMPacket;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -19,6 +23,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.server.command.ConfigCommand;
 import java.util.UUID;
 
@@ -31,6 +36,19 @@ public class ForgeEvents {
         new OnlyBlockCommand(event.getDispatcher());
 
         ConfigCommand.register(event.getDispatcher());
+    }
+
+    @SubscribeEvent
+    public static void onPlayerRightClick(PlayerInteractEvent.RightClickBlock event)
+    {
+        if (!event.getWorld().isRemote && event.getHand() == Hand.MAIN_HAND)
+        {
+            BlockState blockState = event.getWorld().getBlockState(event.getPos());
+            if (blockState.getBlock() == BlockRegister.ATM.get())
+            {
+                OnlyBlockNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) event.getPlayer()), new ATMPacket(ATMPacket.ATMPacketType.SEND_ATM, ATMPacket.createSendATMData(-1)));
+            }
+        }
     }
 
     private static final ResourceLocation WAVE_BAR = new ResourceLocation(OnlyBlock.MOD_ID, "textures/gui/wave_bar.png");

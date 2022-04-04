@@ -75,7 +75,6 @@ public class ATMScreen extends Screen {
     public ATMScreen(int clientId) {
         super(new StringTextComponent("ATM"));
         this.clientID = clientId;
-        System.out.println(clientId);
         init();
     }
 
@@ -161,6 +160,7 @@ public class ATMScreen extends Screen {
 
         if (!(minecraft.world.getEntityByID(clientID) instanceof PlayerEntity))
         {
+            isKeyboardOn = false;
             currentRendering = CurrentScreen.PIN;
         } else
         {
@@ -169,6 +169,7 @@ public class ATMScreen extends Screen {
 
             if (moneyCapability.getPin().isEmpty())
             {
+                isKeyboardOn = false;
                 currentRendering = CurrentScreen.PIN;
             }
         }
@@ -214,6 +215,18 @@ public class ATMScreen extends Screen {
                 if (keyboardInput.length() == 0) return super.keyReleased(keyCode, scanCode, modifiers);
                 keyboardInput = keyboardInput.substring(0, keyboardInput.length() - 1);
                 minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK, 1f, 0.8f);
+                return super.keyReleased(keyCode, scanCode, modifiers);
+            }
+            if (keyCode == 335)
+            {
+                confirmButton.onPress();
+                minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK, 1f, 1.0f);
+                return super.keyReleased(keyCode, scanCode, modifiers);
+            }
+            if (keyCode >= 320 && keyCode <= 329)
+            {
+                keyboardInput += (keyCode - 320);
+                minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK, 1f, 1.8f);
                 return super.keyReleased(keyCode, scanCode, modifiers);
             }
             if (KeyEvent.getKeyText(keyCode).contains("Unknown")) return super.keyReleased(keyCode, scanCode, modifiers);
@@ -355,6 +368,7 @@ public class ATMScreen extends Screen {
                         ).setOnRenderEvent((x, y, width1, height1) -> {
                             this.backButton = this.addButton(new Button((int)x, (int)y, (int)width1, (int)height1, new StringTextComponent("back"), p_onPress_1_ -> {
                                 this.currentRendering = CurrentScreen.MAIN;
+                                isKeyboardOn = false;
                             }));
                             this.backButton.active = true;
                         })
@@ -369,7 +383,6 @@ public class ATMScreen extends Screen {
                     this.confirmButton = this.addButton(new Button((int)x, (int)y, (int)width1, (int)height1, new StringTextComponent("confirm"), p_onPress_1_ -> {
                         this.currentRendering = CurrentScreen.MAIN;
                         OnlyBlockNetwork.CHANNEL.sendToServer(new ATMPacket(ATMPacket.ATMPacketType.DEPOSIT, ATMPacket.createProcessATMData(null, playerATM.getEntityId(), Integer.parseInt(getOnlyDigitKeyboard()))));
-                        System.out.println("Depositing " + getOnlyDigitKeyboard());
                     }));
                     this.confirmButton.active = true;
                 })
@@ -389,6 +402,7 @@ public class ATMScreen extends Screen {
                         ).setOnRenderEvent((x, y, width1, height1) -> {
                             this.backButton = this.addButton(new Button((int)x, (int)y, (int)width1, (int)height1, new StringTextComponent("back"), p_onPress_1_ -> {
                                 this.currentRendering = CurrentScreen.MAIN;
+                                isKeyboardOn = false;
                             }));
                             this.backButton.active = true;
                         })
@@ -402,8 +416,8 @@ public class ATMScreen extends Screen {
                 ).setOnRenderEvent((x, y, width1, height1) -> {
                     this.confirmButton = this.addButton(new Button((int)x, (int)y, (int)width1, (int)height1, new StringTextComponent("confirm"), p_onPress_1_ -> {
                         this.currentRendering = CurrentScreen.MAIN;
+                        isKeyboardOn = false;
                         OnlyBlockNetwork.CHANNEL.sendToServer(new ATMPacket(ATMPacket.ATMPacketType.WITHDRAWAL, ATMPacket.createProcessATMData(null, playerATM.getEntityId(), Integer.parseInt(getOnlyDigitKeyboard()))));
-                        System.out.println("Withdrawing " + getOnlyDigitKeyboard());
                     }));
                     this.confirmButton.active = true;
                 })
@@ -423,6 +437,7 @@ public class ATMScreen extends Screen {
                         ).setOnRenderEvent((x, y, width1, height1) -> {
                             this.backButton = this.addButton(new Button((int)x, (int)y, (int)width1, (int)height1, new StringTextComponent("back"), p_onPress_1_ -> {
                                 this.currentRendering = CurrentScreen.MAIN;
+                                isKeyboardOn = false;
                             }));
                             this.backButton.active = true;
                         })
@@ -436,7 +451,7 @@ public class ATMScreen extends Screen {
                 ).setOnRenderEvent((x, y, width1, height1) -> {
                     this.confirmButton = this.addButton(new Button((int)x, (int)y, (int)width1, (int)height1, new StringTextComponent("confirm"), p_onPress_1_ -> {
                         this.currentRendering = CurrentScreen.MAIN;
-                        System.out.println("Transfering " + getOnlyDigitKeyboard());
+                        isKeyboardOn = false;
                     }));
                     this.confirmButton.active = true;
                 })
