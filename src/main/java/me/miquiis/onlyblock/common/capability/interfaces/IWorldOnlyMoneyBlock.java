@@ -12,5 +12,6 @@ public interface IWorldOnlyMoneyBlock extends IInstance<World>, IWorldSyncable, 
     boolean hasReachedHalfGoal();
 
     void reachedHalfGoal();
+    void reset();
 
 }

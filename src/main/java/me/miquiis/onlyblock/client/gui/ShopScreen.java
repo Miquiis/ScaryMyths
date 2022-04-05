@@ -172,7 +172,7 @@ public class ShopScreen extends Screen {
                 if (mouseY >= button.y + 1 && mouseY <= button.y + (button.getHeight() - 1))
                 {
                     List<ITextComponent> a = button.itemSlot.itemStack.getTooltip(null, ITooltipFlag.TooltipFlags.NORMAL);
-                    a.add(1, new StringTextComponent("Cost: \u00A7a\u00A7l$" + button.itemSlot.value));
+                    a.add(new StringTextComponent("Cost: \u00A7a\u00A7l$" + button.itemSlot.value));
                     drawHoveringText(button.itemSlot.itemStack, matrixStack, a, mouseX, mouseY, width, height, -1, DEFAULT_BACKGROUND_COLOR, DEFAULT_BORDER_COLOR_START, DEFAULT_BORDER_COLOR_END, minecraft.fontRenderer);
                 }
             }

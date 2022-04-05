@@ -6,6 +6,7 @@ import net.minecraft.world.server.ServerWorld;
 public interface IWorldSyncable {
 
     void sync();
+    void sync(ServerPlayerEntity player);
     void setServerWorld(ServerWorld serverWorld);
     ServerWorld getServerWorld();
 

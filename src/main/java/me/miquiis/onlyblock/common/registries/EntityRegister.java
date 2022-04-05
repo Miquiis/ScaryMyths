@@ -47,21 +47,21 @@ public class EntityRegister {
 
     public static final RegistryObject<EntityType<MutantCreeperEntity>> MUTANT_CREEPER = ENTITIES.register("mutant_creeper", () ->
             EntityType.Builder.<MutantCreeperEntity>create(MutantCreeperEntity::new, EntityClassification.MISC)
-                    .size(1.5f, 1.8f)
+                    .size(1f, 1.8f)
                     .trackingRange(8)
                     .build(new ResourceLocation(OnlyBlock.MOD_ID, "mutant_creeper").toString())
     );
 
     public static final RegistryObject<EntityType<MutantSkeletonEntity>> MUTANT_SKELETON = ENTITIES.register("mutant_skeleton", () ->
             EntityType.Builder.<MutantSkeletonEntity>create(MutantSkeletonEntity::new, EntityClassification.MISC)
-                    .size(1f, 2f)
+                    .size(0.8f, 2f)
                     .trackingRange(8)
                     .build(new ResourceLocation(OnlyBlock.MOD_ID, "mutant_skeleton").toString())
     );
 
     public static final RegistryObject<EntityType<MutantZombieEntity>> MUTANT_ZOMBIE = ENTITIES.register("mutant_zombie", () ->
             EntityType.Builder.<MutantZombieEntity>create(MutantZombieEntity::new, EntityClassification.MISC)
-                    .size(1.5f, 2.5f)
+                    .size(1f, 2f)
                     .trackingRange(8)
                     .build(new ResourceLocation(OnlyBlock.MOD_ID, "mutant_zombie").toString())
     );
@@ -94,6 +94,12 @@ public class EntityRegister {
                     .build(new ResourceLocation(OnlyBlock.MOD_ID, "hacker").toString())
     );
 
+    public static final RegistryObject<EntityType<FlyingTeslaEntity>> FLYING_TESLA = ENTITIES.register("flying_tesla",
+            () -> EntityType.Builder.<FlyingTeslaEntity>create(FlyingTeslaEntity::new, EntityClassification.MISC)
+                    .size(2.5f, 1.5f).trackingRange(10)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "flying_tesla").toString())
+    );
+
     public static final RegistryObject<EntityType<NoobEntity>> NOOB = ENTITIES.register("noob", () ->
             EntityType.Builder.<NoobEntity>create(NoobEntity::new, EntityClassification.MISC)
                     .size(1f, 2f)
@@ -101,16 +107,30 @@ public class EntityRegister {
                     .build(new ResourceLocation(OnlyBlock.MOD_ID, "noob").toString())
     );
 
+    public static final RegistryObject<EntityType<JeffBezosEntity>> JEFF_BEZOS = ENTITIES.register("jeff_bezos", () ->
+            EntityType.Builder.<JeffBezosEntity>create(JeffBezosEntity::new, EntityClassification.MISC)
+                    .size(1f, 2f)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "jeff_bezos").toString())
+    );
+
+    public static final RegistryObject<EntityType<ElonMuskEntity>> ELON_MUSK = ENTITIES.register("elon_musk", () ->
+            EntityType.Builder.<ElonMuskEntity>create(ElonMuskEntity::new, EntityClassification.MISC)
+                    .size(1f, 2f)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "elon_musk").toString())
+    );
+
     public static final RegistryObject<EntityType<SaleEntity>> SALE = ENTITIES.register("sale",
             () -> EntityType.Builder.<SaleEntity>create(SaleEntity::new, EntityClassification.MISC)
-                    .size(2.0F, 2.0F)
+                    .size(5.0F, 5.0F)
                     .trackingRange(8)
                     .build(new ResourceLocation(OnlyBlock.MOD_ID, "sale").toString())
     );
 
     public static final RegistryObject<EntityType<SoldEntity>> SOLD = ENTITIES.register("sold",
             () -> EntityType.Builder.<SoldEntity>create(SoldEntity::new, EntityClassification.MISC)
-                    .size(2.0F, 2.0F)
+                    .size(5.0F, 5.0F)
                     .trackingRange(8)
                     .build(new ResourceLocation(OnlyBlock.MOD_ID, "sold").toString())
     );
@@ -136,9 +156,12 @@ public class EntityRegister {
         event.put(ALFRED.get(), AlfredEntity.func_233666_p_().create());
         event.put(NOOB.get(), NoobEntity.func_233666_p_().create());
         event.put(HACKER.get(), HackerEntity.func_233666_p_().create());
+        event.put(ELON_MUSK.get(), ElonMuskEntity.func_233666_p_().create());
+        event.put(JEFF_BEZOS.get(), JeffBezosEntity.func_233666_p_().create());
 
         event.put(SALE.get(), SaleEntity.func_233666_p_().create());
         event.put(SOLD.get(), SaleEntity.func_233666_p_().create());
+        event.put(FLYING_TESLA.get(), FlyingTeslaEntity.func_233666_p_().create());
     }
 
 }

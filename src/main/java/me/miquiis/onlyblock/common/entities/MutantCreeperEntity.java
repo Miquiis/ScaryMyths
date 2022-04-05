@@ -1,5 +1,6 @@
 package me.miquiis.onlyblock.common.entities;
 
+import me.miquiis.onlyblock.common.registries.EntityRegister;
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MobEntity;
@@ -25,6 +26,12 @@ public class MutantCreeperEntity extends CreatureEntity implements IAnimatable {
 
     public MutantCreeperEntity(EntityType<? extends CreatureEntity> type, World worldIn) {
         super(type, worldIn);
+        this.setHealth(45);
+    }
+
+    public MutantCreeperEntity(World worldIn) {
+        super(EntityRegister.MUTANT_CREEPER.get(), worldIn);
+        this.setHealth(45);
     }
 
     @Override
@@ -45,7 +52,7 @@ public class MutantCreeperEntity extends CreatureEntity implements IAnimatable {
     }
 
     public static AttributeModifierMap.MutableAttribute registerAttributes() {
-        return MonsterEntity.func_234295_eP_().createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.25D);
+        return MonsterEntity.func_234295_eP_().createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.29D).createMutableAttribute(Attributes.FOLLOW_RANGE, 64.0D).createMutableAttribute(Attributes.MAX_HEALTH, 45.0);
     }
 
     private PlayState predicte(AnimationEvent animationEvent) {

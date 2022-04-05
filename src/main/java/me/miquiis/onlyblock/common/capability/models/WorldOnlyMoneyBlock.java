@@ -9,7 +9,9 @@ import me.miquiis.onlyblock.server.network.OnlyBlockNetwork;
 import me.miquiis.onlyblock.server.network.messages.OnlyMoneyBlockPacket;
 import me.miquiis.onlyblock.server.network.messages.WorldOnlyMoneyBlockPacket;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.network.PacketDistributor;
@@ -23,9 +25,9 @@ public class WorldOnlyMoneyBlock implements IWorldOnlyMoneyBlock {
 
     public WorldOnlyMoneyBlock()
     {
-        this.mcdonaldsBusiness = new Business("mcdonalds", "McDonalds", null);
-        this.amazonBusiness = new Business("amazon", "Amazon", null);
-        this.teslaBusiness = new Business("tesla", "Tesla", null);
+        this.mcdonaldsBusiness = new Business("mcdonalds", "McDonalds", null, new Vector3d(215.5, 89, -23.5));
+        this.amazonBusiness = new Business("amazon", "Amazon", null, new Vector3d(214, 100, 7));
+        this.teslaBusiness = new Business("tesla", "Tesla", null, new Vector3d(270.5, 115, -5));
         this.hasReachedHalfGoal = false;
     }
 
@@ -88,10 +90,27 @@ public class WorldOnlyMoneyBlock implements IWorldOnlyMoneyBlock {
     }
 
     @Override
+    public void reset() {
+        this.mcdonaldsBusiness = new Business("mcdonalds", "McDonalds", null, new Vector3d(215.5, 89, -23.5));
+        this.amazonBusiness = new Business("amazon", "Amazon", null, new Vector3d(214, 100, 7));
+        this.teslaBusiness = new Business("tesla", "Tesla", null, new Vector3d(270.5, 115, -5));
+        this.hasReachedHalfGoal = false;
+        sync();
+    }
+
+    @Override
     public void sync() {
         if (serverWorld != null)
         {
             OnlyBlockNetwork.CHANNEL.send(PacketDistributor.ALL.noArg(), new WorldOnlyMoneyBlockPacket(serializeNBT()));
+        }
+    }
+
+    @Override
+    public void sync(ServerPlayerEntity player) {
+        if (serverWorld != null)
+        {
+            OnlyBlockNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new WorldOnlyMoneyBlockPacket(serializeNBT()));
         }
     }
 

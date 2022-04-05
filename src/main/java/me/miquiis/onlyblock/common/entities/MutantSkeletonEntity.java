@@ -1,5 +1,6 @@
 package me.miquiis.onlyblock.common.entities;
 
+import me.miquiis.onlyblock.common.registries.EntityRegister;
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MobEntity;
@@ -26,6 +27,12 @@ public class MutantSkeletonEntity extends CreatureEntity implements IAnimatable 
 
     public MutantSkeletonEntity(EntityType<? extends CreatureEntity> type, World worldIn) {
         super(type, worldIn);
+        this.setHealth(35);
+    }
+
+    public MutantSkeletonEntity(World worldIn) {
+        super(EntityRegister.MUTANT_SKELETON.get(), worldIn);
+        this.setHealth(35);
     }
 
     @Override
@@ -40,7 +47,8 @@ public class MutantSkeletonEntity extends CreatureEntity implements IAnimatable 
     }
 
     public static AttributeModifierMap.MutableAttribute registerAttributes() {
-        return MonsterEntity.func_234295_eP_().createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.25D);
+        return MonsterEntity.func_234295_eP_().createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.28D).createMutableAttribute(Attributes.FOLLOW_RANGE, 64.0D).createMutableAttribute(Attributes.MAX_HEALTH, 35.0);
+
     }
 
     @Override

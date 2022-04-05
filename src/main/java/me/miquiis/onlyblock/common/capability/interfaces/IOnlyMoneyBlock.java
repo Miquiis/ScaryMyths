@@ -8,7 +8,9 @@ public interface IOnlyMoneyBlock extends ISerializable, IPlayerSyncable {
     int getCash();
     boolean isFrozen();
     int getFrozenDay();
+    boolean hasBusiness();
 
+    void setBusiness(boolean hasBusiness);
     void setPin(String pin);
     void setDays(int days);
     void sumDays(int days);
@@ -17,4 +19,5 @@ public interface IOnlyMoneyBlock extends ISerializable, IPlayerSyncable {
     void sumBankAccount(int amount);
     void sumCash(int amount);
     void setFrozen(int frozenDay, boolean frozen);
+    void reset();
 }

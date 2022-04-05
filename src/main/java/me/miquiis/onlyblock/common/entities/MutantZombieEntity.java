@@ -1,5 +1,6 @@
 package me.miquiis.onlyblock.common.entities;
 
+import me.miquiis.onlyblock.common.registries.EntityRegister;
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MobEntity;
@@ -28,6 +29,12 @@ public class MutantZombieEntity extends CreatureEntity implements IAnimatable {
 
     public MutantZombieEntity(EntityType<? extends CreatureEntity> type, World worldIn) {
         super(type, worldIn);
+        this.setHealth(30f);
+    }
+
+    public MutantZombieEntity(World worldIn) {
+        super(EntityRegister.MUTANT_ZOMBIE.get(), worldIn);
+        this.setHealth(30f);
     }
 
     @Override
@@ -44,7 +51,7 @@ public class MutantZombieEntity extends CreatureEntity implements IAnimatable {
     }
 
     public static AttributeModifierMap.MutableAttribute registerAttributes() {
-        return MonsterEntity.func_234295_eP_().createMutableAttribute(Attributes.FOLLOW_RANGE, 35.0D).createMutableAttribute(Attributes.MOVEMENT_SPEED, (double)0.23F).createMutableAttribute(Attributes.ATTACK_DAMAGE, 3.0D).createMutableAttribute(Attributes.ARMOR, 2.0D).createMutableAttribute(Attributes.ZOMBIE_SPAWN_REINFORCEMENTS);
+        return MonsterEntity.func_234295_eP_().createMutableAttribute(Attributes.FOLLOW_RANGE, 55.0D).createMutableAttribute(Attributes.MAX_HEALTH, 30.0D).createMutableAttribute(Attributes.MOVEMENT_SPEED, (double)0.26F).createMutableAttribute(Attributes.ATTACK_DAMAGE, 6.0D).createMutableAttribute(Attributes.ARMOR, 4.0D).createMutableAttribute(Attributes.ZOMBIE_SPAWN_REINFORCEMENTS);
     }
 
     @Override

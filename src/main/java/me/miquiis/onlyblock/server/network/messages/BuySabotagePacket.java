@@ -35,14 +35,14 @@ public class BuySabotagePacket implements IPlayerSelectablePacket {
     public static void handle(final BuySabotagePacket msg, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ServerPlayerEntity player = ctx.get().getSender();
-            System.out.println(msg.playerSelectorInfo.getPlayerName());
-//            IOnlyMoneyBlock onlyMoneyBlock = OnlyMoneyBlock.getCapability(player);
-//            if (onlyMoneyBlock.getCash() >= msg.price)
-//            {
-//                player.inventory.addItemStackToInventory(msg.itemStack);
-//                onlyMoneyBlock.sumCash(-msg.price);
-//                //player.world.playSound(null, player.getPosX(), player.getPosY(), player.getPosZ(), SoundRegister.KATCHING.get(), SoundCategory.PLAYERS, 0.5f, 1f);
-//            }
+            ServerPlayerEntity target = (ServerPlayerEntity) player.getServerWorld().getPlayerByUuid(msg.playerSelectorInfo.getPlayerUUID());
+            if (target == null)
+            {
+                System.out.println("No target");
+                return;
+            }
+            IOnlyMoneyBlock onlyMoneyBlock = OnlyMoneyBlock.getCapability(target);
+            onlyMoneyBlock.sumDays(-20);
         });
         ctx.get().setPacketHandled(true);
     }

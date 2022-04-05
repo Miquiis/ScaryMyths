@@ -27,6 +27,7 @@ public class PlayerRenderer extends GeoEntityRenderer {
     @Override
     public void render(LivingEntity entity, float entityYaw, float partialTicks, MatrixStack stack, IRenderTypeBuffer bufferIn, int packedLightIn) {
         String name = entity instanceof BobEntity ? "\u00A76\u00a7lBob, the Builder" : entity instanceof DealerEntity ? "\u00A77\u00a7lDealer" : entity instanceof AlfredEntity ? "\u00A7f\u00a7lAlfred" : entity instanceof HackerEntity ? "\u00A7a\u00A7l\u00a7kHacker" : "";
+        if (!name.isEmpty())
         renderName(entity, new StringTextComponent(name), stack, bufferIn, packedLightIn);
         super.render(entity, entityYaw, partialTicks, stack, bufferIn, packedLightIn);
     }

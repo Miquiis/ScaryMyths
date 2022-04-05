@@ -1,7 +1,5 @@
 package me.miquiis.onlyblock.common.entities;
 
-import me.miquiis.onlyblock.common.registries.EntityRegister;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.world.World;
@@ -12,32 +10,18 @@ import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
-public class SoldEntity extends MobEntity implements IAnimatable, ISign {
+public class JeffBezosEntity extends MobEntity implements IAnimatable {
 
     private AnimationFactory factory = new AnimationFactory(this);
 
-    public SoldEntity(EntityType<? extends MobEntity> type, World worldIn) {
+    public JeffBezosEntity(EntityType<? extends MobEntity> type, World worldIn) {
         super(type, worldIn);
-        this.ignoreFrustumCheck = true;
-    }
-
-    public SoldEntity(World worldIn) {
-        super(EntityRegister.SOLD.get(), worldIn);
-        this.ignoreFrustumCheck = true;
-    }
-
-    @Override
-    protected void collideWithEntity(Entity entityIn) {
-    }
-
-    @Override
-    public void applyEntityCollision(Entity entityIn) {
     }
 
     @Override
     public void registerControllers(AnimationData data) {
         data.addAnimationController(new AnimationController(this, "controller", 10, event -> {
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("spin"));
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("idle"));
             return PlayState.CONTINUE;
         }));
     }
@@ -45,10 +29,5 @@ public class SoldEntity extends MobEntity implements IAnimatable, ISign {
     @Override
     public AnimationFactory getFactory() {
         return factory;
-    }
-
-    @Override
-    public boolean hasNoGravity() {
-        return true;
     }
 }

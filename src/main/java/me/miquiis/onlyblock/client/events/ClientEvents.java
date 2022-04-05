@@ -32,6 +32,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.*;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -63,6 +64,21 @@ public class ClientEvents {
     }
 
     @SubscribeEvent
+    public static void onDayChange(TickEvent.WorldTickEvent event)
+    {
+        if (event.phase == TickEvent.Phase.START && event.world.getDimensionKey().getLocation().toString().contains("overworld"))
+        {
+            if (event.world.getDayTime() % 24000 == 0)
+            {
+                event.world.getServer().getPlayerList().getPlayers().forEach(player -> {
+                    OnlyMoneyBlock.getCapability(player).sumDays(-1);
+                    OnlyMoneyBlock.getCapability(player).setFrozen(-1, false);
+                });
+            }
+        }
+    }
+
+    @SubscribeEvent
     public static void onEntityInteract(PlayerInteractEvent.EntityInteract event)
     {
         IWorldOnlyMoneyBlock worldOnlyMoneyBlock = WorldOnlyMoneyBlock.getCapability(event.getWorld());
@@ -71,12 +87,48 @@ public class ClientEvents {
             if (worldOnlyMoneyBlock.getMcDonaldsBusiness().getBusinessOwner() != null)
             {
                 Minecraft.getInstance().displayGuiScreen(new ShopScreen("McDonald's", new ArrayList<>(Arrays.asList(
-                        new ShopScreen.ItemSlot(new ItemStack(ItemRegister.BIG_MAC.get()), 0, 100)
+                        new ShopScreen.ItemSlot(new ItemStack(ItemRegister.BIG_MAC.get()), 0, worldOnlyMoneyBlock.getMcDonaldsBusiness().getBusinessOwner().equals(event.getPlayer().getUniqueID()) ? 0 : 500)
                 ))));
             } else
             {
                 Minecraft.getInstance().displayGuiScreen(new ShopScreen("McDonald's", new ArrayList<>(Arrays.asList(
-                        new ShopScreen.ItemSlot(createOutOfOrderItem(), 0, 999999999)
+                        new ShopScreen.ItemSlot(new ItemStack(ItemRegister.MCDONALDS.get()), 0, 20000)
+                ))));
+            }
+        }
+
+        if (event.getTarget() instanceof ElonMuskEntity && event.getHand() == Hand.MAIN_HAND && event.getWorld().isRemote)
+        {
+            if (worldOnlyMoneyBlock.getTeslaBusiness().getBusinessOwner() != null)
+            {
+                if (worldOnlyMoneyBlock.getTeslaBusiness().getBusinessOwner().equals(event.getPlayer().getUniqueID()))
+                {
+                    Minecraft.getInstance().displayGuiScreen(new ShopScreen("Tesla", new ArrayList<>(Arrays.asList(
+                            new ShopScreen.ItemSlot(new ItemStack(ItemRegister.FLYING_TESLA.get()), 0, 0)
+                    ))));
+                }
+            } else
+            {
+                Minecraft.getInstance().displayGuiScreen(new ShopScreen("Tesla", new ArrayList<>(Arrays.asList(
+                        new ShopScreen.ItemSlot(new ItemStack(ItemRegister.TESLA.get()), 0, 20000)
+                ))));
+            }
+        }
+
+        if (event.getTarget() instanceof JeffBezosEntity && event.getHand() == Hand.MAIN_HAND && event.getWorld().isRemote)
+        {
+            if (worldOnlyMoneyBlock.getAmazonBusiness().getBusinessOwner() != null)
+            {
+                if (worldOnlyMoneyBlock.getAmazonBusiness().getBusinessOwner().equals(event.getPlayer().getUniqueID()))
+                {
+                    Minecraft.getInstance().displayGuiScreen(new ShopScreen("Amazon", new ArrayList<>(Arrays.asList(
+                            new ShopScreen.ItemSlot(new ItemStack(ItemRegister.TNT_BAZOOKA.get()), 0, 0)
+                    ))));
+                }
+            } else
+            {
+                Minecraft.getInstance().displayGuiScreen(new ShopScreen("Amazon", new ArrayList<>(Arrays.asList(
+                        new ShopScreen.ItemSlot(new ItemStack(ItemRegister.AMAZON.get()), 0, 20000)
                 ))));
             }
         }
@@ -95,8 +147,8 @@ public class ClientEvents {
         if (event.getTarget() instanceof DealerEntity && event.getHand() == Hand.MAIN_HAND && event.getWorld().isRemote)
         {
             Minecraft.getInstance().displayGuiScreen(new ShopScreen("Dealer", new ArrayList<>(Arrays.asList(
-                    new ShopScreen.ItemSlot(new ItemStack(ItemRegister.CRYPTO_MINER.get()), 0, 1000),
-                    new ShopScreen.ItemSlot(new ItemStack(ItemRegister.DEBIT_CARD_SWORD.get()), 1, 5000)
+                    new ShopScreen.ItemSlot(new ItemStack(ItemRegister.DEBIT_CARD_SWORD.get()), 1, 5000),
+                    new ShopScreen.ItemSlot(new ItemStack(ItemRegister.CRYPTO_MINER.get()), 0, 1000)
             ))));
         }
 
@@ -104,10 +156,10 @@ public class ClientEvents {
         {
             Minecraft.getInstance().displayGuiScreen(new ShopScreen("Alfred", new ArrayList<>(Arrays.asList(
                     new ShopScreen.ItemSlot(new ItemStack(BlockRegister.MONEY_PRINTER.get()), 0, 5000),
-                    new ShopScreen.ItemSlot(new ItemStack(Items.DIAMOND_HELMET), 1, 3000),
-                    new ShopScreen.ItemSlot(new ItemStack(Items.DIAMOND_CHESTPLATE), 2, 4000),
-                    new ShopScreen.ItemSlot(new ItemStack(Items.DIAMOND_LEGGINGS), 3, 3500),
-                    new ShopScreen.ItemSlot(new ItemStack(Items.DIAMOND_BOOTS), 4, 2000)
+                    new ShopScreen.ItemSlot(new ItemStack(ItemRegister.MONEY_HELMET.get()), 1, 3000),
+                    new ShopScreen.ItemSlot(new ItemStack(ItemRegister.MONEY_CHESTPLATE.get()), 2, 4000),
+                    new ShopScreen.ItemSlot(new ItemStack(ItemRegister.MONEY_LEGGINGS.get()), 3, 3500),
+                    new ShopScreen.ItemSlot(new ItemStack(ItemRegister.MONEY_BOOTS.get()), 4, 2000)
             ))));
         }
 
@@ -137,6 +189,7 @@ public class ClientEvents {
             final Minecraft minecraft = Minecraft.getInstance();
 
             IOnlyMoneyBlock currency = OnlyMoneyBlock.getCapability(minecraft.player);
+            if (currency == null) return;
 
             OldEasyGUI.StringGUIElement stringGUIElement = new OldEasyGUI.StringGUIElement(
                     new OldEasyGUI.Anchor(OldEasyGUI.VAnchor.BOTTOM, OldEasyGUI.HAnchor.CENTER),
@@ -151,10 +204,17 @@ public class ClientEvents {
     }
 
     @SubscribeEvent
-    public static void onPlayerRender(RenderLivingEvent<?,?> event)
+    public static void onPlayerRender(RenderLivingEvent.Pre<?,?> event)
     {
         if (event.getEntity() instanceof PlayerEntity)
         {
+            PlayerEntity player = (PlayerEntity)event.getEntity();
+            if (player.getRidingEntity() != null && player.getRidingEntity() instanceof FlyingTeslaEntity)
+            {
+                event.setCanceled(true);
+                return;
+            }
+
             float yOffset = Minecraft.getInstance().player.equals(event.getEntity()) ? 0f : 0.3f;
             IOnlyMoneyBlock moneyBlock = OnlyMoneyBlock.getCapability((PlayerEntity)event.getEntity());
             renderName((PlayerEntity)event.getEntity(), new StringTextComponent("\u00A7e\u00A7l" + moneyBlock.getDays() + " Days"), yOffset + yOffset, event.getMatrixStack(), event.getBuffers(), event.getLight());
