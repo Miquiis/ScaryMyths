@@ -14,7 +14,7 @@ public class OnlyMoneyBlock implements IOnlyMoneyBlock {
     private ServerPlayerEntity serverPlayer;
     private String pin;
     private int days, bankAccount, cash, frozenDay;
-    private boolean isFrozen, hasBusiness;
+    private boolean isFrozen, hasBusiness, hasATM;
 
     public OnlyMoneyBlock()
     {
@@ -25,6 +25,7 @@ public class OnlyMoneyBlock implements IOnlyMoneyBlock {
         this.isFrozen = false;
         this.pin = "";
         this.hasBusiness = false;
+        this.hasATM = false;
     }
 
     @Override
@@ -35,6 +36,11 @@ public class OnlyMoneyBlock implements IOnlyMoneyBlock {
     @Override
     public int getDays() {
         return days;
+    }
+
+    @Override
+    public boolean hasATM() {
+        return hasATM;
     }
 
     @Override
@@ -65,6 +71,12 @@ public class OnlyMoneyBlock implements IOnlyMoneyBlock {
     @Override
     public void setBusiness(boolean hasBusiness) {
         this.hasBusiness = hasBusiness;
+        sync(false);
+    }
+
+    @Override
+    public void setHasATM(boolean hasATM) {
+        this.hasATM = hasATM;
         sync(false);
     }
 
@@ -125,6 +137,7 @@ public class OnlyMoneyBlock implements IOnlyMoneyBlock {
         this.isFrozen = false;
         this.pin = "";
         this.hasBusiness = false;
+        this.hasATM = false;
         sync(true);
     }
 
@@ -172,6 +185,7 @@ public class OnlyMoneyBlock implements IOnlyMoneyBlock {
         this.isFrozen = data.getBoolean("IsFrozen");
         this.pin = data.getString("Pin");
         this.hasBusiness = data.getBoolean("HasBusiness");
+        this.hasATM = data.getBoolean("HasATM");
     }
 
     @Override
@@ -184,6 +198,7 @@ public class OnlyMoneyBlock implements IOnlyMoneyBlock {
         compoundNBT.putBoolean("IsFrozen", isFrozen);
         compoundNBT.putString("Pin", pin);
         compoundNBT.putBoolean("HasBusiness", hasBusiness);
+        compoundNBT.putBoolean("HasATM", hasATM);
         return compoundNBT;
     }
 

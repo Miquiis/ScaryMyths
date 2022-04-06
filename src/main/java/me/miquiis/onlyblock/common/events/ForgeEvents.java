@@ -11,6 +11,7 @@ import me.miquiis.onlyblock.common.entities.MutantCreeperEntity;
 import me.miquiis.onlyblock.common.entities.MutantSkeletonEntity;
 import me.miquiis.onlyblock.common.entities.MutantZombieEntity;
 import me.miquiis.onlyblock.common.registries.BlockRegister;
+import me.miquiis.onlyblock.common.registries.ItemRegister;
 import me.miquiis.onlyblock.common.utils.MathUtils;
 import me.miquiis.onlyblock.common.utils.TitleUtils;
 import me.miquiis.onlyblock.server.commands.OnlyBlockCommand;
@@ -39,6 +40,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -174,6 +176,18 @@ public class ForgeEvents {
         }
     }
 
+    @SubscribeEvent
+    public static void onBlockBreak(BlockEvent.BreakEvent event)
+    {
+        if (event.getWorld().isRemote()) return;
+        if (event.getPlayer().isCreative()) return;
+        if (event.getState().getBlock() == BlockRegister.CASH_PILE.get())
+        {
+            event.setCanceled(true);
+            OnlyBlock.getInstance().getBlockManager().onBlockBreak(event);
+        }
+    }
+
     final static Vector3d CENTER_SPAWN = new Vector3d(4, 66, 2);
     private static Vector3d getRandomSpawnPosition() {
         return CENTER_SPAWN.add(MathUtils.getRandomMinMax(-20, 20), 0, MathUtils.getRandomMinMax(-20, 20));
@@ -185,16 +199,17 @@ public class ForgeEvents {
         if (!event.getEntity().world.isRemote && event.getSource().getTrueSource() instanceof PlayerEntity)
         {
             PlayerEntity player = (PlayerEntity)event.getSource().getTrueSource();
+            int multiplier = player.getHeldItemMainhand().getItem() == ItemRegister.DEBIT_CARD_SWORD.get() ? 3 : 1;
             if (event.getEntity() instanceof MutantZombieEntity) {
-                OnlyMoneyBlock.getCapability(player).sumCash(2000);
+                OnlyMoneyBlock.getCapability(player).sumCash(2000 * multiplier);
             } else if (event.getEntity() instanceof MutantSkeletonEntity) {
-                OnlyMoneyBlock.getCapability(player).sumCash(5000);
+                OnlyMoneyBlock.getCapability(player).sumCash(5000 * multiplier);
             } else if (event.getEntity() instanceof MutantCreeperEntity) {
-                OnlyMoneyBlock.getCapability(player).sumCash(1000);
+                OnlyMoneyBlock.getCapability(player).sumCash(1000 * multiplier);
             } else if (event.getEntity() instanceof RavagerEntity) {
-                OnlyMoneyBlock.getCapability(player).sumCash(25000);
+                OnlyMoneyBlock.getCapability(player).sumCash(25000 * multiplier);
             } else if (event.getEntity() instanceof WitherEntity) {
-                OnlyMoneyBlock.getCapability(player).sumCash(100000);
+                OnlyMoneyBlock.getCapability(player).sumCash(100000 * multiplier);
             }
         }
     }
@@ -221,8 +236,14 @@ public class ForgeEvents {
         {
             IOnlyMoneyBlock onlyMoneyBlock = OnlyMoneyBlock.getCapability(event.player);
             IWorldOnlyMoneyBlock worldOnlyMoneyBlock = WorldOnlyMoneyBlock.getCapability(event.player.world);
+
             if (worldOnlyMoneyBlock.getMcDonaldsBusiness().getBusinessOwner() == null) {
                 event.player.addPotionEffect(new EffectInstance(Effects.SATURATION, 20, 0, false, false));
+            }
+
+            if (!worldOnlyMoneyBlock.hasReachedHalfGoal() && onlyMoneyBlock.getBankAccount() >= 500000)
+            {
+                worldOnlyMoneyBlock.reachedHalfGoal();
             }
 
             if (event.player.world.getGameTime() % 1200 == 0 && event.player.getUniqueID().equals(worldOnlyMoneyBlock.getMcDonaldsBusiness().getBusinessOwner()))

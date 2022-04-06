@@ -83,7 +83,7 @@ public class LeaderboardInventoryScreen extends DisplayEffectsScreen<PlayerConta
 
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(matrixStack);
-        this.hasActivePotionEffects = !this.recipeBookGui.isVisible();
+        this.hasActivePotionEffects = false;
         if (this.recipeBookGui.isVisible() && this.widthTooNarrow) {
             this.drawGuiContainerBackgroundLayer(matrixStack, partialTicks, mouseX, mouseY);
             this.recipeBookGui.render(matrixStack, mouseX, mouseY, partialTicks);

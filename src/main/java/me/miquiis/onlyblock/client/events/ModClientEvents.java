@@ -46,6 +46,7 @@ public class ModClientEvents {
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.MUTANT_SKELETON.get(), MutantSkeletonRenderer::new);
 
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.FLYING_TESLA.get(), FlyingTeslaRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegister.TNT_PROJECTILE.get(), TNTProjectileRenderer::new);
 
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.SOLD.get(), SoldRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityRegister.SALE.get(), SaleRenderer::new);

@@ -1,5 +1,6 @@
 package me.miquiis.onlyblock.common.tileentity;
 
+import me.miquiis.onlyblock.common.capability.models.OnlyMoneyBlock;
 import me.miquiis.onlyblock.common.registries.TileEntityRegister;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
@@ -12,9 +13,12 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
+import java.util.UUID;
+
 public class MoneyPrinterTileEntity extends TileEntity implements IAnimatable, ITickableTileEntity {
 
     private final AnimationFactory factory = new AnimationFactory(this);
+    private UUID owner;
     private PrinterState currentState;
     private int lastPrintTick;
 
@@ -38,12 +42,25 @@ public class MoneyPrinterTileEntity extends TileEntity implements IAnimatable, I
             currentState = PrinterState.PRINTING;
         }
 
-        if (lastPrintTick >= 20)
+        if (lastPrintTick >= 20 * 60)
         {
+            if (!world.isRemote)
+            {
+                System.out.println("Not remote");
+                OnlyMoneyBlock.getCapability(world.getPlayerByUuid(owner)).sumCash(500);
+            }
             lastPrintTick = 0;
         }
 
         lastPrintTick++;
+    }
+
+    public void setOwner(UUID owner) {
+        this.owner = owner;
+    }
+
+    public UUID getOwner() {
+        return owner;
     }
 
     private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {

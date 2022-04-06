@@ -17,7 +17,10 @@ public class McDonaldsCompanyItem extends Item {
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        tooltip.add(new StringTextComponent("Insert text here"));
+        tooltip.add(new StringTextComponent("\u00A7e- Unlocks the McDonald's Shop"));
+        tooltip.add(new StringTextComponent("\u00A7e- Removes Saturation from Players"));
+        tooltip.add(new StringTextComponent("\u00A7e- Free Burger"));
+        tooltip.add(new StringTextComponent("\u00A7e- $20k per minute"));
         super.addInformation(stack, worldIn, tooltip, flagIn);
     }
 }

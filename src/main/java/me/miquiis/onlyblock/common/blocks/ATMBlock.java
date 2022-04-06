@@ -1,6 +1,7 @@
 package me.miquiis.onlyblock.common.blocks;
 
 import me.miquiis.onlyblock.common.registries.TileEntityRegister;
+import me.miquiis.onlyblock.common.tileentity.ATMTileEntity;
 import me.miquiis.onlyblock.common.tileentity.MoneyPrinterTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -16,11 +17,11 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
-public class MoneyPrinterBlock extends BaseHorizontalBlock {
+public class ATMBlock extends BaseHorizontalBlock {
 
-    protected static final VoxelShape BOTTOM_SHAPE = Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D);
+    protected static final VoxelShape BOTTOM_SHAPE = Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 32.0D, 16.0D);
 
-    public MoneyPrinterBlock(Properties properties) {
+    public ATMBlock(Properties properties) {
         super(properties);
     }
 
@@ -31,10 +32,10 @@ public class MoneyPrinterBlock extends BaseHorizontalBlock {
 
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        if (worldIn.getTileEntity(pos) instanceof MoneyPrinterTileEntity)
+        if (worldIn.getTileEntity(pos) instanceof ATMTileEntity)
         {
-            MoneyPrinterTileEntity moneyPrinterTileEntity = (MoneyPrinterTileEntity) worldIn.getTileEntity(pos);
-            moneyPrinterTileEntity.setOwner(placer.getUniqueID());
+            ATMTileEntity atmTileEntity = (ATMTileEntity) worldIn.getTileEntity(pos);
+            atmTileEntity.setOwner(placer.getUniqueID());
         }
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
     }
@@ -42,12 +43,7 @@ public class MoneyPrinterBlock extends BaseHorizontalBlock {
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return TileEntityRegister.MONEY_PRINTER_TILE_ENTITY.get().create();
-    }
-
-    @Override
-    public BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.ENTITYBLOCK_ANIMATED;
+        return TileEntityRegister.ATM_TILE_ENTITY.get().create();
     }
 
     @Override

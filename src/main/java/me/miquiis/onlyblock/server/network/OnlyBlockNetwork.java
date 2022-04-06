@@ -23,6 +23,9 @@ public class OnlyBlockNetwork {
         CHANNEL.registerMessage(5, BuySabotagePacket.class, BuySabotagePacket::encode, BuySabotagePacket::decode, BuySabotagePacket::handle);
         CHANNEL.registerMessage(6, OpenPlayerSelectPacket.class, OpenPlayerSelectPacket::encode, OpenPlayerSelectPacket::decode, OpenPlayerSelectPacket::handle);
         CHANNEL.registerMessage(7, CloseScreenPacket.class, CloseScreenPacket::encode, CloseScreenPacket::decode, CloseScreenPacket::handle);
+        CHANNEL.registerMessage(8, BuyStealPacket.class, BuyStealPacket::encode, BuyStealPacket::decode, BuyStealPacket::handle);
+        CHANNEL.registerMessage(9, BuyFreezePacket.class, BuyFreezePacket::encode, BuyFreezePacket::decode, BuyFreezePacket::handle);
+        CHANNEL.registerMessage(10, BuyDestroyPacket.class, BuyDestroyPacket::encode, BuyDestroyPacket::decode, BuyDestroyPacket::handle);
     }
 
 }

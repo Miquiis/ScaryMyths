@@ -1,6 +1,7 @@
 package me.miquiis.onlyblock.common.registries;
 
 import me.miquiis.onlyblock.OnlyBlock;
+import me.miquiis.onlyblock.common.blocks.ATMBlock;
 import me.miquiis.onlyblock.common.blocks.BaseHorizontalBlock;
 import me.miquiis.onlyblock.common.blocks.MoneyPrinterBlock;
 import me.miquiis.onlyblock.common.blocks.SpeedBoostBlock;
@@ -24,7 +25,11 @@ public class BlockRegister {
             = DeferredRegister.create(ForgeRegistries.BLOCKS, OnlyBlock.MOD_ID);
 
     public static final RegistryObject<Block> ATM = registerBlock("atm", () ->
-            new BaseHorizontalBlock(AbstractBlock.Properties.create(Material.IRON).hardnessAndResistance(2f).sound(SoundType.ANVIL).notSolid().setOpaque(BlockRegister::isntSolid).setSuffocates(BlockRegister::isntSolid).setBlocksVision(BlockRegister::isntSolid))
+            new ATMBlock(AbstractBlock.Properties.create(Material.IRON).hardnessAndResistance(2f).sound(SoundType.ANVIL).notSolid().setOpaque(BlockRegister::isntSolid).setSuffocates(BlockRegister::isntSolid).setBlocksVision(BlockRegister::isntSolid))
+    );
+
+    public static final RegistryObject<Block> CASH_PILE = registerBlock("cash_pile", () ->
+            new Block(AbstractBlock.Properties.create(Material.ROCK).hardnessAndResistance(0.5f, 0.5f).sound(SoundType.PLANT).notSolid())
     );
 
     public static final RegistryObject<Block> MONEY_PRINTER = registerBlock("money_printer", () ->

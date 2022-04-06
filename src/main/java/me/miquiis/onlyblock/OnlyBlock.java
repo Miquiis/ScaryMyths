@@ -3,6 +3,8 @@ package me.miquiis.onlyblock;
 import me.miquiis.custombar.common.BarManager;
 import me.miquiis.onlyblock.common.capability.OnlyMoneyBlockCapability;
 import me.miquiis.onlyblock.common.capability.WorldOnlyMoneyBlockCapability;
+import me.miquiis.onlyblock.common.managers.BlockManager;
+import me.miquiis.onlyblock.common.managers.FileManager;
 import me.miquiis.onlyblock.common.registries.*;
 import me.miquiis.onlyblock.server.network.OnlyBlockNetwork;
 import net.minecraftforge.common.MinecraftForge;
@@ -22,6 +24,9 @@ public class OnlyBlock
     public static final String MOD_ID = "onlyblock";
 
     private static OnlyBlock instance;
+
+    private FileManager onlyBlockFolder;
+    private BlockManager blockManager;
 
     public OnlyBlock() {
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -65,7 +70,16 @@ public class OnlyBlock
     @SubscribeEvent
     public void onServerStarting(FMLServerStartingEvent event)
     {
+        this.onlyBlockFolder = new FileManager("onlyblock", event.getServer().getDataDirectory(), "1.0");
+        this.blockManager = new BlockManager(this);
+    }
 
+    public BlockManager getBlockManager() {
+        return blockManager;
+    }
+
+    public FileManager getOnlyBlockFolder() {
+        return onlyBlockFolder;
     }
 
     public static OnlyBlock getInstance() {

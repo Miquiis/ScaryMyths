@@ -9,9 +9,11 @@ public interface IOnlyMoneyBlock extends ISerializable, IPlayerSyncable {
     boolean isFrozen();
     int getFrozenDay();
     boolean hasBusiness();
+    boolean hasATM();
 
     void setBusiness(boolean hasBusiness);
     void setPin(String pin);
+    void setHasATM(boolean hasATM);
     void setDays(int days);
     void sumDays(int days);
     void setBankAccount(int amount);

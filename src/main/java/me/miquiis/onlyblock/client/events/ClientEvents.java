@@ -165,12 +165,23 @@ public class ClientEvents {
 
         if (event.getTarget() instanceof HackerEntity && event.getHand() == Hand.MAIN_HAND && event.getWorld().isRemote)
         {
-            Minecraft.getInstance().displayGuiScreen(new ShopScreen("Hacker", new ArrayList<>(Arrays.asList(
-                    new ShopScreen.ItemSlot(new ItemStack(ItemRegister.SABOTAGE.get()), 0, 50000),
-                    new ShopScreen.ItemSlot(createOutOfOrderItem(), 1, 999999999),
-                    new ShopScreen.ItemSlot(createOutOfOrderItem(), 2, 999999999),
-                    new ShopScreen.ItemSlot(createOutOfOrderItem(), 3, 999999999)
-            ))));
+            if (worldOnlyMoneyBlock.hasReachedHalfGoal())
+            {
+                Minecraft.getInstance().displayGuiScreen(new ShopScreen("Hacker", new ArrayList<>(Arrays.asList(
+                        new ShopScreen.ItemSlot(new ItemStack(ItemRegister.SABOTAGE.get()), 0, 50000),
+                        new ShopScreen.ItemSlot(new ItemStack(ItemRegister.BALACLAVA.get()), 1, 100000),
+                        new ShopScreen.ItemSlot(new ItemStack(ItemRegister.MILLIONAIRE_NUKE.get()), 3, 100000),
+                        new ShopScreen.ItemSlot(new ItemStack(ItemRegister.FROZEN_CLOCK.get()), 2, 200000)
+                ))));
+            } else
+            {
+                Minecraft.getInstance().displayGuiScreen(new ShopScreen("Hacker", new ArrayList<>(Arrays.asList(
+                        new ShopScreen.ItemSlot(new ItemStack(ItemRegister.SABOTAGE.get()), 0, 50000),
+                        new ShopScreen.ItemSlot(createOutOfOrderItem(), 1, 999999999),
+                        new ShopScreen.ItemSlot(createOutOfOrderItem(), 2, 999999999),
+                        new ShopScreen.ItemSlot(createOutOfOrderItem(), 3, 999999999)
+                ))));
+            }
         }
     }
 

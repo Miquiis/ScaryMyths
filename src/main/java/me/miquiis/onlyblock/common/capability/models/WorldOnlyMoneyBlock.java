@@ -87,6 +87,7 @@ public class WorldOnlyMoneyBlock implements IWorldOnlyMoneyBlock {
     @Override
     public void reachedHalfGoal() {
         this.hasReachedHalfGoal = true;
+        sync();
     }
 
     @Override

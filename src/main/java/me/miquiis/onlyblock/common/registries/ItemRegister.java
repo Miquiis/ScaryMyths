@@ -48,7 +48,7 @@ public class ItemRegister {
     );
 
     public static final RegistryObject<Item> BIG_MAC = ITEMS.register("big_mac", () ->
-            new Item(new Item.Properties().food(Foods.COOKED_BEEF).group(ItemGroup.FOOD))
+            new Item(new Item.Properties().food(Foods.GOLDEN_APPLE).group(ItemGroup.FOOD))
     );
 
     public static final RegistryObject<Item> MCDONALDS = ITEMS.register("mcdonalds", () ->

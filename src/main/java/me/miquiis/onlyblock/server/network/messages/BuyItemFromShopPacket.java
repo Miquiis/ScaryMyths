@@ -45,7 +45,22 @@ public class BuyItemFromShopPacket {
                 onlyMoneyBlock.sumCash(-msg.price);
                 if (msg.itemStack.getItem() == ItemRegister.SABOTAGE.get())
                 {
-                    OnlyBlockNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> ctx.get().getSender()), new OpenPlayerSelectPacket());
+                    OnlyBlockNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> ctx.get().getSender()), new OpenPlayerSelectPacket(OpenPlayerSelectPacket.PacketToSend.SABOTAGE));
+                    return;
+                }
+                if (msg.itemStack.getItem() == ItemRegister.BALACLAVA.get())
+                {
+                    OnlyBlockNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> ctx.get().getSender()), new OpenPlayerSelectPacket(OpenPlayerSelectPacket.PacketToSend.ROBBER));
+                    return;
+                }
+                if (msg.itemStack.getItem() == ItemRegister.FROZEN_CLOCK.get())
+                {
+                    OnlyBlockNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> ctx.get().getSender()), new OpenPlayerSelectPacket(OpenPlayerSelectPacket.PacketToSend.FREEZE));
+                    return;
+                }
+                if (msg.itemStack.getItem() == ItemRegister.MILLIONAIRE_NUKE.get())
+                {
+                    OnlyBlockNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> ctx.get().getSender()), new OpenPlayerSelectPacket(OpenPlayerSelectPacket.PacketToSend.NUKE));
                     return;
                 }
                 if (msg.itemStack.getItem() == ItemRegister.MCDONALDS.get())

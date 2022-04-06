@@ -80,6 +80,12 @@ public class EntityRegister {
                     .build(new ResourceLocation(OnlyBlock.MOD_ID, "alfred").toString())
     );
 
+    public static final RegistryObject<EntityType<TNTProjectileEntity>> TNT_PROJECTILE = ENTITIES.register("tnt_projectile",
+            () -> EntityType.Builder.<TNTProjectileEntity>create(TNTProjectileEntity::new, EntityClassification.MISC)
+                    .size(1.0f, 0.5f).trackingRange(20)
+                    .build(new ResourceLocation(OnlyBlock.MOD_ID, "tnt_projectile").toString())
+    );
+
     public static final RegistryObject<EntityType<DealerEntity>> DEALER = ENTITIES.register("dealer", () ->
             EntityType.Builder.<DealerEntity>create(DealerEntity::new, EntityClassification.MISC)
                     .size(1f, 2f)

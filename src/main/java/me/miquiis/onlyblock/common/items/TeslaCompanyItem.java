@@ -17,7 +17,9 @@ public class TeslaCompanyItem extends Item {
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        tooltip.add(new StringTextComponent("Insert text here"));
+        tooltip.add(new StringTextComponent("\u00A7e- Unlocks the Tesla Shop"));
+        tooltip.add(new StringTextComponent("\u00A7e- Free Flying Tesla"));
+        tooltip.add(new StringTextComponent("\u00A7e- $20k per minute"));
         super.addInformation(stack, worldIn, tooltip, flagIn);
     }
 }
