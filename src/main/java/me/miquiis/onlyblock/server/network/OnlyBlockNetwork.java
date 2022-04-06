@@ -1,7 +1,6 @@
 package me.miquiis.onlyblock.server.network;
 
 import me.miquiis.onlyblock.OnlyBlock;
-import me.miquiis.onlyblock.server.network.messages.*;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
@@ -16,16 +15,7 @@ public class OnlyBlockNetwork {
     );
 
     public static void init() {
-        CHANNEL.registerMessage(1, WorldOnlyMoneyBlockPacket.class, WorldOnlyMoneyBlockPacket::encode, WorldOnlyMoneyBlockPacket::decode, WorldOnlyMoneyBlockPacket::handle);
-        CHANNEL.registerMessage(2, OnlyMoneyBlockPacket.class, OnlyMoneyBlockPacket::encode, OnlyMoneyBlockPacket::decode, OnlyMoneyBlockPacket::handle);
-        CHANNEL.registerMessage(3, ATMPacket.class, ATMPacket::encode, ATMPacket::decode, ATMPacket::handle);
-        CHANNEL.registerMessage(4, BuyItemFromShopPacket.class, BuyItemFromShopPacket::encode, BuyItemFromShopPacket::decode, BuyItemFromShopPacket::handle);
-        CHANNEL.registerMessage(5, BuySabotagePacket.class, BuySabotagePacket::encode, BuySabotagePacket::decode, BuySabotagePacket::handle);
-        CHANNEL.registerMessage(6, OpenPlayerSelectPacket.class, OpenPlayerSelectPacket::encode, OpenPlayerSelectPacket::decode, OpenPlayerSelectPacket::handle);
-        CHANNEL.registerMessage(7, CloseScreenPacket.class, CloseScreenPacket::encode, CloseScreenPacket::decode, CloseScreenPacket::handle);
-        CHANNEL.registerMessage(8, BuyStealPacket.class, BuyStealPacket::encode, BuyStealPacket::decode, BuyStealPacket::handle);
-        CHANNEL.registerMessage(9, BuyFreezePacket.class, BuyFreezePacket::encode, BuyFreezePacket::decode, BuyFreezePacket::handle);
-        CHANNEL.registerMessage(10, BuyDestroyPacket.class, BuyDestroyPacket::encode, BuyDestroyPacket::decode, BuyDestroyPacket::handle);
+
     }
 
 }

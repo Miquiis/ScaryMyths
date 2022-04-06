@@ -1,8 +1,6 @@
 package me.miquiis.onlyblock;
 
 import me.miquiis.custombar.common.BarManager;
-import me.miquiis.onlyblock.common.capability.OnlyMoneyBlockCapability;
-import me.miquiis.onlyblock.common.capability.WorldOnlyMoneyBlockCapability;
 import me.miquiis.onlyblock.common.managers.BlockManager;
 import me.miquiis.onlyblock.common.managers.FileManager;
 import me.miquiis.onlyblock.common.registries.*;
@@ -52,8 +50,6 @@ public class OnlyBlock
     {
         instance = this;
         OnlyBlockNetwork.init();
-        WorldOnlyMoneyBlockCapability.register();
-        OnlyMoneyBlockCapability.register();
         BarManager.init();
     }
 

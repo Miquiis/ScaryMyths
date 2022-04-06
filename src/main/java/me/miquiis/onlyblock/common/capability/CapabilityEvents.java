@@ -15,14 +15,13 @@ public class CapabilityEvents {
     @SubscribeEvent
     public static void attachCapabilitiesWorld(final AttachCapabilitiesEvent<World> event)
     {
-        event.addCapability(new ResourceLocation(OnlyBlock.MOD_ID, "world_onlymoneyblock"), new WorldOnlyMoneyBlockCapability(event.getObject()));
+
     }
 
     @SubscribeEvent
     public static void attachCapabilitiesPlayer(final AttachCapabilitiesEvent<Entity> event)
     {
-        if (event.getObject() instanceof PlayerEntity)
-        event.addCapability(new ResourceLocation(OnlyBlock.MOD_ID, "onlymoneyblock"), new OnlyMoneyBlockCapability((PlayerEntity) event.getObject()));
+
     }
 
 }

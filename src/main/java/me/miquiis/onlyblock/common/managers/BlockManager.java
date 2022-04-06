@@ -1,7 +1,6 @@
 package me.miquiis.onlyblock.common.managers;
 
 import me.miquiis.onlyblock.OnlyBlock;
-import me.miquiis.onlyblock.common.capability.models.OnlyMoneyBlock;
 import me.miquiis.onlyblock.common.classes.LootTable;
 import me.miquiis.onlyblock.common.registries.BlockRegister;
 import me.miquiis.onlyblock.common.registries.ItemRegister;
@@ -56,20 +55,6 @@ public class BlockManager {
 
     private LootTable.Loot getLootFromPlayer(ServerPlayerEntity player)
     {
-        if (player.getHeldItemMainhand().getItem() == ItemRegister.CRYPTO_MINER.get())
-        {
-            OnlyMoneyBlock.getCapability(player).sumCash(100);
-        } else
-        {
-            OnlyMoneyBlock.getCapability(player).sumCash(1);
-        }
-
-        if (!OnlyMoneyBlock.getCapability(player).hasATM() && OnlyMoneyBlock.getCapability(player).getCash() >= 50)
-        {
-            OnlyMoneyBlock.getCapability(player).setHasATM(true);
-            return getLootTable("level_1_1").getLoot();
-        }
-
         return getLootTable("level_1").getLoot();
     }
 
@@ -86,19 +71,9 @@ public class BlockManager {
     private void setupDefaultLootTable()
     {
         LootTable level1 = new LootTable("level_1", new ArrayList<>(Arrays.asList(
-                new LootTable.Loot(Items.COBBLESTONE.getRegistryName().toString(), 6),
-                new LootTable.Loot(Items.OAK_LOG.getRegistryName().toString(), 4),
-                new LootTable.Loot(Items.OAK_PLANKS.getRegistryName().toString(), 10),
-                new LootTable.Loot(Items.STONE.getRegistryName().toString(), 3),
-                new LootTable.Loot(Items.BRICKS.getRegistryName().toString(), 5)
-        )));
-
-        LootTable level1_1 = new LootTable("level_1_1", new ArrayList<>(Arrays.asList(
-                new LootTable.Loot(BlockRegister.ATM.get().getRegistryName().toString(), 1)
         )));
 
         folderReference.saveObject("level_1", level1);
-        folderReference.saveObject("level_1_1", level1_1);
     }
 
     public LootTable getLootTable(String lootKey) {
