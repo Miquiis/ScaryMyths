@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "package": "me.miquiis.scarymyths.mixin.client",
+  "compatibilityLevel": "JAVA_8",
+  "client": [
+    "IngameMenuScreenMixin",
+    "MultiplayerScreenMixin",
+    "ScreenAccessor",
+    "ServerListAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "refmap": "scarymyths.mixin-refmap.json",
+  "minVersion": "0.8"
+}
